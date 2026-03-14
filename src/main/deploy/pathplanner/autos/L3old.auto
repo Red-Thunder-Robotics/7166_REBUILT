@@ -7,13 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftStartPosToNZ1"
+            "pathName": "LeftStartToDepot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeDeployOn"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "LeftNZStartToNZ2"
+            "pathName": "PickUpDepot"
           }
         },
         {
@@ -25,13 +31,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftNeutralPush"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "LeftNeutralPushToShoot"
+            "pathName": "LeftDepotToClimb"
           }
         },
         {
@@ -50,6 +50,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Left",
+  "folder": "oldLeft",
   "choreoAuto": false
 }

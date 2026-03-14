@@ -7,19 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RightStartToNZ5"
+            "pathName": "LeftStartPosToNZ1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "RightPickUpNZ4"
+            "pathName": "LeftNZStartToNZ2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "RightNZ4ToShootPos"
+            "pathName": "LeftNZ1ToShoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "EngageShooterHub"
           }
         },
         {
@@ -31,13 +37,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Right Shoot To NZ2"
+            "pathName": "LeftTrenchToNZ2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Right NZ2 To Shoot"
+            "pathName": "LeftNZ2ToTrench"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "EngageShooterHub"
           }
         },
         {
@@ -49,25 +61,43 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Right Shoot To NZ3"
+            "pathName": "LeftShootToNZ3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "RightNZ3ToShoot"
+            "pathName": "LeftNZ3ToTrench"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "EngageShooterHub"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "AfterShoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LeftShootToClimb"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ClimbMark1Home"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Right",
+  "folder": "oldLeft",
   "choreoAuto": false
 }

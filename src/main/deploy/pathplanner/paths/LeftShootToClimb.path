@@ -16,22 +16,6 @@
     },
     {
       "anchor": {
-        "x": 2.3471807228915655,
-        "y": 6.799710843373493
-      },
-      "prevControl": {
-        "x": 2.6422289156626504,
-        "y": 7.477228915662651
-      },
-      "nextControl": {
-        "x": 2.243105226403097,
-        "y": 6.5607226662518245
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
         "x": 1.1796148359486442,
         "y": 4.753095577746078
       },
@@ -46,11 +30,11 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.65,
+      "waypointRelativePos": 0.35,
       "rotationDegrees": -90.0
     },
     {
-      "waypointRelativePos": 1.4854111405835553,
+      "waypointRelativePos": 0.75,
       "rotationDegrees": 0.0
     }
   ],
@@ -59,7 +43,7 @@
   "eventMarkers": [
     {
       "name": "ClimbMark1Deploy",
-      "waypointRelativePos": 1.05,
+      "waypointRelativePos": 0.55,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

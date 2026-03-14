@@ -7,25 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftStartPosToNZ1"
+            "pathName": "LeftStartPosToNZ1withSweep"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "LeftNZStartToNZ2"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeHomeOff"
+            "pathName": "LeftNZStartToNZ2withSweep"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "LeftNZ1ToShoot"
+            "pathName": "LeftNZ2ToShootWithSweep"
           }
         },
         {
@@ -43,19 +37,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftTrenchToNZ2"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeHomeOff"
+            "pathName": "Left Goto second Sweep"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "LeftNZ2ToTrench"
+            "pathName": "Left second Sweep"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left second Sweep to Shoot"
           }
         },
         {

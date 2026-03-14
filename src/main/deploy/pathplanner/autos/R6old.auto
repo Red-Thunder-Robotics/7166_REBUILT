@@ -7,37 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftStartToDepot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeDeployOn"
+            "pathName": "RightStartToNZ5"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "PickUpDepot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeHomeOff"
+            "pathName": "RightPickUpNZ4"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "LeftDepotToClimb"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "EngageShooterHub"
+            "pathName": "RightNZ4ToShootPos"
           }
         },
         {
@@ -47,9 +29,9 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "ClimbRotate"
+            "pathName": "RightTrenchToClimb"
           }
         },
         {
@@ -62,6 +44,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Left",
+  "folder": "oldRight",
   "choreoAuto": false
 }

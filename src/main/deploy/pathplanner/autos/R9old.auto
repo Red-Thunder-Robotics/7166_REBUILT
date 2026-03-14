@@ -31,19 +31,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RightTrenchToClimb"
+            "pathName": "Right Shoot To NZ2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Right NZ2 To Shoot"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ClimbMark1Home"
+            "name": "AfterShoot"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Right",
+  "folder": "oldRight",
   "choreoAuto": false
 }

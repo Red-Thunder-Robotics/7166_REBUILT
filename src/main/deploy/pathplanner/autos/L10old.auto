@@ -17,6 +17,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "IntakeHomeOff"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "LeftNZ1ToShoot"
@@ -61,30 +67,6 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftShootToNZ3"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "LeftNZ3ToTrench"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "EngageShooterHub"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AfterShoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
             "pathName": "LeftShootToClimb"
           }
         },
@@ -98,6 +80,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Left",
+  "folder": "oldLeft",
   "choreoAuto": false
 }

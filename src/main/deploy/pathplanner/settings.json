@@ -12,9 +12,12 @@
   "autoFolders": [
     "Center",
     "Left",
-    "old",
+    "random",
     "Right",
-    "Test"
+    "Test",
+    "oldCenter",
+    "oldRight",
+    "oldLeft"
   ],
   "defaultMaxVel": 3.5,
   "defaultMaxAccel": 3.0,

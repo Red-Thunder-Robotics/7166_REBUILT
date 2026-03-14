@@ -25,7 +25,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftNZ1ToShoot"
+            "pathName": "LeftNeutralPush"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LeftNeutralPushToShoot"
           }
         },
         {
@@ -39,23 +45,11 @@
           "data": {
             "name": "AfterShoot"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "LeftShootToClimb"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ClimbMark1Home"
-          }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Left",
+  "folder": "oldLeft",
   "choreoAuto": false
 }

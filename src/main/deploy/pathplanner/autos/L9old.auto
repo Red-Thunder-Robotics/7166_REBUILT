@@ -7,19 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftStartPosToNZ1withSweep"
+            "pathName": "LeftStartPosToNZ1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "LeftNZStartToNZ2withSweep"
+            "pathName": "LeftNZStartToNZ2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeHomeOff"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "LeftNZ2ToShootWithSweep"
+            "pathName": "LeftNZ1ToShoot"
           }
         },
         {
@@ -37,19 +43,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left Goto second Sweep"
+            "pathName": "LeftTrenchToNZ2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeHomeOff"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Left second Sweep"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Left second Sweep to Shoot"
+            "pathName": "LeftNZ2ToTrench"
           }
         },
         {
@@ -68,6 +74,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Left",
+  "folder": "oldLeft",
   "choreoAuto": false
 }

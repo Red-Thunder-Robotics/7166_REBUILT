@@ -7,31 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftStartToDepot"
+            "pathName": "RightStartToOutPost"
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "IntakeDeployOn"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "PickUpDepot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeHomeOff"
+            "waitTime": 3.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "LeftDepotToClimb"
+            "pathName": "RightOutPostToClimbPos"
           }
         },
         {
@@ -50,6 +38,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Left",
+  "folder": "oldRight",
   "choreoAuto": false
 }

@@ -7,19 +7,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RightStartToNZ5WithSweep"
+            "pathName": "RightStartToNZ5"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "RightPickUpNZ3withsweep"
+            "pathName": "RightPickUpNZ4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeHomeOff"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "RightNZ3ToShootWithSweep"
+            "pathName": "Right NZ Push"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RightNZ push to Left Shoot"
           }
         },
         {
@@ -37,37 +49,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Right Going to and Second Sweep"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Right Second Sweep "
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Right second sweep to shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "EngageShooterHub"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AfterShoot"
+            "pathName": "LeftShootToClimb"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Right",
+  "folder": "oldRight",
   "choreoAuto": false
 }

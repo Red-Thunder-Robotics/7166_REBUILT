@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RightStartToNZ5"
+            "pathName": "LeftStartPosToNZ1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "RightPickUpNZ4"
+            "pathName": "LeftNZStartToNZ2"
           }
         },
         {
@@ -25,13 +25,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Right NZ Push"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "RightNZ push to Left Shoot"
+            "pathName": "LeftNZ1ToShoot"
           }
         },
         {
@@ -51,11 +45,17 @@
           "data": {
             "pathName": "LeftShootToClimb"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ClimbMark1Home"
+          }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Right",
+  "folder": "oldLeft",
   "choreoAuto": false
 }

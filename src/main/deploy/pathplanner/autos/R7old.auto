@@ -7,19 +7,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RightStartToOutPost"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 3.0
+            "pathName": "RightStartToNZ5"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "RightOutPostToClimbPos"
+            "pathName": "RightPickUpNZ4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeHomeOff"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Right NZ Push"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RightNZ push to Left Shoot"
           }
         },
         {
@@ -38,6 +50,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Right",
+  "folder": "oldRight",
   "choreoAuto": false
 }

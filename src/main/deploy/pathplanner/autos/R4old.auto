@@ -7,37 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RightStartToNZ5"
+            "pathName": "RightStartToOutPost"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "RightPickUpNZ4"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeHomeOff"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Right NZ Push"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "RightNZ push to Left Shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "EngageShooterHub"
+            "pathName": "RightOutPostToShootPos"
           }
         },
         {
@@ -45,11 +27,23 @@
           "data": {
             "name": "AfterShoot"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RightShootPosToClimb"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ClimbMark1Home"
+          }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Right",
+  "folder": "oldRight",
   "choreoAuto": false
 }
