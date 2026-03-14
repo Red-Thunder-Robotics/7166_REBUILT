@@ -35,6 +35,7 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Controls;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.state_machine.LiveConfig;
 import frc.robot.state_machine.ShooterState;
@@ -96,8 +97,11 @@ public final class ShooterSubsystem extends SubsystemBase {
 
                         InterpolationShooterParams params;
                         // if (LiveConfig.getIsPit())
-                        //     params = LauncherLocationParam.HubCenter.m_params;
-                        // else
+                        if (Controls.visionFail1.getAsBoolean())
+                            params = paramMap.map.get(3.249d);
+                        else if (LiveConfig.getVisionFail())
+                            params = hubCenterParams;
+                        else
                             params = calculateParams(targetPose.get());
                         if (params != null)
                             setParams(params);

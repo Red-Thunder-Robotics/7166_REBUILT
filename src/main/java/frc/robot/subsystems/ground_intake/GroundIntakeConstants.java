@@ -13,7 +13,7 @@ import edu.wpi.first.units.measure.Distance;
 
 public final class GroundIntakeConstants {
     public static final int rollerMotorId = 54;
-    public static final int rollerCurrentLimit = 25;
+    public static final int rollerCurrentLimit = 45;
     public static final int rollerCurrentLimitAuto = 45;
     public static final NeutralModeValue rollerNeutralMode = NeutralModeValue.Coast;
     public static final InvertedValue rollerInverted = InvertedValue.CounterClockwise_Positive;

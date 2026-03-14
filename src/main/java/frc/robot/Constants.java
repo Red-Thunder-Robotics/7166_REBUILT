@@ -28,10 +28,11 @@ public final class Constants {
         REPLAY
     }
 
-    private static final boolean USE_TWO_CONTROLLERS_DESIRED = true;
-    public static final boolean USE_TWO_CONTROLLERS = !RobotBase.isSimulation() && USE_TWO_CONTROLLERS_DESIRED;
+    // NOTE: THERE ARE OVERLAPPING CONTROLS!!!!
+    private static final boolean USE_TWO_CONTROLLERS_DESIRED = false;
+    public static final boolean USE_TWO_CONTROLLERS = USE_TWO_CONTROLLERS_DESIRED;// ? RobotBase.isSimulation() : false;
     public static final int DRIVER_CONTROLLER = 0;
-    public static final int OPERATOR_CONTROLLER = USE_TWO_CONTROLLERS ? 1 : DRIVER_CONTROLLER;
+    public static final int OPERATOR_CONTROLLER = USE_TWO_CONTROLLERS ? DRIVER_CONTROLLER : 1;
 
     public static final CANBus CANBUS = new CANBus("Canivore");
 

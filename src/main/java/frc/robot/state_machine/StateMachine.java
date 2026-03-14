@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
+import frc.robot.Controls;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.Robot;
@@ -138,7 +139,7 @@ public class StateMachine {
     public static boolean turretShouldIndex() {
         if (LiveConfig.getIsPit())
             return true;
-        return Constants.USE_TURRET ? TurretSubsystem.instance.shouldIndex() : withinJoystickRotationErrorThreshold;
+        return Constants.USE_TURRET ? TurretSubsystem.instance.shouldIndex() : Controls.lockWheelsButton.getAsBoolean() || withinJoystickRotationErrorThreshold;
     }
     public static boolean shouldIndex() {
         return turretShouldIndex() && ShooterSubsystem.instance.shouldIndex() && kickerStartupTimer.hasElapsed(shouldIndexKickerVelocityThresholdSeconds);
@@ -440,7 +441,7 @@ public class StateMachine {
     @SuppressWarnings("unused") // for useTurret
     public static synchronized void periodic(Robot robot) {
         Logger.recordOutput("Odometry/Robot", odometryAndVision.getEstimatedPose());
-        
+
         Logger.recordOutput("StateMachine/IntakeState", intakeState);
         Logger.recordOutput("StateMachine/LauncherTarget", launcherTarget);
         Logger.recordOutput("StateMachine/ShooterState", shooterState);

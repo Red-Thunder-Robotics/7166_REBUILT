@@ -12,6 +12,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Controls;
 import frc.robot.Robot;
 import frc.robot.state_machine.IntakeState;
 import frc.robot.state_machine.ShooterState;
@@ -36,6 +37,7 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
     private static final double oscillateFrequencySeconds = 0.7d;
     private static final double oscillateStartDelaySeconds = 2d;
     private static final int oscillateCountStopThreshold = 6;
+    private static final boolean oscillateStopAfterCounInTeleop = false;
     private Timer m_oscillatorTimer = new Timer();
     private int m_oscillateCount = 0;
 
@@ -81,14 +83,16 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
         } else if (m_rollerReverse)
             m_io.rollerVelocity(rollerOutputVelocityReverse);
 
-        // final boolean shouldOscillate = DriverStation.isAutonomousEnabled() && StateMachine.wantsToShoot();
-        final boolean shouldOscillate = (DriverStation.isAutonomousEnabled() || Robot.isSimulation()) && StateMachine.wantsToShoot();
+        final boolean isTeleop = DriverStation.isTeleop();
+        final boolean shouldOscillate = StateMachine.wantsToShoot() && (isTeleop ? Controls.oscillateIntakeButton.getAsBoolean() : true);
+        // final boolean shouldOscillate = (DriverStation.isAutonomousEnabled() || Robot.isSimulation()) && StateMachine.wantsToShoot();
         Logger.recordOutput("Intake/ShouldOscillate", shouldOscillate);
         if (m_oscillatorTimer.isRunning()) {
             if (shouldOscillate) {
-                final boolean waiting = m_oscillateCount < 1 && m_oscillatorTimer.get() < oscillateStartDelaySeconds;
+                final boolean waiting = isTeleop ? false : m_oscillateCount < 1 && (m_oscillatorTimer.get() < oscillateStartDelaySeconds);
                 if (!waiting && m_oscillatorTimer.advanceIfElapsed(oscillateFrequencySeconds)) {
-                    if (m_oscillateCount < oscillateCountStopThreshold) {
+                    final boolean skipStop = oscillateStopAfterCounInTeleop ? false : isTeleop;
+                    if (skipStop || m_oscillateCount < oscillateCountStopThreshold) {
                         StateMachine.setIntakeState(StateMachine.getIntakeState() == IntakeState.DeployedOn ? IntakeState.OscillateOff : IntakeState.DeployedOn);
                         m_oscillateCount += 1;
                     } else

@@ -8,19 +8,23 @@ public final class Controls {
     public static final CommandXboxController driveController = new CommandXboxController(DRIVER_CONTROLLER);
     public static final CommandXboxController operatorController = new CommandXboxController(OPERATOR_CONTROLLER);
 
-    // NOTE: do not have overlapping controls because of Constants.USE_TWO_CONTROLLERS
-
     public static final Trigger manualTurretToggle = operatorController.rightStick();
 
     public static final Trigger resetGyroButton = driveController.start();
-    public static final Trigger lockWheelsButton = driveController.x();
+    public static final Trigger lockWheelsButton = driveController.a();
 
     public static final Trigger deployIntakeButton = driveController.rightBumper();
     public static final Trigger retractIntakeButton = driveController.leftBumper();
+    public static final Trigger oscillateIntakeButton = driveController.rightTrigger();
 
-    public static final Trigger reverseButton = operatorController.leftTrigger();
+    public static final Trigger reverseButton = operatorController.leftTrigger().or(driveController.leftTrigger());
     public static final Trigger hubButton = operatorController.rightTrigger();
-    public static final Trigger allianceFeedButton = operatorController.b();
+    public static final Trigger allianceFeedButton = operatorController.x();
+
+    public static final Trigger visionFail1 = operatorController.b();
+
+    public static final Trigger rotationTargetBumpLeft = operatorController.leftBumper();
+    public static final Trigger rotationTargetBumpRight = operatorController.rightBumper();
 
     // CLIMBER MARK 1
     public static final Trigger leftClimbUp = operatorController.povUp();
@@ -28,6 +32,8 @@ public final class Controls {
 
     public static final Trigger rightClimbUp = operatorController.y();
     public static final Trigger rightClimbDown = operatorController.a();
+
+    public static final Trigger eitherClimbUp = leftClimbUp.or(rightClimbUp);
 
     // CLIMBER MARK 2
     // public static final Trigger climbSafetyButton = driveController.b();

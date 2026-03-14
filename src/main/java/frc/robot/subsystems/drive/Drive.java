@@ -408,7 +408,7 @@ public class Drive extends SubsystemBase {
   /** Returns the maximum angular speed in radians per sec. */
   public double getMaxAngularSpeedRadPerSec() {
     // return getMaxLinearSpeedMetersPerSec() / DRIVE_BASE_RADIUS;
-    return Units.degreesToRadians(360d);
+    return Units.degreesToRadians(540d);
   }
 
   public double getYawVelocityRadPerSec() {
