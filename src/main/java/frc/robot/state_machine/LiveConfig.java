@@ -14,6 +14,9 @@ public final class LiveConfig {
     private static final BooleanTopic isPitTopic = networkTable.getBooleanTopic("IsPit");
     private static final BooleanSubscriber isPitSubscriber = isPitTopic.subscribe(false);
 
+    private static final BooleanTopic visionFailTopic = networkTable.getBooleanTopic("VisionFail");
+    private static final BooleanSubscriber visionFailSubscriber = visionFailTopic.subscribe(false);
+
     private static final BooleanTopic launcherTuning = networkTable.getBooleanTopic("LauncherTuning");
     private static final BooleanSubscriber launcherTuningSubscriber = launcherTuning.subscribe(false);
 
@@ -25,6 +28,7 @@ public final class LiveConfig {
 
     static {
         isPitTopic.publish().set(false);
+        visionFailTopic.publish().set(false);
         launcherTuning.publish().set(false);
         launcherTuningRPM.publish().set(launcherTuningRPMSubscriber.get());
         launcherTuningAngle.publish().set(launcherTuningAngleSubscriber.get());
@@ -32,6 +36,10 @@ public final class LiveConfig {
 
     public static boolean getIsPit() {
         return isPitSubscriber.get();
+    }
+
+    public static boolean getVisionFail() {
+        return visionFailSubscriber.get();
     }
 
     public static boolean getLauncherTuning() {

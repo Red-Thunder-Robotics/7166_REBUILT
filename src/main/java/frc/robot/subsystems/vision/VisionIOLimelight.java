@@ -35,7 +35,8 @@ public final class VisionIOLimelight implements VisionIO {
     }
 
     
-    private final Matrix<N3, N1> stdDevs = VecBuilder.fill(.7,.7,9999999);
+    // private final Matrix<N3, N1> stdDevs = VecBuilder.fill(.7,.7,9999999);
+    private final Matrix<N3, N1> stdDevs = VecBuilder.fill(.35,.35,9999999);
     private boolean updateVisionMegaTag2(String limelightName) {
         final Drive drive = Drive.instance;
 
@@ -47,8 +48,6 @@ public final class VisionIOLimelight implements VisionIO {
 
         LimelightHelpers.SetRobotOrientation(limelightName, yaw_degrees, 0, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
-        if (mt2 == null)
-            return false;
 
         if(mt2.tagCount == 0)
             return false;

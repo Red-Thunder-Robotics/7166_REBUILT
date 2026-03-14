@@ -8,6 +8,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Radians;
@@ -22,6 +23,7 @@ import java.util.Set;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -52,9 +54,11 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.AutoDriveCommands;
 import frc.robot.commands.DriveCommands;
@@ -68,6 +72,7 @@ import frc.robot.state_machine.LiveConfig;
 import frc.robot.state_machine.StateMachine;
 import frc.robot.state_machine.StateMachine.RobotCommands;
 import frc.robot.subsystems.climbermark1.ClimberIO;
+import frc.robot.subsystems.climbermark1.ClimberIOReal;
 import frc.robot.subsystems.climbermark1.ClimberIOSim;
 import frc.robot.subsystems.climbermark1.ClimberSubsystem;
 import frc.robot.subsystems.drive.Drive;
@@ -128,10 +133,16 @@ public class Robot extends LoggedRobot {
 
     private final LoggedDashboardChooser<Command> m_autoChooser;
 
+    @AutoLogOutput(key="RotationTargetOffset")
+    private double m_rotationTargetMeterOffset = 0d;
+
+    private static final double rotationTargetMax = Units.inchesToMeters(24d);
+    private static final double rotationTargetMin = -rotationTargetMax;
+
     public Robot() {
         SignalLogger.setPath("/U/logs");
         SignalLogger.start();
-
+        
         m_commandScheduler = CommandScheduler.getInstance();
 
         // Record metadata
@@ -167,9 +178,9 @@ public class Robot extends LoggedRobot {
                 m_indexerSubsystem = new IndexerSubsystem(new IndexerIOReal());
                 // FIXME: real subsystems
                 m_shooterSubsystem = new ShooterSubsystem(new ShooterIOReal());
-                // m_climberSubsystem = new ClimberSubsystem(new ClimberIOReal());
+                m_climberSubsystem = new ClimberSubsystem(new ClimberIOReal());
                 // m_lightEmittingDiodesSubsystem = new LightEmittingDiodesSubsystem(new LightEmittingDiodesIOReal());
-                m_climberSubsystem = new ClimberSubsystem(new ClimberIO() {});
+                // m_climberSubsystem = new ClimberSubsystem(new ClimberIO() {});
                 m_lightEmittingDiodesSubsystem = new LightEmittingDiodesSubsystem(new LightEmittingDiodesIO() {});
 
                 break;
@@ -259,6 +270,7 @@ public class Robot extends LoggedRobot {
         m_autoChooser.addOption(
             "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(m_driveSubsystem));
 
+        SmartDashboard.putBoolean("NTGyro", false);
         resetGyro(Rotation2d.kZero);
         configureButtons();
         m_commandScheduler.onCommandInterrupt((Command command, Optional<Command> interruptor) -> {
@@ -324,6 +336,26 @@ public class Robot extends LoggedRobot {
                 Controls.hubButton::getAsBoolean), "AllianceFeedDisengage")
         );
 
+        final double rotationTargetOffsetAddend = Units.inchesToMeters(3d);
+        Controls.rotationTargetBumpLeft
+            .and(Controls.rotationTargetBumpRight.negate())
+            .onTrue(cmdName(Commands.runOnce(() -> {
+                m_rotationTargetMeterOffset -= rotationTargetOffsetAddend;
+                if (m_rotationTargetMeterOffset < rotationTargetMin)
+                    m_rotationTargetMeterOffset = rotationTargetMin;
+            }), "RotationTargetBumpLeft"));
+        Controls.rotationTargetBumpRight
+            .and(Controls.rotationTargetBumpLeft.negate())
+            .onTrue(cmdName(Commands.runOnce(() -> {
+                m_rotationTargetMeterOffset += rotationTargetOffsetAddend;
+                if (m_rotationTargetMeterOffset > rotationTargetMax)
+                    m_rotationTargetMeterOffset = rotationTargetMax;
+            }), "RotationTargetBumpRight"));
+
+        Controls.rotationTargetBumpLeft
+            .and(Controls.rotationTargetBumpRight)
+            .onTrue(cmdName(Commands.runOnce(() -> m_rotationTargetMeterOffset = 0d), "RotationTargetBumpReset"));
+
         if (Robot.isSimulation())
             Controls.hubButton
                 .or(Controls.allianceFeedButton)
@@ -335,6 +367,9 @@ public class Robot extends LoggedRobot {
 
         Controls.rightClimbUp.onTrue(RobotCommands.climberRightDeployed());
         Controls.rightClimbDown.onTrue(RobotCommands.climberRightHome());
+
+        // bring intake out so the climber doesn't catch on it
+        Controls.eitherClimbUp.onTrue(RobotCommands.setIntakeState(IntakeState.OscillateOff));
 
         // CLIMBER MARK 2
         // Controls.climbForward.onTrue(Commands.either(
@@ -369,7 +404,7 @@ public class Robot extends LoggedRobot {
         NamedCommands.registerCommand("IntakeHomeOff", RobotCommands.retractIntakeOff());
 
         // FIXME: waitForEmptyHopper command using vision
-        Command waitForEmptyHopper = Commands.waitSeconds(12d); // next 8?
+        Command waitForEmptyHopper = Commands.waitSeconds(12d);
         NamedCommands.registerCommand("AfterShoot", cmdName(waitForEmptyHopper.andThen(RobotCommands.disengageShooter()), "AfterShoot"));
 
         // NamedCommands.registerCommand("ClimbRotate", Commands.defer(() -> {
@@ -379,7 +414,7 @@ public class Robot extends LoggedRobot {
         //         MetersPerSecond.of(1d), MetersPerSecondPerSecond.of(1d),
         //         RadiansPerSecond.of(360d), RadiansPerSecondPerSecond.of(720d)));
         // }, Set.of()));
-        NamedCommands.registerCommand("ClimbRotate", cmdName(AutoDriveCommands.faceRotation2d(Rotation2d.kZero), "AutoClimbRotate"));
+        NamedCommands.registerCommand("ClimbRotate", cmdName(AutoDriveCommands.faceRotation2d(StateMachine.allianceFlip(Rotation2d.kZero)), "AutoClimbRotate"));
 
         // CLIMBER MARK 1
         NamedCommands.registerCommand("ClimbMark1Deploy", RobotCommands.setClimberBothState(ClimberMark1State.Deployed));
@@ -405,18 +440,7 @@ public class Robot extends LoggedRobot {
     /** This function is called once when the robot is disabled. */
     @Override
     public void disabledInit() {
-        resetState();
-
-        if (RobotCommands.getHasAutoClimbRan()) {
-            // prevent climber from jerking back to setpoint on enable
-
-            // CLIMBER MARK 1
-            StateMachine.setClimberLeftState(ClimberMark1State.Idle);
-            StateMachine.setClimberRightState(ClimberMark1State.Idle);
-
-            // CLIMBER MARK 2
-            // StateMachine.setClimberState(ClimberMark2State.Idle);
-        }
+        // resetState();
     }
 
     private void resetState() {
@@ -424,12 +448,17 @@ public class Robot extends LoggedRobot {
         // RobotCommands.setIntakeState(StateMachine.getIntakeState().off());
     }
 
+    private boolean m_lastNTGyroButton = false;
     /** This function is called periodically when disabled. */
     @Override
     public void disabledPeriodic() {
-        var command = m_autoChooser.get();
+        final boolean NTGyroButton = SmartDashboard.getBoolean("NTGyro", m_lastNTGyroButton);
+        if (NTGyroButton != m_lastNTGyroButton) {
+            var command = m_autoChooser.get();
 
-        resetGyroFromPathPlanner(command);
+            resetGyroFromPathPlanner(command);
+        }
+        m_lastNTGyroButton = NTGyroButton;
     }
 
     private void resetGyroFromPathPlanner(Command command) {
@@ -503,6 +532,20 @@ public class Robot extends LoggedRobot {
                     : StateMachine.odometryAndVision.getRotation()));
         }
     }
+    
+    @Override
+    public void autonomousExit() {
+        if (RobotCommands.getHasAutoClimbRan()) {
+            // prevent climber from jerking back to setpoint on enable
+
+            // CLIMBER MARK 1
+            StateMachine.setClimberLeftState(ClimberMark1State.Idle);
+            StateMachine.setClimberRightState(ClimberMark1State.Idle);
+
+            // CLIMBER MARK 2
+            // StateMachine.setClimberState(ClimberMark2State.Idle);
+        }
+    }
 
     /** This function is called once when teleop is enabled. */
     @Override
@@ -561,11 +604,14 @@ public class Robot extends LoggedRobot {
                 return Optional.empty();
 
             var rotation = StateMachine.odometryAndVision.getRotation();
-            return Optional.of(rotation.plus(new Rotation2d(StateMachine.getRobotRotationalGoal(targetPose.get()))));
+            var target = targetPose.get();
+            target = target.plus(new Translation3d(0d, (StateMachine.ALLIANCE == Alliance.Red ? 1d : -1d) * m_rotationTargetMeterOffset, 0d));
+            return Optional.of(rotation.plus(new Rotation2d(StateMachine.getRobotRotationalGoal(target))));
         };
     }
 
     public void resetGyro(Rotation2d offset) {
+        System.out.println("resetGyro called");
         if (StateMachine.initialSwerveRotation != null) {
             final Pose2d pose = new Pose2d(StateMachine.odometryAndVision.getEstimatedPose().getTranslation(), StateMachine.initialSwerveRotation.plus(offset));
             StateMachine.odometryAndVision.resetPose(pose);

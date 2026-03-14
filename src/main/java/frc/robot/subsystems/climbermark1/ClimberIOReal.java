@@ -18,15 +18,15 @@ import frc.robot.Constants;
 import frc.robot.util.PhoenixUtil;
 
 public final class ClimberIOReal implements ClimberIO {
-    private final TalonFX m_leftMotor = new TalonFX(leftMotorId, Constants.CANBUS);
+    // private final TalonFX m_leftMotor = new TalonFX(leftMotorId, Constants.CANBUS);
     private final TalonFX m_rightMotor = new TalonFX(rightMotorId, Constants.CANBUS);
 
     private double m_leftTargetPosition = positionHome;
     private double m_rightTargetPosition = positionHome;
 
-    private final StatusSignal<Angle> m_leftPositionSignal = m_leftMotor.getPosition();
-    private final StatusSignal<AngularVelocity> m_leftVelocitySignal = m_leftMotor.getVelocity();
-    private final StatusSignal<Current> m_leftCurrentSignal = m_leftMotor.getSupplyCurrent();
+    // private final StatusSignal<Angle> m_leftPositionSignal = m_leftMotor.getPosition();
+    // private final StatusSignal<AngularVelocity> m_leftVelocitySignal = m_leftMotor.getVelocity();
+    // private final StatusSignal<Current> m_leftCurrentSignal = m_leftMotor.getSupplyCurrent();
 
     private final StatusSignal<Angle> m_rightPositionSignal = m_rightMotor.getPosition();
     private final StatusSignal<AngularVelocity> m_rightVelocitySignal = m_rightMotor.getVelocity();
@@ -36,45 +36,59 @@ public final class ClimberIOReal implements ClimberIO {
     private final MotionMagicVoltage m_rightPositionRequest = new MotionMagicVoltage(m_rightTargetPosition);
 
     public ClimberIOReal() {
-        var leftConfig = new TalonFXConfiguration();
-        leftConfig.MotorOutput.NeutralMode = neutralMode;
-        leftConfig.MotorOutput.Inverted = leftInverted;
+        // var leftConfig = new TalonFXConfiguration();
+        // leftConfig.MotorOutput.NeutralMode = neutralMode;
+        // leftConfig.MotorOutput.Inverted = leftInverted;
 
-        leftConfig.Feedback.SensorToMechanismRatio = motorReduction;
+        // leftConfig.Feedback.SensorToMechanismRatio = motorReduction;
 
-        leftConfig.Slot0.GravityType = GravityTypeValue.Elevator_Static;
-        leftConfig.Slot0.kP = pidP;
+        // leftConfig.Slot0.GravityType = GravityTypeValue.Elevator_Static;
+        // leftConfig.Slot0.kP = pidP;
 
-        leftConfig.MotionMagic.MotionMagicAcceleration = targetAcceleration;
-        leftConfig.MotionMagic.MotionMagicCruiseVelocity = maxVelocity;
+        // leftConfig.MotionMagic.MotionMagicAcceleration = targetAcceleration;
+        // leftConfig.MotionMagic.MotionMagicCruiseVelocity = maxVelocity;
 
-        var rightConfig = leftConfig.clone();
+        // var rightConfig = leftConfig.clone();
+        // rightConfig.MotorOutput.Inverted = rightInverted;
+
+        var rightConfig = new TalonFXConfiguration();
+        rightConfig.MotorOutput.NeutralMode = neutralMode;
         rightConfig.MotorOutput.Inverted = rightInverted;
 
-        PhoenixUtil.tryUntilOk(5, () -> m_leftMotor.getConfigurator().apply(leftConfig));
+        rightConfig.Feedback.SensorToMechanismRatio = motorReduction;
+
+        rightConfig.Slot0.GravityType = GravityTypeValue.Elevator_Static;
+        rightConfig.Slot0.kP = pidP;
+
+        rightConfig.MotionMagic.MotionMagicAcceleration = targetAcceleration;
+        rightConfig.MotionMagic.MotionMagicCruiseVelocity = maxVelocity;
+
+        // PhoenixUtil.tryUntilOk(5, () -> m_leftMotor.getConfigurator().apply(leftConfig));
         PhoenixUtil.tryUntilOk(5, () -> m_rightMotor.getConfigurator().apply(rightConfig));
 
-        BaseStatusSignal.setUpdateFrequencyForAll(50d, m_leftPositionSignal, m_leftVelocitySignal, m_leftCurrentSignal, m_rightPositionSignal, m_rightVelocitySignal, m_rightCurrentSignal);
+        // BaseStatusSignal.setUpdateFrequencyForAll(50d, m_leftPositionSignal, m_leftVelocitySignal, m_leftCurrentSignal, m_rightPositionSignal, m_rightVelocitySignal, m_rightCurrentSignal);
+        BaseStatusSignal.setUpdateFrequencyForAll(50d,  m_rightPositionSignal, m_rightVelocitySignal, m_rightCurrentSignal);
 
-        PhoenixUtil.tryUntilOk(5, () -> m_leftMotor.setPosition(m_leftTargetPosition));
+        // PhoenixUtil.tryUntilOk(5, () -> m_leftMotor.setPosition(m_leftTargetPosition));
         PhoenixUtil.tryUntilOk(5, () -> m_rightMotor.setPosition(m_rightTargetPosition));
     }
 
     @Override
     public void updateInputs(ClimberIOInputs inputs) {
-        BaseStatusSignal.refreshAll(m_leftPositionSignal, m_leftVelocitySignal, m_leftCurrentSignal, m_rightPositionSignal, m_rightVelocitySignal, m_rightCurrentSignal);
+        // BaseStatusSignal.refreshAll(m_leftPositionSignal, m_leftVelocitySignal, m_leftCurrentSignal, m_rightPositionSignal, m_rightVelocitySignal, m_rightCurrentSignal);
+        BaseStatusSignal.refreshAll(m_rightPositionSignal, m_rightVelocitySignal, m_rightCurrentSignal);
 
         // left
         final double leftTargetPosition = m_leftTargetPosition;
         inputs.leftTargetPositionRotations = leftTargetPosition;
         inputs.leftTargetPositionInches = mechanismPositionToDistance(leftTargetPosition, pitchCircumference).in(Inches);
 
-        final double leftPositionRotations = m_leftPositionSignal.getValueAsDouble();
-        inputs.leftPositionRotations = leftPositionRotations;
-        inputs.leftPositionInches = mechanismPositionToDistance(leftPositionRotations, pitchCircumference).in(Inches);
+        // final double leftPositionRotations = m_leftPositionSignal.getValueAsDouble();
+        // inputs.leftPositionRotations = leftPositionRotations;
+        // inputs.leftPositionInches = mechanismPositionToDistance(leftPositionRotations, pitchCircumference).in(Inches);
 
-        inputs.leftVelocityRPS = m_leftVelocitySignal.getValueAsDouble();
-        inputs.leftCurrentAmps = m_leftCurrentSignal.getValueAsDouble();
+        // inputs.leftVelocityRPS = m_leftVelocitySignal.getValueAsDouble();
+        // inputs.leftCurrentAmps = m_leftCurrentSignal.getValueAsDouble();
 
         // right
         final double rightTargetPosition = m_rightTargetPosition;
@@ -91,7 +105,7 @@ public final class ClimberIOReal implements ClimberIO {
 
     @Override
     public void leftIdle() {
-        m_leftMotor.disable();
+        // m_leftMotor.disable();
     }
     @Override
     public void rightIdle() {
@@ -101,7 +115,7 @@ public final class ClimberIOReal implements ClimberIO {
     @Override
     public void setLeftPosition(double position) {
         m_leftTargetPosition = position;
-        m_leftMotor.setControl(m_leftPositionRequest.withPosition(position));
+        // m_leftMotor.setControl(m_leftPositionRequest.withPosition(position));
     }
     @Override
     public void setRightPosition(double position) {
