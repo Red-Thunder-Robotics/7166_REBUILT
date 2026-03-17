@@ -1,0 +1,61 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LeftStartPosToNZ1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LeftNZStartToNZ2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LeftNZ2ToShoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "EngageShooterHub"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AfterShoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left Shoot to Start"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LeftStartPosToNZ1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LeftNZStartToNZ3"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Left",
+  "choreoAuto": false
+}
