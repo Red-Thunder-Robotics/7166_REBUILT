@@ -24,6 +24,7 @@ public final class ClimberSubsystem extends SubsystemBase {
         m_io.updateInputs(m_inputs);
 
         Logger.processInputs("Climber", m_inputs);
+        Logger.recordOutput("Climber/PositionDeployedRotations", positionDeployed);
     }
 
     public void stateUpdateLeft(ClimberMark1State climberState) {

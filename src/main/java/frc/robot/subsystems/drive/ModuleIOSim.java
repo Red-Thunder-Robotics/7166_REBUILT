@@ -98,7 +98,7 @@ public class ModuleIOSim implements ModuleIO {
     inputs.drivePositionRad = driveSim.getAngularPositionRad();
     inputs.driveVelocityRadPerSec = driveSim.getAngularVelocityRadPerSec();
     inputs.driveAppliedVolts = driveAppliedVolts;
-    inputs.driveCurrentAmps = Math.abs(driveSim.getCurrentDrawAmps());
+    inputs.driveStatorCurrentAmps = Math.abs(driveSim.getCurrentDrawAmps());
 
     // Update turn inputs
     inputs.turnConnected = true;

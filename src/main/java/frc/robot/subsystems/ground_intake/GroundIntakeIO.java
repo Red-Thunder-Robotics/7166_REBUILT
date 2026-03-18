@@ -28,7 +28,4 @@ public interface GroundIntakeIO {
     public default void setActuatorPosition(double position) {}
     public default void rollerVelocity(AngularVelocity velocity) {}
     public default void rollerStop() {}
-
-    public default void teleopInit() {}
-    public default void autoInit() {}
 }

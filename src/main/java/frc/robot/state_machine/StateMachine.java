@@ -437,6 +437,30 @@ public class StateMachine {
         return generalRobotState.isFiring();
     }
 
+    private static final Timer turboTimer = new Timer();
+    private static final double TURBO_MAX = 15d; // seconds
+    public static void startTurbo() {
+        turboTimer.start();
+    }
+    public static void stopTurbo() {
+        turboTimer.stop();
+    }
+    public static boolean isTurboAvailable() {
+        return !turboTimer.hasElapsed(TURBO_MAX);
+    }
+
+    static {
+        RobotEvent.TurboOn.addListener(StateMachine::startTurbo);
+        RobotEvent.TurboOff.addListener(StateMachine::stopTurbo);
+    }
+
+    public static Command eventTurboOff() {
+        return Commands.either(
+            Commands.runOnce(RobotEvent.TurboOff::trigger),
+            Commands.none(),
+            turboTimer::isRunning);
+    }
+
     private static boolean needsToUpdateRobot = true;
     @SuppressWarnings("unused") // for useTurret
     public static synchronized void periodic(Robot robot) {
@@ -448,6 +472,8 @@ public class StateMachine {
         // Logger.recordOutput("StateMachine/ClimberState", climberState);
         Logger.recordOutput("StateMachine/ClimberLeftState", climberLeftState);
         Logger.recordOutput("StateMachine/ClimberRightState", climberRightState);
+
+        Logger.recordOutput("StateMachine/TurboMeter", turboTimer.get());
 
         var alliance = DriverStation.getAlliance();
         if (alliance.isPresent() && alliance.get() != ALLIANCE) {

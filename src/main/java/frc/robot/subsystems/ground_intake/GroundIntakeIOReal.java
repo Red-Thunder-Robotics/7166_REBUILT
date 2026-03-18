@@ -7,7 +7,6 @@ import static frc.robot.util.ConversionUtil.*;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -17,6 +16,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import frc.robot.Constants;
+import frc.robot.state_machine.RobotEvent;
 import frc.robot.util.PhoenixUtil;
 
 public final class GroundIntakeIOReal implements GroundIntakeIO {
@@ -70,6 +70,9 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
         BaseStatusSignal.setUpdateFrequencyForAll(50d, m_rollerVelocitySignal, m_rollerCurrentSignal, m_actuatorPositionSignal, m_actuatorCurrentSignal);
 
         PhoenixUtil.tryUntilOk(5, () -> m_actuatorMotor.setPosition(m_actuatorTargetPosition));
+
+        RobotEvent.OnTeleopEnabled.addListener(() -> setRollerCurrentLimit(rollerCurrentLimit));
+        RobotEvent.OnAutoEnabled.addListener(() -> setRollerCurrentLimit(rollerCurrentLimitAuto));
     }
     
     @Override
@@ -119,14 +122,5 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
             config.CurrentLimits.SupplyCurrentLimit = limit;
             PhoenixUtil.tryUntilOk(5, () -> m_rollerMotor.getConfigurator().apply(config));
         }
-    }
-
-    @Override
-    public void teleopInit() {
-        setRollerCurrentLimit(rollerCurrentLimit);
-    }
-    @Override
-    public void autoInit() {
-        setRollerCurrentLimit(rollerCurrentLimitAuto);
     }
 }

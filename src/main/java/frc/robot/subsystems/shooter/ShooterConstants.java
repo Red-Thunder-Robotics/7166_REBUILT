@@ -27,7 +27,7 @@ import frc.robot.state_machine.StateMachine;
 
 public final class ShooterConstants {
     // public static final long spinUpDurationMilliseconds = 800L;
-    public static final double shouldIndexFlywheelVelocityThresholdRPS = 3d;
+    public static final double shouldIndexFlywheelVelocityThresholdRPS = 5.5d;
     // public static final double shouldIndexKickerVelocityThresholdRPS = 3d;
     public static final double shouldIndexKickerVelocityThresholdSeconds = 0.5d;
     public static final double latencyCompensationSeconds = 0.150d;
@@ -83,6 +83,8 @@ public final class ShooterConstants {
         new InterpolationShooterParams(1700d, 40d);
     private static final InterpolationShooterParams trenchShooterParams =
         new InterpolationShooterParams(1750d, 30d);
+    public static final InterpolationShooterParams hubCenterParams =
+        new InterpolationShooterParams(1435d, 20d);
     // public static enum LauncherLocationParam {
     //     TrenchLeft(
     //         new Translation2d(Meters.of(4.138d), Meters.of(7.632d)),
@@ -92,7 +94,7 @@ public final class ShooterConstants {
     //         trenchShooterParams),
     //     HubCenter(
     //         new Translation2d(Meters.of(2.985594d), StateMachine.getHubPoseBlue().getMeasureY()),
-    //         new InterpolationShooterParams(1535d, 20d)),
+    //         hubCenterParams,
     //     TowerLeft(
     //         new Translation2d(Meters.of(1.52d), Meters.of(4.177d)),
     //         new InterpolationShooterParams(1600d, 30d)),
@@ -155,10 +157,10 @@ public final class ShooterConstants {
             //     Normal.map.put(distance, value.m_params);
             // }
 
-            Normal.map.put(1.65, new InterpolationShooterParams(1435d, 20d));
-            Normal.map.put(3.1, new InterpolationShooterParams(1600d, 30d));
+            Normal.map.put(1.65, hubCenterParams);
+            Normal.map.put(3.1, new InterpolationShooterParams(1600d, 30d)); // tower left
             Normal.map.put(3.63, trenchShooterParams);
-            Normal.map.put(5.5, new InterpolationShooterParams(2200d, 30d));
+            Normal.map.put(5.5, new InterpolationShooterParams(2200d, 30d)); // field left
             // cross map (only x direction so not horizontal) alliance feed
             Normal.map.put(11d, new InterpolationShooterParams(3000d, mechanismPositionToAngle(hoodPositionHome).in(Degrees)));
 
@@ -169,6 +171,7 @@ public final class ShooterConstants {
     // distance to seconds
     public static final InterpolatingDoubleTreeMap timeOfFlightMap = new InterpolatingDoubleTreeMap();
     static {
-        timeOfFlightMap.put(3.5d, 1.5d); // random numbers right now
+        timeOfFlightMap.put(1.65d, 0.9291666666666675d); // hub center
+        timeOfFlightMap.put(3.63d, 1.12777777777d); // trench (MY BEST GUESS; PLEASE CHANGE)
     }
 }

@@ -10,26 +10,34 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.net.PortForwarder;
 import frc.robot.state_machine.OdometryAndVision.VisionObservation;
+import frc.robot.state_machine.RobotEvent;
 import frc.robot.state_machine.StateMachine;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.LimelightHelpers;
 
 public final class VisionIOLimelight implements VisionIO {
     public VisionIOLimelight() {
-        for (int port = 5800; port <= 5809; port++)
-            PortForwarder.add(port, limelightFrontLeftName + ".local", port);
-
-        for (int port = 5800; port <= 5809; port++)
-            PortForwarder.add(port + 10, limelightBackRightName + ".local", port);
+        for (int i = 0; i < limelightList.length; i++) {
+            final var name = limelightList[i];
+            for (int port = 5800; port <= 5809; port++)
+                PortForwarder.add(port + (i * 10), name + ".local", port);
+        }
+        
+        RobotEvent.OnDisabled.addListener(() -> {
+            for (var name : limelightList)
+                LimelightHelpers.SetThrottle(name, 200);
+        });
+        RobotEvent.OnEnabled.addListener(() -> {
+            for (var name : limelightList)
+                LimelightHelpers.SetThrottle(name, 0);
+        });
     }
 
     @Override
     public void updateInputs(VisionIOInputs inputs) {
-        boolean megaTagSuccess = updateVisionMegaTag2(limelightFrontLeftName);
-        {
-            var success = updateVisionMegaTag2(limelightBackRightName);
-            megaTagSuccess |= success;
-        }
+        boolean megaTagSuccess = false;
+        for (var name : limelightPoseEstimationList)
+            megaTagSuccess |= updateVisionMegaTag2(name);
 
         inputs.megaTagSuccess = megaTagSuccess;
     }

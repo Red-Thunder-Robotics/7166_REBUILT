@@ -12,6 +12,7 @@ public final class Controls {
 
     public static final Trigger resetGyroButton = driveController.start();
     public static final Trigger lockWheelsButton = driveController.a();
+    public static final Trigger turboButton = driveController.b();
 
     public static final Trigger deployIntakeButton = driveController.rightBumper();
     public static final Trigger retractIntakeButton = driveController.leftBumper();

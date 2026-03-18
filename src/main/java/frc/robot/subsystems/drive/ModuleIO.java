@@ -23,7 +23,8 @@ public interface ModuleIO {
     public double drivePositionRad = 0.0;
     public double driveVelocityRadPerSec = 0.0;
     public double driveAppliedVolts = 0.0;
-    public double driveCurrentAmps = 0.0;
+    public double driveStatorCurrentAmps = 0.0;
+    public double driveSupplyCurrentAmps = 0.0;
 
     public boolean turnConnected = false;
     public boolean turnEncoderConnected = false;
@@ -40,6 +41,13 @@ public interface ModuleIO {
 
   /** Updates the set of loggable inputs. */
   public default void updateInputs(ModuleIOInputs inputs) {}
+
+  public default boolean setDriveCurrentLimits(double stator, double supply) {
+    return true;
+  }
+
+  public default double getStatorCurrent() { return 0d; }
+  public default double getSupplyCurrent() { return 0d; }
 
   /** Run the drive motor at the specified open loop value. */
   public default void setDriveOpenLoop(double output) {}

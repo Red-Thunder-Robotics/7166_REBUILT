@@ -69,6 +69,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.state_machine.ClimberMark1State;
 import frc.robot.state_machine.IntakeState;
 import frc.robot.state_machine.LiveConfig;
+import frc.robot.state_machine.RobotEvent;
 import frc.robot.state_machine.StateMachine;
 import frc.robot.state_machine.StateMachine.RobotCommands;
 import frc.robot.subsystems.climbermark1.ClimberIO;
@@ -356,6 +357,18 @@ public class Robot extends LoggedRobot {
             .and(Controls.rotationTargetBumpRight)
             .onTrue(cmdName(Commands.runOnce(() -> m_rotationTargetMeterOffset = 0d), "RotationTargetBumpReset"));
 
+        Controls.turboButton
+            .whileTrue(Commands.either(
+                Commands.runOnce(RobotEvent.TurboOn::trigger)
+                    .andThen(Commands.waitUntil(() -> !StateMachine.isTurboAvailable()))
+                    .andThen(StateMachine.eventTurboOff()),
+                Commands.none(),
+                StateMachine::isTurboAvailable))
+            .onFalse(StateMachine.eventTurboOff());
+
+        RobotEvent.TurboOn.addListener(() -> System.out.println("TURBO MODE ENGAGE\nTURBO MODE ENGAGE"));
+        RobotEvent.TurboOff.addListener(() -> System.out.println("TURBO MODE DISENGAGE\nTURBO MODE DISENGAGE"));
+
         if (Robot.isSimulation())
             Controls.hubButton
                 .or(Controls.allianceFeedButton)
@@ -395,8 +408,14 @@ public class Robot extends LoggedRobot {
         }
     }
 
+    private boolean m_hasLoweredDriveStatorInAuto = false;
+
     private void setupNamedCommands() {
-        var engageShooterHub = RobotCommands.engageShooterHub();
+        var engageShooterHub = RobotCommands.engageShooterHub()
+            .andThen(Commands.runOnce(() -> {
+                if (!m_hasLoweredDriveStatorInAuto)
+                    m_hasLoweredDriveStatorInAuto = m_driveSubsystem.lowerDriveCurrentLimits();
+            }));
         NamedCommands.registerCommand("EngageShooterHub", engageShooterHub);
         NamedCommands.registerCommand("DisengageShooter", RobotCommands.disengageShooter());
 
@@ -441,6 +460,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void disabledInit() {
         // resetState();
+        RobotEvent.OnDisabled.trigger();
     }
 
     private void resetState() {
@@ -477,10 +497,10 @@ public class Robot extends LoggedRobot {
     /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
     @Override
     public void autonomousInit() {
+        m_hasLoweredDriveStatorInAuto = false;
+
         // ensure flywheel is spinning if we want it to be
         StateMachine.setShooterState(StateMachine.getShooterState());
-
-        m_intakeSubsystem.autoInit();
 
         if (m_autonomousRotationSupplier == null)
             m_autonomousRotationSupplier = getShooterRotationalGoalSupplier();
@@ -495,6 +515,9 @@ public class Robot extends LoggedRobot {
             m_autoSimFuelCommand = repeatingSimFuelCommand();
 
         m_commandScheduler.schedule(m_autoSimFuelCommand);
+
+        RobotEvent.OnAutoEnabled.trigger();
+        RobotEvent.OnEnabled.trigger();
     }
 
     /** This function is called periodically during autonomous. */
@@ -559,14 +582,15 @@ public class Robot extends LoggedRobot {
 
         resetState();
 
-        m_intakeSubsystem.teleopInit();
-
         // CLIMBER MARK 2 MAYBE
         // if (RobotCommands.getHasAutoClimbRan()) {
         //     m_commandScheduler.schedule(
         //         RobotCommands.setClimberState(ClimberMark1State.DeployedGrabHome)
         //     );
         // }
+
+        RobotEvent.OnTeleopEnabled.trigger();
+        RobotEvent.OnEnabled.trigger();
     }
 
     /** This function is called periodically during operator control. */

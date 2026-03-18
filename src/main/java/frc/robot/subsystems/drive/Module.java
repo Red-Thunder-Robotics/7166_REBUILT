@@ -77,6 +77,17 @@ public class Module {
     turnEncoderDisconnectedAlert.set(!inputs.turnEncoderConnected);
   }
 
+  public boolean lowerDriveCurrentLimits() {
+    return io.setDriveCurrentLimits(constants.SlipCurrent, 50d);
+  }
+
+  public double getStatorCurrent() {
+    return io.getStatorCurrent();
+  }
+  public double getSupplyCurrent() {
+    return io.getSupplyCurrent();
+  }
+
   /** Runs the module with the specified setpoint state. Mutates the state to optimize it. */
   public void runSetpoint(SwerveModuleState state) {
     // Optimize velocity setpoint

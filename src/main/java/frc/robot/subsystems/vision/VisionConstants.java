@@ -14,6 +14,16 @@ import frc.robot.Constants;
 public final class VisionConstants {
     public static final String limelightFrontLeftName = "limelight-frontl";
     public static final String limelightBackRightName = "limelight-backr";
+    public static final String limelightHopperName = "limelight-hopper";
+    public static final String[] limelightList = {
+        limelightFrontLeftName,
+        limelightBackRightName,
+        limelightHopperName
+    };
+    public static final String[] limelightPoseEstimationList = {
+        limelightFrontLeftName,
+        limelightBackRightName
+    };
 
     private static final boolean forceEnableInstanceLogging = true;
     @SuppressWarnings("unused")

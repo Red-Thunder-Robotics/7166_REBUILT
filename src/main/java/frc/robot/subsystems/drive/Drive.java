@@ -198,16 +198,25 @@ public class Drive extends SubsystemBase {
     odometryLock.unlock();
 
     // Stop moving when disabled
-    if (DriverStation.isDisabled()) {
-      for (var module : modules) {
+    if (DriverStation.isDisabled())
+      for (var module : modules)
         module.stop();
-      }
-    }
 
     // Log empty setpoint states when disabled
     if (DriverStation.isDisabled()) {
       Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
       Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
+    }
+
+    {
+      double totalStatorCurrent = 0d;
+      double totalSupplyCurrent = 0d;
+      for (final var module : modules) {
+        totalStatorCurrent += module.getStatorCurrent();
+        totalSupplyCurrent += module.getSupplyCurrent();
+      }
+      Logger.recordOutput("Drive/TotalDriveStatorCurrent", totalStatorCurrent);
+      Logger.recordOutput("Drive/TotalDriveSupplyCurrent", totalSupplyCurrent);
     }
 
     // Update odometry
@@ -262,6 +271,14 @@ public class Drive extends SubsystemBase {
     final var speeds = getChassisSpeeds();
     return Math.abs(speeds.vxMetersPerSecond) >= DriveConstants.IS_MOVING_THRESHOLD_METERS ||
       Math.abs(speeds.vyMetersPerSecond) >= DriveConstants.IS_MOVING_THRESHOLD_METERS;
+  }
+
+  public boolean lowerDriveCurrentLimits() {
+    boolean success = false;
+    for (final var module : modules)
+      success &= module.lowerDriveCurrentLimits();
+
+    return success;
   }
 
   /**

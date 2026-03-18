@@ -183,11 +183,4 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
     public void retract() {
         m_io.setActuatorPosition(actuatorPositionHome);
     }
-
-    public void teleopInit() {
-        m_io.teleopInit();
-    }
-    public void autoInit() {
-        m_io.autoInit();
-    }
 }

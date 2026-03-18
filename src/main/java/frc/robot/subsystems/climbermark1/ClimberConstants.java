@@ -25,7 +25,7 @@ public final class ClimberConstants {
     public static final double positionHome = distanceToMechanismPosition(Inches.of(0d), pitchCircumference);
     public static final double positionDeployed = distanceToMechanismPosition(Inches.of(8.25d), pitchCircumference);
 
-    public static final double pidP = 0d;
-    public static final double targetAcceleration = 0d;
-    public static final double maxVelocity = 0d;
+    public static final double pidP = 20d;
+    public static final double targetAcceleration = 70d;
+    public static final double maxVelocity = 5d;
 }

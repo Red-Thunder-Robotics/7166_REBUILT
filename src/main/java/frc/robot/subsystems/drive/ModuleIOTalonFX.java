@@ -41,6 +41,8 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
+import frc.robot.util.PhoenixUtil;
+
 import java.util.Queue;
 
 /**
@@ -79,7 +81,8 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final Queue<Double> drivePositionQueue;
   private final StatusSignal<AngularVelocity> driveVelocity;
   private final StatusSignal<Voltage> driveAppliedVolts;
-  private final StatusSignal<Current> driveCurrent;
+  private final StatusSignal<Current> driveStatorCurrent;
+  private final StatusSignal<Current> driveSupplyCurrent;
 
   // Inputs from turn motor
   private final StatusSignal<Angle> turnAbsolutePosition;
@@ -107,11 +110,14 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     driveConfig.Slot0 = constants.DriveMotorGains;
     driveConfig.Feedback.SensorToMechanismRatio = constants.DriveMotorGearRatio;
-    driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = constants.SlipCurrent;
-    driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = -constants.SlipCurrent;
-    driveConfig.CurrentLimits.StatorCurrentLimit = constants.SlipCurrent;
+    // higher drive current limits for start of auto, until a NamedCommand will lower it back down
+    final double statorLimit = 200d;
+    final double supplyLimit = 70d;
+    driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = statorLimit;
+    driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = -statorLimit;
+    driveConfig.CurrentLimits.StatorCurrentLimit = statorLimit;
     driveConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    driveConfig.CurrentLimits.SupplyCurrentLimit = 50;
+    driveConfig.CurrentLimits.SupplyCurrentLimit = supplyLimit;
     driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     driveConfig.MotorOutput.Inverted =
         constants.DriveMotorInverted
@@ -164,7 +170,8 @@ public class ModuleIOTalonFX implements ModuleIO {
         PhoenixOdometryThread.getInstance().registerSignal(driveTalon.getPosition());
     driveVelocity = driveTalon.getVelocity();
     driveAppliedVolts = driveTalon.getMotorVoltage();
-    driveCurrent = driveTalon.getStatorCurrent();
+    driveStatorCurrent = driveTalon.getStatorCurrent();
+    driveSupplyCurrent = driveTalon.getSupplyCurrent();
 
     // Create turn status signals
     turnAbsolutePosition = cancoder.getAbsolutePosition();
@@ -181,7 +188,8 @@ public class ModuleIOTalonFX implements ModuleIO {
         50.0,
         driveVelocity,
         driveAppliedVolts,
-        driveCurrent,
+        driveStatorCurrent,
+        driveSupplyCurrent,
         turnAbsolutePosition,
         turnVelocity,
         turnAppliedVolts,
@@ -193,7 +201,7 @@ public class ModuleIOTalonFX implements ModuleIO {
   public void updateInputs(ModuleIOInputs inputs) {
     // Refresh all signals
     var driveStatus =
-        BaseStatusSignal.refreshAll(drivePosition, driveVelocity, driveAppliedVolts, driveCurrent);
+        BaseStatusSignal.refreshAll(drivePosition, driveVelocity, driveAppliedVolts, driveStatorCurrent, driveSupplyCurrent);
     var turnStatus =
         BaseStatusSignal.refreshAll(turnPosition, turnVelocity, turnAppliedVolts, turnCurrent);
     var turnEncoderStatus = BaseStatusSignal.refreshAll(turnAbsolutePosition);
@@ -203,7 +211,8 @@ public class ModuleIOTalonFX implements ModuleIO {
     inputs.drivePositionRad = Units.rotationsToRadians(drivePosition.getValueAsDouble());
     inputs.driveVelocityRadPerSec = Units.rotationsToRadians(driveVelocity.getValueAsDouble());
     inputs.driveAppliedVolts = driveAppliedVolts.getValueAsDouble();
-    inputs.driveCurrentAmps = driveCurrent.getValueAsDouble();
+    inputs.driveStatorCurrentAmps = driveStatorCurrent.getValueAsDouble();
+    inputs.driveSupplyCurrentAmps = driveSupplyCurrent.getValueAsDouble();
 
     // Update turn inputs
     inputs.turnConnected = turnConnectedDebounce.calculate(turnStatus.isOK());
@@ -228,6 +237,29 @@ public class ModuleIOTalonFX implements ModuleIO {
     timestampQueue.clear();
     drivePositionQueue.clear();
     turnPositionQueue.clear();
+  }
+
+  @Override
+  public boolean setDriveCurrentLimits(double stator, double supply) {
+    var config = new TalonFXConfiguration();
+    if (PhoenixUtil.tryUntilOk(5, () -> driveTalon.getConfigurator().refresh(config))) {
+        config.TorqueCurrent.PeakForwardTorqueCurrent = stator;
+        config.TorqueCurrent.PeakReverseTorqueCurrent = -stator;
+        config.CurrentLimits.StatorCurrentLimit = stator;
+        config.CurrentLimits.SupplyCurrentLimit = supply;
+        return PhoenixUtil.tryUntilOk(5, () -> driveTalon.getConfigurator().apply(config));
+    }
+
+    return false;
+  }
+
+  @Override
+  public double getStatorCurrent() {
+    return driveStatorCurrent.getValueAsDouble();
+  }
+  @Override
+  public double getSupplyCurrent() {
+    return driveSupplyCurrent.getValueAsDouble();
   }
 
   @Override

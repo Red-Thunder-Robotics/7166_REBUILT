@@ -15,6 +15,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -107,10 +108,12 @@ public class DriveCommands {
   public static void resetAngleController() {
     angleController.reset(StateMachine.odometryAndVision.getRotation().getRadians());
   }
+  private static final LinearFilter omegaFilter = LinearFilter.singlePoleIIR(0.1d, 0.02d);
   public static double calculateOmega(Drive drive, Rotation2d rotation) {
-    // FIXME DELETEME: need to aim to the right
+    double target = rotation.getRadians();
+    target = omegaFilter.calculate(target);
     final double output = angleController.calculate(
-      StateMachine.odometryAndVision.getRotation().getRadians(), rotation.getRadians());
+      StateMachine.odometryAndVision.getRotation().getRadians(), target);
 
     double tolerance = Units.degreesToRadians(Constants.USE_TURRET ? TurretConstants.shouldIndexThresholdDegrees : DriveConstants.SHOULD_INDEX_THRESHOLD_DEGREES);
     if (drive.isMoving() && !Constants.USE_TURRET)

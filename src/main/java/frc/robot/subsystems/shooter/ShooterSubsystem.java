@@ -226,11 +226,11 @@ public final class ShooterSubsystem extends SubsystemBase {
 
     public InterpolationShooterParams calculateParams(Translation3d target) {
         final var robotPose = StateMachine.odometryAndVision.getEstimatedPose();
-        // final var fieldSpeeds = Drive.instance.getChassisSpeeds();
+        final var fieldSpeeds = Drive.instance.getChassisSpeeds();
         
         // https://github.com/hammerheads5000/2026Rebuilt/blob/9a94e647443d8a5651b044449cc5ebb8195efc52/src/main/java/frc/robot/subsystems/turret/TurretCalculator.java#L129
         // see 5000-License.md
-        // final int iterations = 3;
+        final int iterations = 3;
 
         // PhysicsShotData shot = calculateShotFromFunnelClearance(robotPose, target, target);
         // Distance distance = getDistanceToTarget(robotPose, target);
@@ -251,21 +251,22 @@ public final class ShooterSubsystem extends SubsystemBase {
         //     shot.angle.in(Degrees)
         // );
 
-        final double distance = getDistanceToTarget(robotPose, target).in(Meters);
-        // InterpolationShooterParams shot = paramMap.map.get(distance);
-        // // shot = new ShotData(shot.exitVelocity, shot.hoodAngle, target);
-        // Time timeOfFlight = Seconds.of(timeOfFlightMap.get(distance));
-        // Translation3d predictedTarget = target;
+        double distance = getDistanceToTarget(robotPose, target).in(Meters);
+        InterpolationShooterParams shot = paramMap.map.get(distance);
+        // shot = new ShotData(shot.exitVelocity, shot.hoodAngle, target);
+        Time timeOfFlight = Seconds.of(timeOfFlightMap.get(distance));
+        Translation3d predictedTarget = target;
 
-        // // Iterate the process, getting better time of flight estimations and updating the predicted target accordingly
-        // for (int i = 0; i < iterations; i++) {
-        //     predictedTarget = predictTargetPos(target, fieldSpeeds, timeOfFlight);
-        //     distance = getDistanceToTarget(robotPose, predictedTarget).in(Meters);
-        //     shot = paramMap.map.get(distance);
-        //     // shot = new ShotData(shot.exitVelocity, shot.hoodAngle, predictedTarget);
-        //     timeOfFlight = Seconds.of(timeOfFlightMap.get(distance));
-        // }
+        // Iterate the process, getting better time of flight estimations and updating the predicted target accordingly
+        for (int i = 0; i < iterations; i++) {
+            predictedTarget = predictTargetPos(target, fieldSpeeds, timeOfFlight);
+            distance = getDistanceToTarget(robotPose, predictedTarget).in(Meters);
+            shot = paramMap.map.get(distance);
+            // shot = new ShotData(shot.exitVelocity, shot.hoodAngle, predictedTarget);
+            timeOfFlight = Seconds.of(timeOfFlightMap.get(distance));
+        }
 
-        return paramMap.map.get(distance);
+        // return paramMap.map.get(distance);
+        return shot;
     }
 }
