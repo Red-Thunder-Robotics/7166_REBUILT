@@ -16,62 +16,64 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import frc.robot.Constants;
 import frc.robot.util.PhoenixUtil;
+import frc.robot.util.PhoenixUtil.MotorAction;
 
 public final class ClimberIOReal implements ClimberIO {
-    private final TalonFX m_rightMotor = new TalonFX(rightMotorId, Constants.CANBUS);
+    private final TalonFX m_motor = new TalonFX(motorId, Constants.CANBUS);
 
-    private double m_rightTargetPosition = positionHome;
+    private double m_targetPosition = positionHome;
 
-    private final StatusSignal<Angle> m_rightPositionSignal = m_rightMotor.getPosition();
-    private final StatusSignal<AngularVelocity> m_rightVelocitySignal = m_rightMotor.getVelocity();
-    private final StatusSignal<Current> m_rightCurrentSignal = m_rightMotor.getSupplyCurrent();
+    private final StatusSignal<Angle> m_positionSignal = m_motor.getPosition();
+    private final StatusSignal<AngularVelocity> m_velocitySignal = m_motor.getVelocity();
+    private final StatusSignal<Current> m_currentSignal = m_motor.getSupplyCurrent();
     
-    private final MotionMagicVoltage m_rightPositionRequest = new MotionMagicVoltage(m_rightTargetPosition);
+    private final MotionMagicVoltage m_positionRequest = new MotionMagicVoltage(m_targetPosition);
 
     public ClimberIOReal() {
-        var rightConfig = new TalonFXConfiguration();
-        rightConfig.MotorOutput.NeutralMode = neutralMode;
-        rightConfig.MotorOutput.Inverted = rightInverted;
+        var config = new TalonFXConfiguration();
+        config.MotorOutput.NeutralMode = neutralMode;
+        config.MotorOutput.Inverted = inverted;
 
-        rightConfig.Feedback.SensorToMechanismRatio = motorReduction;
+        config.Feedback.SensorToMechanismRatio = motorReduction;
 
-        rightConfig.Slot0.GravityType = GravityTypeValue.Elevator_Static;
-        rightConfig.Slot0.kP = pidP;
+        config.Slot0.GravityType = GravityTypeValue.Elevator_Static;
+        config.Slot0.kP = pidP;
 
-        rightConfig.MotionMagic.MotionMagicAcceleration = targetAcceleration;
-        rightConfig.MotionMagic.MotionMagicCruiseVelocity = maxVelocity;
+        config.MotionMagic.MotionMagicAcceleration = targetAcceleration;
+        config.MotionMagic.MotionMagicCruiseVelocity = maxVelocity;
 
-        PhoenixUtil.tryUntilOk(5, () -> m_rightMotor.getConfigurator().apply(rightConfig));
+        // PhoenixUtil.tryUntilOk(5, () -> m_motor.getConfigurator().apply(config));
+        MotorAction.configureMotor("Climber", m_motor, config).run();
 
-        BaseStatusSignal.setUpdateFrequencyForAll(50d,  m_rightPositionSignal, m_rightVelocitySignal, m_rightCurrentSignal);
+        BaseStatusSignal.setUpdateFrequencyForAll(50d,  m_positionSignal, m_velocitySignal, m_currentSignal);
 
-        PhoenixUtil.tryUntilOk(5, () -> m_rightMotor.setPosition(m_rightTargetPosition));
+        // PhoenixUtil.tryUntilOk(5, () -> m_rightMotor.setPosition(m_targetPosition));
+        MotorAction.setMotorPosition("Climber", m_motor, m_targetPosition).run();
     }
 
     @Override
     public void updateInputs(ClimberIOInputs inputs) {
-        BaseStatusSignal.refreshAll(m_rightPositionSignal, m_rightVelocitySignal, m_rightCurrentSignal);
+        BaseStatusSignal.refreshAll(m_positionSignal, m_velocitySignal, m_currentSignal);
 
-        // right
-        final double rightTargetPosition = m_rightTargetPosition;
-        inputs.positionRotations = rightTargetPosition;
-        inputs.positionInches = mechanismPositionToDistance(rightTargetPosition, pitchCircumference).in(Inches);
+        final double targetPosition = m_targetPosition;
+        inputs.positionRotations = targetPosition;
+        inputs.positionInches = mechanismPositionToDistance(targetPosition, pitchCircumference).in(Inches);
 
-        final double rightPositionRotations = m_rightPositionSignal.getValueAsDouble();
-        inputs.positionRotations = rightPositionRotations;
-        inputs.positionInches = mechanismPositionToDistance(rightPositionRotations, pitchCircumference).in(Inches);
+        final double positionRotations = m_positionSignal.getValueAsDouble();
+        inputs.positionRotations = positionRotations;
+        inputs.positionInches = mechanismPositionToDistance(positionRotations, pitchCircumference).in(Inches);
 
-        inputs.velocityRPS = m_rightVelocitySignal.getValueAsDouble();
-        inputs.currentAmps = m_rightCurrentSignal.getValueAsDouble();
+        inputs.velocityRPS = m_velocitySignal.getValueAsDouble();
+        inputs.currentAmps = m_currentSignal.getValueAsDouble();
     }
 
     @Override
     public void setPosition(double position) {
-        m_rightTargetPosition = position;
-        m_rightMotor.setControl(m_rightPositionRequest.withPosition(position));
+        m_targetPosition = position;
+        m_motor.setControl(m_positionRequest.withPosition(position));
     }
     @Override
     public void stop() {
-        m_rightMotor.disable();
+        m_motor.disable();
     }
 }

@@ -21,6 +21,7 @@ import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import java.util.ArrayDeque;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class PhoenixUtil {
@@ -36,11 +37,21 @@ public class PhoenixUtil {
                 queue.poll();
         }
 
-        private final String description;
-        private final Supplier<StatusCode> action;
+        public static enum ActionType {
+            Config,
+            SetPosition,
+            ConfigRefresh
+        }
 
-        public MotorAction(String description, Supplier<StatusCode> action) {
+        private final String description;
+        private final TalonFX motor;
+        private final Supplier<StatusCode> action;
+        private final ActionType type;
+
+        public MotorAction(String description, TalonFX motor, ActionType type, Supplier<StatusCode> action) {
             this.description = description;
+            this.motor = motor;
+            this.type = type;
             this.action = action;
         }
 
@@ -58,14 +69,46 @@ public class PhoenixUtil {
                 throw new RuntimeException("FATAL: Failed to " + this.description);
         }
         public void queue() {
+            // remove redundant actions
+            MotorAction.queue.removeIf(action -> action.motor == this.motor && action.type == this.type);
             MotorAction.queue.addLast(this);
         }
 
         public static MotorAction configureMotor(String name, TalonFX motor, TalonFXConfiguration configuration) {
-            return new MotorAction("Configure motor '" + name + '\'', () -> motor.getConfigurator().apply(configuration, 0.25d));
+            return new MotorAction(
+                "Configure motor '" + name + '\'',
+                motor,
+                ActionType.Config,
+                () -> motor.getConfigurator().apply(configuration, 0.25d));
         }
         public static MotorAction setMotorPosition(String name, TalonFX motor, double position) {
-            return new MotorAction("Set motor '" + name + "' position", () -> motor.setPosition(position, 0.25d));
+            return new MotorAction(
+                "Set motor '" + name + "' position",
+                motor,
+                ActionType.SetPosition,
+                () -> motor.setPosition(position, 0.25d));
+        }
+        public static MotorAction refreshMotorConfig(String name, TalonFX motor, TalonFXConfiguration configuration) {
+            return new MotorAction(
+                "Refresh config from motor '" + name + '\'',
+                motor,
+                ActionType.ConfigRefresh,
+                () -> motor.getConfigurator().refresh(configuration, 0.25d)
+            );
+        }
+        public static MotorAction updateMotorConfig(String name, TalonFX motor, Consumer<TalonFXConfiguration> callback) {
+            return new MotorAction(
+                "Update config on motor '" + name + '\'',
+                motor,
+                ActionType.Config,
+                () -> {
+                    var config = new TalonFXConfiguration();
+                    refreshMotorConfig(name, motor, config).run();
+                    configureMotor(name, motor, config).run();
+
+                    return null;
+                }
+            );
         }
     }
 

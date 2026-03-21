@@ -10,13 +10,9 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Distance;
 
 public final class ClimberConstants {
-    // public static final int leftMotorId = -1;
-    // public static final double leftCurrentLimit = 40;
-    // public static final InvertedValue leftInverted = InvertedValue.Clockwise_Positive;
-    
-    public static final int rightMotorId = 31;
-    public static final double rightCurrentLimit = 40;
-    public static final InvertedValue rightInverted = InvertedValue.CounterClockwise_Positive;
+    public static final int motorId = 31;
+    public static final double currentLimit = 40;
+    public static final InvertedValue inverted = InvertedValue.CounterClockwise_Positive;
     
     public static final double motorReduction = 30d + (2/3d);
     public static final Distance pitchCircumference = Millimeters.of(120d);

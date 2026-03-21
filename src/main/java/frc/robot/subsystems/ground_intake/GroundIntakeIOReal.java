@@ -18,6 +18,7 @@ import edu.wpi.first.units.measure.Current;
 import frc.robot.Constants;
 import frc.robot.state_machine.RobotEvent;
 import frc.robot.util.PhoenixUtil;
+import frc.robot.util.PhoenixUtil.MotorAction;
 
 public final class GroundIntakeIOReal implements GroundIntakeIO {
     private final TalonFX m_rollerMotor = new TalonFX(rollerMotorId, Constants.CANBUS);
@@ -64,12 +65,15 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
         actuatorConfig.MotionMagic.MotionMagicAcceleration = actuatorTargetAcceleration;
         actuatorConfig.MotionMagic.MotionMagicCruiseVelocity = actuatorMaxVelocity;
 
-        PhoenixUtil.tryUntilOk(5, () -> m_rollerMotor.getConfigurator().apply(rollerConfig));
-        PhoenixUtil.tryUntilOk(5, () -> m_actuatorMotor.getConfigurator().apply(actuatorConfig));
+        // PhoenixUtil.tryUntilOk(5, () -> m_rollerMotor.getConfigurator().apply(rollerConfig));
+        // PhoenixUtil.tryUntilOk(5, () -> m_actuatorMotor.getConfigurator().apply(actuatorConfig));
+        MotorAction.configureMotor("Intake Roller", m_rollerMotor, rollerConfig).run();
+        MotorAction.configureMotor("Intake Actuator", m_actuatorMotor, actuatorConfig).run();
 
         BaseStatusSignal.setUpdateFrequencyForAll(50d, m_rollerVelocitySignal, m_rollerCurrentSignal, m_actuatorPositionSignal, m_actuatorCurrentSignal);
 
-        PhoenixUtil.tryUntilOk(5, () -> m_actuatorMotor.setPosition(m_actuatorTargetPosition));
+        // PhoenixUtil.tryUntilOk(5, () -> m_actuatorMotor.setPosition(m_actuatorTargetPosition));
+        MotorAction.setMotorPosition("Intake Acuator", m_actuatorMotor, m_actuatorTargetPosition).run();
 
         RobotEvent.OnTeleopEnabled.addListener(() -> setRollerCurrentLimit(rollerCurrentLimit));
         RobotEvent.OnAutoEnabled.addListener(() -> setRollerCurrentLimit(rollerCurrentLimitAuto));
@@ -117,10 +121,8 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
     }
 
     private void setRollerCurrentLimit(double limit) {
-        var config = new TalonFXConfiguration();
-        if (PhoenixUtil.tryUntilOk(5, () -> m_rollerMotor.getConfigurator().refresh(config))) {
+        MotorAction.updateMotorConfig("Intake Roller", m_rollerMotor, (config) -> {
             config.CurrentLimits.SupplyCurrentLimit = limit;
-            PhoenixUtil.tryUntilOk(5, () -> m_rollerMotor.getConfigurator().apply(config));
-        }
+        }).queue();
     }
 }

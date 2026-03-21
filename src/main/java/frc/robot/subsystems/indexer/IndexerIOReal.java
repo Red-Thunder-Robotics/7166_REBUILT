@@ -12,6 +12,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import frc.robot.Constants;
 import frc.robot.util.PhoenixUtil;
+import frc.robot.util.PhoenixUtil.MotorAction;
 
 public final class IndexerIOReal implements IndexerIO {
     private final TalonFX m_indexerMotor = new TalonFX(indexerMotorId, Constants.CANBUS);
@@ -72,9 +73,12 @@ public final class IndexerIOReal implements IndexerIO {
         lowerKickerConfig.Slot0.kV = indexerPidV;
         lowerKickerConfig.MotionMagic.MotionMagicAcceleration = indexerTargetAcceleration;
 
-        PhoenixUtil.tryUntilOk(5, () -> m_indexerMotor.getConfigurator().apply(indexerConfig));
-        PhoenixUtil.tryUntilOk(5, () -> m_topRollerMotor.getConfigurator().apply(topRollerConfig));
-        PhoenixUtil.tryUntilOk(5, () -> m_lowerKickerMotor.getConfigurator().apply(lowerKickerConfig));
+        // PhoenixUtil.tryUntilOk(5, () -> m_indexerMotor.getConfigurator().apply(indexerConfig));
+        // PhoenixUtil.tryUntilOk(5, () -> m_topRollerMotor.getConfigurator().apply(topRollerConfig));
+        // PhoenixUtil.tryUntilOk(5, () -> m_lowerKickerMotor.getConfigurator().apply(lowerKickerConfig));
+        MotorAction.configureMotor("Indexer Roller", m_indexerMotor, indexerConfig).run();
+        MotorAction.configureMotor("Indexer Top Roller", m_topRollerMotor, topRollerConfig).run();
+        MotorAction.configureMotor("Lower Kicker", m_lowerKickerMotor, lowerKickerConfig).run();
 
         BaseStatusSignal.setUpdateFrequencyForAll(50d,
             m_indexerVelocitySignal,

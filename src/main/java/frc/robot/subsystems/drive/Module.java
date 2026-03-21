@@ -77,8 +77,8 @@ public class Module {
     turnEncoderDisconnectedAlert.set(!inputs.turnEncoderConnected);
   }
 
-  public boolean lowerDriveCurrentLimits() {
-    return io.setDriveCurrentLimits(constants.SlipCurrent, 50d);
+  public void lowerDriveCurrentLimits() {
+    io.setDriveCurrentLimits(constants.SlipCurrent, 50d);
   }
 
   public double getStatorCurrent() {

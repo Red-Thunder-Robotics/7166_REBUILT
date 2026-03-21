@@ -13,8 +13,6 @@
 
 package frc.robot.subsystems.drive;
 
-import static frc.robot.util.PhoenixUtil.*;
-
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
@@ -41,7 +39,10 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
+import frc.robot.Constants.DriveConstants;
+import frc.robot.state_machine.RobotEvent;
 import frc.robot.util.PhoenixUtil;
+import frc.robot.util.PhoenixUtil.MotorAction;
 
 import java.util.Queue;
 
@@ -111,20 +112,27 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveConfig.Slot0 = constants.DriveMotorGains;
     driveConfig.Feedback.SensorToMechanismRatio = constants.DriveMotorGearRatio;
     // higher drive current limits for start of auto, until a NamedCommand will lower it back down
-    final double statorLimit = 200d;
-    final double supplyLimit = 70d;
-    driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = statorLimit;
-    driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = -statorLimit;
-    driveConfig.CurrentLimits.StatorCurrentLimit = statorLimit;
+    driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = DriveConstants.DRIVE_STATOR_AUTO;
+    driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = -DriveConstants.DRIVE_STATOR_AUTO;
+    driveConfig.CurrentLimits.StatorCurrentLimit = DriveConstants.DRIVE_STATOR_AUTO;
     driveConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    driveConfig.CurrentLimits.SupplyCurrentLimit = supplyLimit;
+    driveConfig.CurrentLimits.SupplyCurrentLimit = DriveConstants.DRIVE_SUPPLY_AUTO;
     driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     driveConfig.MotorOutput.Inverted =
         constants.DriveMotorInverted
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;
-    tryUntilOk(5, () -> driveTalon.getConfigurator().apply(driveConfig, 0.25));
-    tryUntilOk(5, () -> driveTalon.setPosition(0.0, 0.25));
+    // PhoenixUtil.tryUntilOk(5, () -> driveTalon.getConfigurator().apply(driveConfig, 0.25));
+    // PhoenixUtil.tryUntilOk(5, () -> driveTalon.setPosition(0.0, 0.25));
+    MotorAction.configureMotor("Unknown Drive", driveTalon, driveConfig).run();
+    MotorAction.setMotorPosition("Unknown Drive", driveTalon, 0d).run();
+
+    RobotEvent.TurboOn.addListener(() -> {
+      setDriveCurrentLimits(DriveConstants.DRIVE_STATOR_TURBO, DriveConstants.DRIVE_SUPPLY_TURBO);
+    });
+    RobotEvent.TurboOff.addListener(() -> {
+      setDriveCurrentLimits(DriveConstants.DRIVE_STATOR_LOW, DriveConstants.DRIVE_SUPPLY_LOW);
+    });
 
     // Configure turn motor
     var turnConfig = new TalonFXConfiguration();
@@ -150,7 +158,8 @@ public class ModuleIOTalonFX implements ModuleIO {
         constants.SteerMotorInverted
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;
-    tryUntilOk(5, () -> turnTalon.getConfigurator().apply(turnConfig, 0.25));
+    // PhoenixUtil.tryUntilOk(5, () -> turnTalon.getConfigurator().apply(turnConfig, 0.25));
+    MotorAction.configureMotor("Unknown Turn", turnTalon, turnConfig).run();
 
     // Configure CANCoder
     CANcoderConfiguration cancoderConfig = constants.EncoderInitialConfigs;
@@ -240,17 +249,13 @@ public class ModuleIOTalonFX implements ModuleIO {
   }
 
   @Override
-  public boolean setDriveCurrentLimits(double stator, double supply) {
-    var config = new TalonFXConfiguration();
-    if (PhoenixUtil.tryUntilOk(5, () -> driveTalon.getConfigurator().refresh(config))) {
-        config.TorqueCurrent.PeakForwardTorqueCurrent = stator;
-        config.TorqueCurrent.PeakReverseTorqueCurrent = -stator;
-        config.CurrentLimits.StatorCurrentLimit = stator;
-        config.CurrentLimits.SupplyCurrentLimit = supply;
-        return PhoenixUtil.tryUntilOk(5, () -> driveTalon.getConfigurator().apply(config));
-    }
-
-    return false;
+  public void setDriveCurrentLimits(double stator, double supply) {
+    MotorAction.updateMotorConfig("Unknown Drive", driveTalon, (config) -> {
+      config.TorqueCurrent.PeakForwardTorqueCurrent = stator;
+      config.TorqueCurrent.PeakReverseTorqueCurrent = -stator;
+      config.CurrentLimits.StatorCurrentLimit = stator;
+      config.CurrentLimits.SupplyCurrentLimit = supply;
+    }).queue();
   }
 
   @Override

@@ -21,6 +21,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import frc.robot.Constants;
 import frc.robot.util.PhoenixUtil;
+import frc.robot.util.PhoenixUtil.MotorAction;
 
 public final class ShooterIOReal implements ShooterIO {
     private final TalonFX m_flywheelMotorTopLeft = new TalonFX(flywheelMotorIdTopLeft, Constants.CANBUS);
@@ -96,17 +97,28 @@ public final class ShooterIOReal implements ShooterIO {
         upperKickerConfig.Slot0.kV = upperKickerPidV;
         upperKickerConfig.MotionMagic.MotionMagicAcceleration = upperKickerTargetAcceleration;
         
-        PhoenixUtil.tryUntilOk(5, () -> m_upperKickerMotor.getConfigurator().apply(upperKickerConfig));
-        PhoenixUtil.tryUntilOk(5, () -> m_flywheelMotorTopLeft.getConfigurator().apply(flywheelConfig.clone()
-            .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedTopLeft))));
+        // PhoenixUtil.tryUntilOk(5, () -> m_upperKickerMotor.getConfigurator().apply(upperKickerConfig));
+        // PhoenixUtil.tryUntilOk(5, () -> m_flywheelMotorTopLeft.getConfigurator().apply(flywheelConfig.clone()
+        //     .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedTopLeft))));
+        // // FIXME: I think withInverted on all these is redundant because they're followers but I don't want to break anything and we're short on time
+        // PhoenixUtil.tryUntilOk(5, () -> m_flywheelMotorBottomLeft.getConfigurator().apply(flywheelConfig.clone()
+        //     .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedBottomLeft))));
+        // PhoenixUtil.tryUntilOk(5, () -> m_flywheelMotorTopRight.getConfigurator().apply(flywheelConfig.clone()
+        //     .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedTopRight))));
+        // PhoenixUtil.tryUntilOk(5, () -> m_flywheelMotorBottomRight.getConfigurator().apply(flywheelConfig.clone()
+        //     .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedBottomRight))));
+        // PhoenixUtil.tryUntilOk(5, () -> m_hoodMotor.getConfigurator().apply(hoodConfig));
+        MotorAction.configureMotor("Shooter Upper Kicker", m_upperKickerMotor, upperKickerConfig).run();
+        MotorAction.configureMotor("Shooter Top Left", m_flywheelMotorTopLeft, flywheelConfig.clone()
+            .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedTopLeft))).run();
         // FIXME: I think withInverted on all these is redundant because they're followers but I don't want to break anything and we're short on time
-        PhoenixUtil.tryUntilOk(5, () -> m_flywheelMotorBottomLeft.getConfigurator().apply(flywheelConfig.clone()
-            .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedBottomLeft))));
-        PhoenixUtil.tryUntilOk(5, () -> m_flywheelMotorTopRight.getConfigurator().apply(flywheelConfig.clone()
-            .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedTopRight))));
-        PhoenixUtil.tryUntilOk(5, () -> m_flywheelMotorBottomRight.getConfigurator().apply(flywheelConfig.clone()
-            .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedBottomRight))));
-        PhoenixUtil.tryUntilOk(5, () -> m_hoodMotor.getConfigurator().apply(hoodConfig));
+        MotorAction.configureMotor("Shooter Bottom Left", m_flywheelMotorBottomLeft, flywheelConfig.clone()
+            .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedBottomLeft))).run();
+        MotorAction.configureMotor("Shooter Top Right", m_flywheelMotorTopRight, flywheelConfig.clone()
+            .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedTopRight))).run();
+        MotorAction.configureMotor("Shooter Bottom Right", m_flywheelMotorBottomRight, flywheelConfig.clone()
+            .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedBottomRight))).run();
+        MotorAction.configureMotor("Shooter Hood", m_hoodMotor, hoodConfig).run();
 
         BaseStatusSignal.setUpdateFrequencyForAll(50d,
             m_flywheelTopLeftVelocitySignal,
@@ -123,7 +135,8 @@ public final class ShooterIOReal implements ShooterIO {
             m_upperKickerVelocitySignal,
             m_upperKickerCurrentSignal);
 
-        PhoenixUtil.tryUntilOk(5, () -> m_hoodMotor.setPosition(m_hoodTargetPosition));
+        // PhoenixUtil.tryUntilOk(5, () -> m_hoodMotor.setPosition(m_hoodTargetPosition));
+        MotorAction.setMotorPosition("Shooter Hood", m_hoodMotor, m_hoodTargetPosition).run();
 
         m_flywheelMotorBottomLeft.setControl(new Follower(flywheelMotorIdTopLeft, flywheelInvertedBottomLeft == flywheelInvertedTopLeft ? MotorAlignmentValue.Aligned : MotorAlignmentValue.Opposed));
         m_flywheelMotorTopRight.setControl(new Follower(flywheelMotorIdTopLeft, flywheelInvertedTopRight == flywheelInvertedTopLeft ? MotorAlignmentValue.Aligned : MotorAlignmentValue.Opposed));

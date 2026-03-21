@@ -42,9 +42,7 @@ public interface ModuleIO {
   /** Updates the set of loggable inputs. */
   public default void updateInputs(ModuleIOInputs inputs) {}
 
-  public default boolean setDriveCurrentLimits(double stator, double supply) {
-    return true;
-  }
+  public default void setDriveCurrentLimits(double stator, double supply) {}
 
   public default double getStatorCurrent() { return 0d; }
   public default double getSupplyCurrent() { return 0d; }

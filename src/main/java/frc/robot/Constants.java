@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Centimeters;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
@@ -16,6 +17,7 @@ import com.ctre.phoenix6.CANBus;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.RobotBase;
+import frc.robot.generated.TunerConstants;
 import frc.robot.util.ApriltagUtil;
 
 public final class Constants {
@@ -62,5 +64,13 @@ public final class Constants {
         public static final double SHOULD_INDEX_THRESHOLD_DEGREES = 1d;
         public static final double SHOULD_INDEX_THRESHOLD_MOVING_DEGREES = 3d;
         public static final double IS_MOVING_THRESHOLD_METERS = Units.inchesToMeters(2d);
+
+        public static final double DRIVE_STATOR_LOW = TunerConstants.kSlipCurrent.in(Amps);
+        public static final double DRIVE_STATOR_AUTO = Math.max(DRIVE_STATOR_LOW, 200);
+        public static final double DRIVE_STATOR_TURBO = Math.max(DRIVE_STATOR_LOW, 160);
+
+        public static final double DRIVE_SUPPLY_LOW = 50;
+        public static final double DRIVE_SUPPLY_AUTO = Math.max(DRIVE_STATOR_LOW, 70);
+        public static final double DRIVE_SUPPLY_TURBO = Math.max(DRIVE_STATOR_LOW, 60);
     }
 }

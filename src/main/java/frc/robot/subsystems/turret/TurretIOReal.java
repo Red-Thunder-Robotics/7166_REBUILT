@@ -15,7 +15,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import frc.robot.Constants;
-import frc.robot.util.PhoenixUtil;
+import frc.robot.util.PhoenixUtil.MotorAction;
 
 public final class TurretIOReal implements TurretIO {
     private final TalonFX m_motor = new TalonFX(motorId, Constants.CANBUS);
@@ -46,11 +46,13 @@ public final class TurretIOReal implements TurretIO {
         config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
         config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = positionMin;
 
-        PhoenixUtil.tryUntilOk(5, () -> m_motor.getConfigurator().apply(config));
+        // PhoenixUtil.tryUntilOk(5, () -> m_motor.getConfigurator().apply(config));
+        MotorAction.configureMotor("Turret", m_motor, config).run();
 
         BaseStatusSignal.setUpdateFrequencyForAll(50d, m_positionSignal, m_velocitySignal, m_currentSignal);
 
-        PhoenixUtil.tryUntilOk(5, () -> m_motor.setPosition(m_targetPosition));
+        // PhoenixUtil.tryUntilOk(5, () -> m_motor.setPosition(m_targetPosition));
+        MotorAction.setMotorPosition("Turret", m_motor, m_targetPosition).run();
     }
 
     @Override

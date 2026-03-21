@@ -256,12 +256,9 @@ public class Drive extends SubsystemBase {
       Math.abs(speeds.vyMetersPerSecond) >= DriveConstants.IS_MOVING_THRESHOLD_METERS;
   }
 
-  public boolean lowerDriveCurrentLimits() {
-    boolean success = false;
+  public void lowerDriveCurrentLimits() {
     for (final var module : modules)
-      success &= module.lowerDriveCurrentLimits();
-
-    return success;
+      module.lowerDriveCurrentLimits();
   }
 
   /**

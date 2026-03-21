@@ -359,6 +359,7 @@ public class Robot extends LoggedRobot {
             .and(Controls.rotationTargetBumpRight)
             .onTrue(cmdName(Commands.runOnce(() -> m_rotationTargetMeterOffset = 0d), "RotationTargetBumpReset"));
 
+        // NOTE: turbo mode is used in ModuleIOTalonFX.java
         Controls.turboButton
             .whileTrue(Commands.either(
                 Commands.runOnce(RobotEvent.TurboOn::trigger)
@@ -367,9 +368,6 @@ public class Robot extends LoggedRobot {
                 Commands.none(),
                 StateMachine::isTurboAvailable))
             .onFalse(StateMachine.eventTurboOff());
-
-        RobotEvent.TurboOn.addListener(() -> System.out.println("TURBO MODE ENGAGE\nTURBO MODE ENGAGE"));
-        RobotEvent.TurboOff.addListener(() -> System.out.println("TURBO MODE DISENGAGE\nTURBO MODE DISENGAGE"));
 
         if (Robot.isSimulation())
             new Trigger(() -> StateMachine.isShooting())
@@ -398,8 +396,10 @@ public class Robot extends LoggedRobot {
     private void setupNamedCommands() {
         var engageShooterHub = RobotCommands.engageShooterHub()
             .andThen(Commands.runOnce(() -> {
-                if (!m_hasLoweredDriveStatorInAuto)
-                    m_hasLoweredDriveStatorInAuto = m_driveSubsystem.lowerDriveCurrentLimits();
+                if (!m_hasLoweredDriveStatorInAuto) {
+                    m_hasLoweredDriveStatorInAuto = true;
+                    m_driveSubsystem.lowerDriveCurrentLimits();
+                }
             }));
         NamedCommands.registerCommand("EngageShooterHub", engageShooterHub);
         NamedCommands.registerCommand("DisengageShooter", RobotCommands.disengageShooter());
