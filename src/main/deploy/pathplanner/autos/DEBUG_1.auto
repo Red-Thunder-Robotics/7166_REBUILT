@@ -9,12 +9,6 @@
           "data": {
             "pathName": "DEBUG_swing"
           }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AfterShoot"
-          }
         }
       ]
     }

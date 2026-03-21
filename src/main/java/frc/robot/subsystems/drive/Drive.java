@@ -51,6 +51,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.Mode;
 import frc.robot.generated.TunerConstants;
+import frc.robot.modified.ModifiedPPHolonomicDriveController;
 import frc.robot.state_machine.OdometryAndVision;
 import frc.robot.state_machine.StateMachine;
 import frc.robot.util.LocalADStarAK;
@@ -168,8 +169,8 @@ public class Drive extends SubsystemBase {
       StateMachine.odometryAndVision::resetPose,
       this::getChassisSpeeds,
       this::runVelocity,
-      new PPHolonomicDriveController(
-          new PIDConstants(4d, 0d, 0d),
+      new ModifiedPPHolonomicDriveController(
+          new PIDConstants(DriveConstants.TRANSLATION_KP, 0d, 0d),
           new PIDConstants(12d, 0d, 0d)),
       PP_CONFIG,
       () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,

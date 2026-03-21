@@ -52,6 +52,7 @@ public final class Constants {
     }
 
     public static final class DriveConstants {
+        public static final double TRANSLATION_KP = 5.5d;
         public static final double ANGLE_KP = 1.25d;
         public static final double ANGLE_KD = 0d;
 

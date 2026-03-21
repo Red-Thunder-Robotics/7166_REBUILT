@@ -107,6 +107,7 @@ import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.util.ApriltagUtil;
 import frc.robot.util.ConversionUtil;
 import frc.robot.util.SystemTimeValidReader;
+import frc.robot.util.PhoenixUtil.MotorAction;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -453,6 +454,7 @@ public class Robot extends LoggedRobot {
         Threads.setCurrentThreadPriority(true, 10);
 
         StateMachine.periodic(this);
+        MotorAction.process();
         Logger.recordOutput("Pose3dZero", Pose3d.kZero);
     }
 

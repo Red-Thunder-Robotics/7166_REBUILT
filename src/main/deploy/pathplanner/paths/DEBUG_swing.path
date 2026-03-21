@@ -17,15 +17,15 @@
     {
       "anchor": {
         "x": 2.0,
-        "y": 1.351020408163265
+        "y": 3.081322094055013
       },
       "prevControl": {
         "x": 2.6,
-        "y": 1.3510204081632649
+        "y": 3.0813220940550123
       },
       "nextControl": {
         "x": 1.4,
-        "y": 1.351020408163265
+        "y": 3.081322094055013
       },
       "isLocked": false,
       "linkedName": null
@@ -47,21 +47,9 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "EngageShooterHub",
-      "waypointRelativePos": 0.21979434447300789,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "EngageShooterHub"
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.2,
+    "maxVelocity": 4.0,
     "maxAcceleration": 100.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
