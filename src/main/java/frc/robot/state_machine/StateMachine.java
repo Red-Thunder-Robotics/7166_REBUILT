@@ -161,24 +161,14 @@ public class StateMachine {
         }
     }
 
-    private static ClimberState climberLeftState = ClimberState.Idle;
+    private static ClimberState climberState = ClimberState.Idle;
 
-    public static ClimberState getClimberLeftState() {
-        return climberLeftState;
+    public static ClimberState getClimberState() {
+        return climberState;
     }
-    public static void setClimberLeftState(ClimberState newClimberState) {
-        climberLeftState = newClimberState;
-        ClimberSubsystem.instance.stateUpdateLeft(climberLeftState);
-    }
-
-    private static ClimberState climberRightState = ClimberState.Idle;
-
-    public static ClimberState getClimberRightState() {
-        return climberRightState;
-    }
-    public static void setClimberRightState(ClimberState newClimberState) {
-        climberRightState = newClimberState;
-        ClimberSubsystem.instance.stateUpdateRight(climberRightState);
+    public static void setClimberState(ClimberState newClimberState) {
+        climberState = newClimberState;
+        ClimberSubsystem.instance.stateUpdate(climberState);
     }
 
     public static final class RobotCommands {
@@ -280,37 +270,19 @@ public class StateMachine {
         }
 
         // climber
-        public static Command setClimberBothState(ClimberState climberState) {
+        public static Command setClimberState(ClimberState climberState) {
             return ClimberSubsystem.instance.runOnce(
                 () -> {
-                    StateMachine.setClimberLeftState(climberState);
-                    StateMachine.setClimberRightState(climberState);
+                    StateMachine.setClimberState(climberState);
                 }
             );
         }
-        public static Command setClimberLeftState(ClimberState climberState) {
-            return ClimberSubsystem.instance.runOnce(
-                () -> StateMachine.setClimberLeftState(climberState)
-            );
-        }
-        public static Command setClimberRightState(ClimberState climberState) {
-            return ClimberSubsystem.instance.runOnce(
-                () -> StateMachine.setClimberRightState(climberState)
-            );
-        }
 
-        public static Command climberLeftHome() {
-            return cmdName(setClimberLeftState(ClimberState.Home), "ClimberLeftHome");
+        public static Command climberHome() {
+            return cmdName(setClimberState(ClimberState.Home), "ClimberHome");
         }
-        public static Command climberLeftDeployed() {
-            return cmdName(setClimberLeftState(ClimberState.Deployed), "ClimberLeftDeployed");
-        }
-
-        public static Command climberRightHome() {
-            return cmdName(setClimberRightState(ClimberState.Home), "ClimberRightHome");
-        }
-        public static Command climberRightDeployed() {
-            return cmdName(setClimberRightState(ClimberState.Deployed), "ClimberRightDeployed");
+        public static Command climberDeployed() {
+            return cmdName(setClimberState(ClimberState.Deployed), "ClimberDeployed");
         }
 
         // general
@@ -322,16 +294,6 @@ public class StateMachine {
         public static Command generalReversingIdle() {
             return cmdName(setShooterIdle()
                 .alongWith(intakeDynamicOff()), "GeneralReversingIdle");
-        }
-
-        private static boolean hasAutoClimbRan = false;
-        public static boolean getHasAutoClimbRan() {
-            return hasAutoClimbRan;
-        }
-
-        // FIXME: auto climb behavior
-        public static Command autoClimb() {
-            return cmdName(Commands.runOnce(() -> hasAutoClimbRan = true), "AutoClimb");
         }
     }
 
@@ -449,9 +411,7 @@ public class StateMachine {
         Logger.recordOutput("StateMachine/IntakeState", intakeState);
         Logger.recordOutput("StateMachine/LauncherTarget", launcherTarget);
         Logger.recordOutput("StateMachine/ShooterState", shooterState);
-        // Logger.recordOutput("StateMachine/ClimberState", climberState);
-        Logger.recordOutput("StateMachine/ClimberLeftState", climberLeftState);
-        Logger.recordOutput("StateMachine/ClimberRightState", climberRightState);
+        Logger.recordOutput("StateMachine/ClimberState", climberState);
 
         Logger.recordOutput("StateMachine/TurboMeter", turboTimer.get());
 

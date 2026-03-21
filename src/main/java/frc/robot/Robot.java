@@ -376,14 +376,10 @@ public class Robot extends LoggedRobot {
                 .whileTrue(repeatingSimFuelCommand());
 
         // climber
-        Controls.leftClimbUp.onTrue(RobotCommands.climberLeftDeployed());
-        Controls.leftClimbDown.onTrue(RobotCommands.climberLeftHome());
-
-        Controls.rightClimbUp.onTrue(RobotCommands.climberRightDeployed());
-        Controls.rightClimbDown.onTrue(RobotCommands.climberRightHome());
-
-        // bring intake out so the climber doesn't catch on it
-        Controls.eitherClimbUp.onTrue(RobotCommands.setIntakeState(IntakeState.OscillateOff));
+        Controls.climbUp.onTrue(RobotCommands.setIntakeState(IntakeState.OscillateOff)
+            .andThen(Commands.waitSeconds(0.5d))
+            .andThen(RobotCommands.climberDeployed()));
+        Controls.climbDown.onTrue(RobotCommands.climberHome());
 
         if (Constants.USE_TURRET) {
             Controls.manualTurretToggle.onTrue(m_turretSubsystem.toggleManualModeCommand());
@@ -424,8 +420,8 @@ public class Robot extends LoggedRobot {
         // }, Set.of()));
         NamedCommands.registerCommand("ClimbRotate", cmdName(AutoDriveCommands.faceRotation2d(StateMachine.allianceFlip(Rotation2d.kZero)), "AutoClimbRotate"));
 
-        NamedCommands.registerCommand("ClimbMark1Deploy", RobotCommands.setClimberBothState(ClimberState.Deployed));
-        NamedCommands.registerCommand("ClimbMark1Home", RobotCommands.setClimberBothState(ClimberState.Home));
+        NamedCommands.registerCommand("ClimbMark1Deploy", RobotCommands.setClimberState(ClimberState.Deployed));
+        NamedCommands.registerCommand("ClimbMark1Home", RobotCommands.setClimberState(ClimberState.Home));
     }
 
     /** This function is called periodically during all modes. */
@@ -544,12 +540,7 @@ public class Robot extends LoggedRobot {
     
     @Override
     public void autonomousExit() {
-        if (RobotCommands.getHasAutoClimbRan()) {
-            // prevent climber from jerking back to setpoint on enable
-
-            StateMachine.setClimberLeftState(ClimberState.Idle);
-            StateMachine.setClimberRightState(ClimberState.Idle);
-        }
+        StateMachine.setClimberState(ClimberState.Idle);
     }
 
     /** This function is called once when teleop is enabled. */

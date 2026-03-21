@@ -28,11 +28,6 @@ public final class Controls {
     public static final Trigger rotationTargetBumpRight = operatorController.rightBumper();
 
     // climber
-    public static final Trigger leftClimbUp = operatorController.povUp();
-    public static final Trigger leftClimbDown = operatorController.povDown();
-
-    public static final Trigger rightClimbUp = operatorController.y();
-    public static final Trigger rightClimbDown = operatorController.a();
-
-    public static final Trigger eitherClimbUp = leftClimbUp.or(rightClimbUp);
+    public static final Trigger climbUp = operatorController.y();
+    public static final Trigger climbDown = operatorController.a();
 }

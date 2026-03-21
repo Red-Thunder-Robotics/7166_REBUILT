@@ -7,14 +7,10 @@ import static frc.robot.util.ConversionUtil.mechanismPositionToDistance;
 import edu.wpi.first.math.controller.PIDController;
 
 public final class ClimberIOSim implements ClimberIO {
-    private double m_leftTargetPosition = positionHome;
-    private double m_leftPosition = m_leftTargetPosition;
+    private double m_targetPosition = positionHome;
+    private double m_position = m_targetPosition;
 
-    private double m_rightTargetPosition = positionHome;
-    private double m_rightPosition = m_rightTargetPosition;
-
-    private final PIDController m_leftPID = new PIDController(0.5d, 0d, 0d);
-    private final PIDController m_rightPID = new PIDController(0.5d, 0d, 0d);
+    private final PIDController m_PID = new PIDController(0.5d, 0d, 0d);
 
     public ClimberIOSim() {
 
@@ -22,43 +18,22 @@ public final class ClimberIOSim implements ClimberIO {
 
     @Override
     public void updateInputs(ClimberIOInputs inputs) {
-        // left
-        final double leftOutput = m_leftPID.calculate(m_leftPosition);
-        m_leftPosition += leftOutput;
-
-        final double leftTargetPosition = m_leftTargetPosition;
-        inputs.leftTargetPositionRotations = leftTargetPosition;
-        inputs.leftTargetPositionInches = mechanismPositionToDistance(leftTargetPosition, pitchCircumference).in(Inches);
-
-        final double leftPosition = m_leftPosition;
-        inputs.leftPositionRotations = leftPosition;
-        inputs.leftPositionInches = mechanismPositionToDistance(leftPosition, pitchCircumference).in(Inches);
-
-        inputs.leftDutyCycle = leftOutput;
-
         // right
-        final double rightOutput = m_rightPID.calculate(m_rightPosition);
-        m_rightPosition += rightOutput;
+        final double output = m_PID.calculate(m_position);
+        m_position += output;
 
-        final double rightTargetPosition = m_rightTargetPosition;
-        inputs.rightTargetPositionRotations = rightTargetPosition;
-        inputs.rightTargetPositionInches = mechanismPositionToDistance(rightTargetPosition, pitchCircumference).in(Inches);
+        final double targetPosition = m_targetPosition;
+        inputs.positionRotations = targetPosition;
+        inputs.positionInches = mechanismPositionToDistance(targetPosition, pitchCircumference).in(Inches);
 
-        final double rightPosition = m_rightPosition;
-        inputs.rightPositionRotations = rightPosition;
-        inputs.rightPositionInches = mechanismPositionToDistance(rightPosition, pitchCircumference).in(Inches);
-
-        inputs.rightDutyCycle = rightOutput;
+        final double position = m_position;
+        inputs.positionRotations = position;
+        inputs.positionInches = mechanismPositionToDistance(position, pitchCircumference).in(Inches);
     }
 
     @Override
-    public void setLeftPosition(double position) {
-        m_leftTargetPosition = position;
-        m_leftPID.setSetpoint(position);
-    }
-    @Override
-    public void setRightPosition(double position) {
-        m_rightTargetPosition = position;
-        m_rightPID.setSetpoint(position);
+    public void setPosition(double position) {
+        m_targetPosition = position;
+        m_PID.setSetpoint(position);
     }
 }

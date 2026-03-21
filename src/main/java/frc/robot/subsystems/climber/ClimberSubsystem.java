@@ -28,29 +28,16 @@ public final class ClimberSubsystem extends SubsystemBase {
         Logger.recordOutput("Climber/PositionDeployedRotations", positionDeployed);
     }
 
-    public void stateUpdateLeft(ClimberState climberState) {
+    public void stateUpdate(ClimberState climberState) {
         switch (climberState) {
             case Idle:
-                m_io.leftIdle();
+                m_io.stop();
                 break;
             case Home:
-                m_io.setLeftPosition(positionHome);
+                m_io.setPosition(positionHome);
                 break;
             case Deployed:
-                m_io.setLeftPosition(positionDeployed);
-                break;
-        }
-    }
-    public void stateUpdateRight(ClimberState climberState) {
-        switch (climberState) {
-            case Idle:
-                m_io.rightIdle();
-                break;
-            case Home:
-                m_io.setRightPosition(positionHome);
-                break;
-            case Deployed:
-                m_io.setRightPosition(positionDeployed);
+                m_io.setPosition(positionDeployed);
                 break;
         }
     }
