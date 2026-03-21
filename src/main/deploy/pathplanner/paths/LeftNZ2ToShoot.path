@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.781615384615385,
-        "y": 4.843650602409639
+        "x": 8.282938659058486,
+        "y": 4.830727532097005
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.658358473824313,
-        "y": 5.106271019467195
+        "x": 8.159681748267413,
+        "y": 5.093347949154562
       },
       "isLocked": false,
       "linkedName": "LeftNZ2"
@@ -119,7 +119,7 @@
   "folder": "Left",
   "idealStartingState": {
     "velocity": 1.0,
-    "rotation": -90.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": false
 }
