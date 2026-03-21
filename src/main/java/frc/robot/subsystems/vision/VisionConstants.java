@@ -12,18 +12,26 @@ import edu.wpi.first.units.measure.Distance;
 import frc.robot.Constants;
 
 public final class VisionConstants {
-    public static final String limelightFrontLeftName = "limelight-frontl";
-    public static final String limelightBackRightName = "limelight-backr";
-    public static final String limelightHopperName = "limelight-hopper";
+    public static final String limelightFrontName = "limelight-front";
+    public static final String limelightLeftName = "limelight-left";
+    public static final String limelightRightName = "limelight-right";
     public static final String[] limelightList = {
-        limelightFrontLeftName,
-        limelightBackRightName,
-        limelightHopperName
+        limelightFrontName,
+        limelightLeftName,
+        limelightRightName
     };
-    public static final String[] limelightPoseEstimationList = {
-        limelightFrontLeftName,
-        limelightBackRightName
-    };
+    // public static final String[] limelightPoseEstimationList = {
+    //     limelightFrontName,
+    //     limelightLeftName
+    // };
+    public static final String[] limelightPoseEstimationList = limelightList;
+
+    /*
+     * limelight front
+     * forward 0.33256 meters
+     * up 0.445871 meters
+     * pitch 15 degrees
+     */
 
     private static final boolean forceEnableInstanceLogging = true;
     @SuppressWarnings("unused")
