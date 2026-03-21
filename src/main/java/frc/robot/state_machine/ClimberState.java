@@ -1,6 +1,6 @@
 package frc.robot.state_machine;
 
-public enum ClimberMark1State {
+public enum ClimberState {
     Idle,
     Home,
     Deployed

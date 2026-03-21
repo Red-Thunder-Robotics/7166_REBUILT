@@ -1,4 +1,4 @@
-package frc.robot.subsystems.climbermark1;
+package frc.robot.subsystems.climber;
 
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Millimeters;

@@ -31,7 +31,7 @@ import frc.robot.Controls;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.Robot;
-import frc.robot.subsystems.climbermark1.ClimberSubsystem;
+import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.ground_intake.GroundIntakeSubsystem;
 import frc.robot.subsystems.indexer.IndexerSubsystem;
@@ -161,22 +161,22 @@ public class StateMachine {
         }
     }
 
-    private static ClimberMark1State climberLeftState = ClimberMark1State.Idle;
+    private static ClimberState climberLeftState = ClimberState.Idle;
 
-    public static ClimberMark1State getClimberLeftState() {
+    public static ClimberState getClimberLeftState() {
         return climberLeftState;
     }
-    public static void setClimberLeftState(ClimberMark1State newClimberState) {
+    public static void setClimberLeftState(ClimberState newClimberState) {
         climberLeftState = newClimberState;
         ClimberSubsystem.instance.stateUpdateLeft(climberLeftState);
     }
 
-    private static ClimberMark1State climberRightState = ClimberMark1State.Idle;
+    private static ClimberState climberRightState = ClimberState.Idle;
 
-    public static ClimberMark1State getClimberRightState() {
+    public static ClimberState getClimberRightState() {
         return climberRightState;
     }
-    public static void setClimberRightState(ClimberMark1State newClimberState) {
+    public static void setClimberRightState(ClimberState newClimberState) {
         climberRightState = newClimberState;
         ClimberSubsystem.instance.stateUpdateRight(climberRightState);
     }
@@ -279,8 +279,8 @@ public class StateMachine {
                 .alongWith(setShooterIdle()), "DisengageShooter");
         }
 
-        // climber mark1
-        public static Command setClimberBothState(ClimberMark1State climberState) {
+        // climber
+        public static Command setClimberBothState(ClimberState climberState) {
             return ClimberSubsystem.instance.runOnce(
                 () -> {
                     StateMachine.setClimberLeftState(climberState);
@@ -288,50 +288,30 @@ public class StateMachine {
                 }
             );
         }
-        public static Command setClimberLeftState(ClimberMark1State climberState) {
+        public static Command setClimberLeftState(ClimberState climberState) {
             return ClimberSubsystem.instance.runOnce(
                 () -> StateMachine.setClimberLeftState(climberState)
             );
         }
-        public static Command setClimberRightState(ClimberMark1State climberState) {
+        public static Command setClimberRightState(ClimberState climberState) {
             return ClimberSubsystem.instance.runOnce(
                 () -> StateMachine.setClimberRightState(climberState)
             );
         }
 
         public static Command climberLeftHome() {
-            return cmdName(setClimberLeftState(ClimberMark1State.Home), "ClimberLeftHome");
+            return cmdName(setClimberLeftState(ClimberState.Home), "ClimberLeftHome");
         }
         public static Command climberLeftDeployed() {
-            return cmdName(setClimberLeftState(ClimberMark1State.Deployed), "ClimberLeftDeployed");
+            return cmdName(setClimberLeftState(ClimberState.Deployed), "ClimberLeftDeployed");
         }
 
         public static Command climberRightHome() {
-            return cmdName(setClimberRightState(ClimberMark1State.Home), "ClimberRightHome");
+            return cmdName(setClimberRightState(ClimberState.Home), "ClimberRightHome");
         }
         public static Command climberRightDeployed() {
-            return cmdName(setClimberRightState(ClimberMark1State.Deployed), "ClimberRightDeployed");
+            return cmdName(setClimberRightState(ClimberState.Deployed), "ClimberRightDeployed");
         }
-
-        // climber mark2
-        // public static Command setClimberState(ClimberMark2State climberState) {
-        //     return ClimberSubsystem.instance.runOnce(
-        //         () -> StateMachine.setClimberState(climberState)
-        //     );
-        // }
-
-        // public static Command climberStateIncrease() {
-        //     return withName(Commands.defer(
-        //         () -> setClimberState(getClimberState().getNext()),
-        //         Set.of(ClimberSubsystem.instance), "ClimberStateIncrease")
-        //     );
-        // }
-        // public static Command climberStateDecrease() {
-        //     return withName(Commands.defer(
-        //         () -> setClimberState(getClimberState().getPrevious()),
-        //         Set.of(ClimberSubsystem.instance), "ClimberStateDecrease")
-        //     );
-        // }
 
         // general
         public static Command generalReversing() {

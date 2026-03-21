@@ -1,7 +1,7 @@
-package frc.robot.subsystems.climbermark1;
+package frc.robot.subsystems.climber;
 
 import static edu.wpi.first.units.Units.Inches;
-import static frc.robot.subsystems.climbermark1.ClimberConstants.*;
+import static frc.robot.subsystems.climber.ClimberConstants.*;
 import static frc.robot.util.ConversionUtil.mechanismPositionToDistance;
 
 import edu.wpi.first.math.controller.PIDController;

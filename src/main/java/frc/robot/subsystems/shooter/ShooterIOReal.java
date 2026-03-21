@@ -9,7 +9,6 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -24,61 +23,41 @@ import frc.robot.Constants;
 import frc.robot.util.PhoenixUtil;
 
 public final class ShooterIOReal implements ShooterIO {
-    private final TalonFX m_flywheelMotorLeft = new TalonFX(flywheelMotorIdLeft, Constants.CANBUS);
-    private final TalonFX m_flywheelMotorMiddleUpper = new TalonFX(flywheelMotorIdMiddleUpper, Constants.CANBUS);
-    private final TalonFX m_flywheelMotorMiddleLower = new TalonFX(flywheelMotorIdMiddleLower, Constants.CANBUS);
-    private final TalonFX m_flywheelMotorRight = new TalonFX(flywheelMotorIdRight, Constants.CANBUS);
+    private final TalonFX m_flywheelMotorTopLeft = new TalonFX(flywheelMotorIdTopLeft, Constants.CANBUS);
+    private final TalonFX m_flywheelMotorBottomLeft = new TalonFX(flywheelMotorIdBottomLeft, Constants.CANBUS);
+    private final TalonFX m_flywheelMotorTopRight = new TalonFX(flywheelMotorIdTopRight, Constants.CANBUS);
+    private final TalonFX m_flywheelMotorBottomRight = new TalonFX(flywheelMotorIdBottomRight, Constants.CANBUS);
     private final TalonFX m_hoodMotor = new TalonFX(hoodMotorId, Constants.CANBUS);
-    private final TalonFX m_kickerMotor = new TalonFX(kickerMotorId, Constants.CANBUS);
+    private final TalonFX m_upperKickerMotor = new TalonFX(upperKickerMotorId, Constants.CANBUS);
     
     private double m_hoodTargetPosition = hoodPositionHome;
 
-    private final StatusSignal<AngularVelocity> m_flywheelLeftVelocitySignal;
-    private final StatusSignal<Current> m_flywheelLeftCurrentSignal;
+    private final StatusSignal<AngularVelocity> m_flywheelTopLeftVelocitySignal = m_flywheelMotorTopLeft.getVelocity();
+    private final StatusSignal<Current> m_flywheelTopLeftCurrentSignal = m_flywheelMotorTopLeft.getSupplyCurrent();
 
-    private final StatusSignal<AngularVelocity> m_flywheelMiddleUpperVelocitySignal;
-    private final StatusSignal<Current> m_flywheelMiddleUpperCurrentSignal;
+    private final StatusSignal<AngularVelocity> m_flywheelBottomLeftVelocitySignal = m_flywheelMotorBottomLeft.getVelocity();
+    private final StatusSignal<Current> m_flywheelBottomLeftCurrentSignal = m_flywheelMotorBottomLeft.getSupplyCurrent();
 
-    private final StatusSignal<AngularVelocity> m_flywheelMiddleLowerVelocitySignal;
-    private final StatusSignal<Current> m_flywheelMiddleLowerCurrentSignal;
+    private final StatusSignal<AngularVelocity> m_flywheelTopRightVelocitySignal = m_flywheelMotorTopRight.getVelocity();
+    private final StatusSignal<Current> m_flywheelTopRightCurrentSignal = m_flywheelMotorTopRight.getSupplyCurrent();
 
-    private final StatusSignal<AngularVelocity> m_flywheelRightVelocitySignal;
-    private final StatusSignal<Current> m_flywheelRightCurrentSignal;
+    private final StatusSignal<AngularVelocity> m_flywheelBottomRightVelocitySignal = m_flywheelMotorBottomRight.getVelocity();
+    private final StatusSignal<Current> m_flywheelBottomRightCurrentSignal = m_flywheelMotorBottomRight.getSupplyCurrent();
 
-    private final StatusSignal<Angle> m_hoodPositionSignal;
-    private final StatusSignal<AngularVelocity> m_hoodVelocitySignal;
-    private final StatusSignal<Current> m_hoodCurrentSignal;
+    private final StatusSignal<Angle> m_hoodPositionSignal = m_hoodMotor.getPosition();
+    private final StatusSignal<AngularVelocity> m_hoodVelocitySignal = m_hoodMotor.getVelocity();
+    private final StatusSignal<Current> m_hoodCurrentSignal = m_hoodMotor.getSupplyCurrent();
 
-    private final StatusSignal<AngularVelocity> m_kickerVelocitySignal;
-    private final StatusSignal<Current> m_kickerCurrentSignal;
+    private final StatusSignal<AngularVelocity> m_upperKickerVelocitySignal = m_upperKickerMotor.getVelocity();
+    private final StatusSignal<Current> m_upperKickerCurrentSignal = m_upperKickerMotor.getSupplyCurrent();
 
-    private final DutyCycleOut m_flywheelDutyCycleRequest = new DutyCycleOut(0d);
     private final MotionMagicVelocityVoltage m_flywheelVelocityRequest = new MotionMagicVelocityVoltage(0d)
-        .withEnableFOC(flywheelFOC);
+        .withEnableFOC(true);
     private final MotionMagicVoltage m_hoodPositionRequest = new MotionMagicVoltage(m_hoodTargetPosition);
         private final MotionMagicVelocityVoltage m_kickerVelocityRequest = new MotionMagicVelocityVoltage(0d)
         .withEnableFOC(true);
 
     public ShooterIOReal() {
-        m_flywheelLeftVelocitySignal = m_flywheelMotorLeft.getVelocity();
-        m_flywheelLeftCurrentSignal = m_flywheelMotorLeft.getSupplyCurrent();
-
-        m_flywheelMiddleUpperVelocitySignal = m_flywheelMotorMiddleUpper.getVelocity();
-        m_flywheelMiddleUpperCurrentSignal = m_flywheelMotorMiddleUpper.getSupplyCurrent();
-
-        m_flywheelMiddleLowerVelocitySignal = m_flywheelMotorMiddleLower.getVelocity();
-        m_flywheelMiddleLowerCurrentSignal = m_flywheelMotorMiddleLower.getSupplyCurrent();
-
-        m_flywheelRightVelocitySignal = m_flywheelMotorRight.getVelocity();
-        m_flywheelRightCurrentSignal = m_flywheelMotorRight.getSupplyCurrent();
-
-        m_hoodPositionSignal = m_hoodMotor.getPosition();
-        m_hoodVelocitySignal = m_hoodMotor.getVelocity();
-        m_hoodCurrentSignal = m_hoodMotor.getSupplyCurrent();
-
-        m_kickerVelocitySignal = m_kickerMotor.getVelocity();
-        m_kickerCurrentSignal = m_kickerMotor.getSupplyCurrent();
-
         var flywheelConfig = new TalonFXConfiguration();
         flywheelConfig.MotorOutput.NeutralMode = flywheelNeutralMode;
 
@@ -106,148 +85,138 @@ public final class ShooterIOReal implements ShooterIO {
         hoodConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
         hoodConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = hoodPositionHome;
 
-        var kickerConfig = new TalonFXConfiguration();
-        kickerConfig.MotorOutput.NeutralMode = kickerNeutralMode;
-        kickerConfig.MotorOutput.Inverted = kickerInverted;
+        var upperKickerConfig = new TalonFXConfiguration();
+        upperKickerConfig.MotorOutput.NeutralMode = upperKickerNeutralMode;
+        upperKickerConfig.MotorOutput.Inverted = upperKickerInverted;
 
-        kickerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-        kickerConfig.CurrentLimits.SupplyCurrentLimit = kickerCurrentLimit;
+        upperKickerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        upperKickerConfig.CurrentLimits.SupplyCurrentLimit = upperKickerCurrentLimit;
 
-        kickerConfig.Slot0.kP = kickerPidP;
-        kickerConfig.Slot0.kV = kickerPidV;
-        kickerConfig.MotionMagic.MotionMagicAcceleration = kickerTargetAcceleration;
+        upperKickerConfig.Slot0.kP = upperKickerPidP;
+        upperKickerConfig.Slot0.kV = upperKickerPidV;
+        upperKickerConfig.MotionMagic.MotionMagicAcceleration = upperKickerTargetAcceleration;
         
-        PhoenixUtil.tryUntilOk(5, () -> m_kickerMotor.getConfigurator().apply(kickerConfig));
-        PhoenixUtil.tryUntilOk(5, () -> m_flywheelMotorLeft.getConfigurator().apply(flywheelConfig.clone()
-            .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedLeft))));
+        PhoenixUtil.tryUntilOk(5, () -> m_upperKickerMotor.getConfigurator().apply(upperKickerConfig));
+        PhoenixUtil.tryUntilOk(5, () -> m_flywheelMotorTopLeft.getConfigurator().apply(flywheelConfig.clone()
+            .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedTopLeft))));
         // FIXME: I think withInverted on all these is redundant because they're followers but I don't want to break anything and we're short on time
-        PhoenixUtil.tryUntilOk(5, () -> m_flywheelMotorMiddleUpper.getConfigurator().apply(flywheelConfig.clone()
-            .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedMiddleUpper))));
-        PhoenixUtil.tryUntilOk(5, () -> m_flywheelMotorMiddleLower.getConfigurator().apply(flywheelConfig.clone()
-            .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedMiddleLower))));
-        PhoenixUtil.tryUntilOk(5, () -> m_flywheelMotorRight.getConfigurator().apply(flywheelConfig.clone()
-            .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedRight))));
+        PhoenixUtil.tryUntilOk(5, () -> m_flywheelMotorBottomLeft.getConfigurator().apply(flywheelConfig.clone()
+            .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedBottomLeft))));
+        PhoenixUtil.tryUntilOk(5, () -> m_flywheelMotorTopRight.getConfigurator().apply(flywheelConfig.clone()
+            .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedTopRight))));
+        PhoenixUtil.tryUntilOk(5, () -> m_flywheelMotorBottomRight.getConfigurator().apply(flywheelConfig.clone()
+            .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedBottomRight))));
         PhoenixUtil.tryUntilOk(5, () -> m_hoodMotor.getConfigurator().apply(hoodConfig));
 
         BaseStatusSignal.setUpdateFrequencyForAll(50d,
-            m_flywheelLeftVelocitySignal,
-            m_flywheelLeftCurrentSignal,
-            m_flywheelMiddleUpperVelocitySignal,
-            m_flywheelMiddleUpperCurrentSignal,
-            m_flywheelMiddleLowerVelocitySignal,
-            m_flywheelMiddleLowerCurrentSignal,
-            m_flywheelRightVelocitySignal,
-            m_flywheelRightCurrentSignal,
+            m_flywheelTopLeftVelocitySignal,
+            m_flywheelTopLeftCurrentSignal,
+            m_flywheelBottomLeftVelocitySignal,
+            m_flywheelBottomLeftCurrentSignal,
+            m_flywheelTopRightVelocitySignal,
+            m_flywheelTopRightCurrentSignal,
+            m_flywheelBottomRightVelocitySignal,
+            m_flywheelBottomRightCurrentSignal,
             m_hoodPositionSignal,
             m_hoodVelocitySignal,
             m_hoodCurrentSignal,
-            m_kickerVelocitySignal,
-            m_kickerCurrentSignal);
+            m_upperKickerVelocitySignal,
+            m_upperKickerCurrentSignal);
 
         PhoenixUtil.tryUntilOk(5, () -> m_hoodMotor.setPosition(m_hoodTargetPosition));
 
-        m_flywheelMotorMiddleUpper.setControl(new Follower(flywheelMotorIdLeft, flywheelInvertedMiddleUpper == flywheelInvertedLeft ? MotorAlignmentValue.Aligned : MotorAlignmentValue.Opposed));
-        m_flywheelMotorMiddleLower.setControl(new Follower(flywheelMotorIdLeft, flywheelInvertedMiddleLower == flywheelInvertedLeft ? MotorAlignmentValue.Aligned : MotorAlignmentValue.Opposed));
-        m_flywheelMotorRight.setControl(new Follower(flywheelMotorIdLeft, flywheelInvertedRight == flywheelInvertedLeft ? MotorAlignmentValue.Aligned : MotorAlignmentValue.Opposed));
+        m_flywheelMotorBottomLeft.setControl(new Follower(flywheelMotorIdTopLeft, flywheelInvertedBottomLeft == flywheelInvertedTopLeft ? MotorAlignmentValue.Aligned : MotorAlignmentValue.Opposed));
+        m_flywheelMotorTopRight.setControl(new Follower(flywheelMotorIdTopLeft, flywheelInvertedTopRight == flywheelInvertedTopLeft ? MotorAlignmentValue.Aligned : MotorAlignmentValue.Opposed));
+        m_flywheelMotorBottomRight.setControl(new Follower(flywheelMotorIdTopLeft, flywheelInvertedBottomRight == flywheelInvertedTopLeft ? MotorAlignmentValue.Aligned : MotorAlignmentValue.Opposed));
     }
 
     @Override
     public void updateInputs(ShooterIOInputs inputs) {
         BaseStatusSignal.refreshAll(
-            m_flywheelLeftVelocitySignal,
-            m_flywheelLeftCurrentSignal,
-            m_flywheelMiddleUpperVelocitySignal,
-            m_flywheelMiddleUpperCurrentSignal,
-            m_flywheelMiddleLowerVelocitySignal,
-            m_flywheelMiddleLowerCurrentSignal,
-            m_flywheelRightVelocitySignal,
-            m_flywheelRightCurrentSignal,
+            m_flywheelTopLeftVelocitySignal,
+            m_flywheelTopLeftCurrentSignal,
+            m_flywheelBottomLeftVelocitySignal,
+            m_flywheelBottomLeftCurrentSignal,
+            m_flywheelTopRightVelocitySignal,
+            m_flywheelTopRightCurrentSignal,
+            m_flywheelBottomRightVelocitySignal,
+            m_flywheelBottomRightCurrentSignal,
             m_hoodPositionSignal,
             m_hoodVelocitySignal,
             m_hoodCurrentSignal,
-            m_kickerVelocitySignal,
-            m_kickerCurrentSignal);
+            m_upperKickerVelocitySignal,
+            m_upperKickerCurrentSignal);
         
-        inputs.flywheelTargetVelocityRPS = PhoenixUtil.getRequestVelocity(m_flywheelMotorLeft.getAppliedControl());
+        inputs.flywheelTargetVelocityRPS = PhoenixUtil.getRequestVelocity(m_flywheelMotorTopLeft.getAppliedControl());
 
-        final double leftCurrent = m_flywheelLeftCurrentSignal.getValueAsDouble();
-        inputs.flywheelMotorLeftDutyCycle = PhoenixUtil.getRequestDutyCycle(m_flywheelMotorLeft.getAppliedControl());
-        inputs.flywheelMotorLeftVelocityRPS = m_flywheelLeftVelocitySignal.getValueAsDouble();
-        inputs.flywheelMotorLeftCurrentAmps = leftCurrent;
-
-        final double middleUpperCurrent = m_flywheelMiddleUpperCurrentSignal.getValueAsDouble();
-        inputs.flywheelMotorMiddleUpperDutyCycle = PhoenixUtil.getRequestDutyCycle(m_flywheelMotorMiddleUpper.getAppliedControl());
-        inputs.flywheelMotorMiddleUpperVelocityRPS = m_flywheelMiddleUpperVelocitySignal.getValueAsDouble();
-        inputs.flywheelMotorMiddleUpperCurrentAmps = middleUpperCurrent;
-
-        final double middleLowerCurrent = m_flywheelMiddleLowerCurrentSignal.getValueAsDouble();
-        inputs.flywheelMotorMiddleLowerDutyCycle = PhoenixUtil.getRequestDutyCycle(m_flywheelMotorMiddleLower.getAppliedControl());
-        inputs.flywheelMotorMiddleLowerVelocityRPS = m_flywheelMiddleLowerVelocitySignal.getValueAsDouble();
-        inputs.flywheelMotorMiddleLowerCurrentAmps = middleLowerCurrent;
-
-        final double rightCurrent = m_flywheelRightCurrentSignal.getValueAsDouble();
-        inputs.flywheelMotorRightDutyCycle = PhoenixUtil.getRequestDutyCycle(m_flywheelMotorRight.getAppliedControl());
-        inputs.flywheelMotorRightVelocityRPS = m_flywheelRightVelocitySignal.getValueAsDouble();
-        inputs.flywheelMotorRightCurrentAmps = rightCurrent;
-
-        inputs.flywheelTotalCurrentAmps = leftCurrent + middleUpperCurrent + middleLowerCurrent + rightCurrent;
-
+        final double topLeftCurrent = m_flywheelTopLeftCurrentSignal.getValueAsDouble();
+        inputs.flywheelMotorLeftVelocityRPS = m_flywheelTopLeftVelocitySignal.getValueAsDouble();
+        inputs.flywheelMotorLeftCurrentAmps = topLeftCurrent;
+        //
+        final double bottomLeftCurrent = m_flywheelBottomLeftCurrentSignal.getValueAsDouble();
+        inputs.flywheelMotorBottomLeftVelocityRPS = m_flywheelBottomLeftVelocitySignal.getValueAsDouble();
+        inputs.flywheelMotorBottomLeftCurrentAmps = bottomLeftCurrent;
+        //
+        final double topRightCurrent = m_flywheelTopRightCurrentSignal.getValueAsDouble();
+        inputs.flywheelMotorMiddleLowerVelocityRPS = m_flywheelTopRightVelocitySignal.getValueAsDouble();
+        inputs.flywheelMotorMiddleLowerCurrentAmps = topRightCurrent;
+        //
+        final double bottomRightCurrent = m_flywheelBottomRightCurrentSignal.getValueAsDouble();
+        inputs.flywheelMotorRightVelocityRPS = m_flywheelBottomRightVelocitySignal.getValueAsDouble();
+        inputs.flywheelMotorRightCurrentAmps = bottomRightCurrent;
+        //
+        inputs.flywheelTotalCurrentAmps = topLeftCurrent + bottomLeftCurrent + topRightCurrent + bottomRightCurrent;
 
         final double hoodTargetPosition = m_hoodTargetPosition;
         inputs.hoodTargetPositionRotations = hoodTargetPosition;
         inputs.hoodTargetPositionDegrees = mechanismPositionToAngle(hoodTargetPosition).in(Degrees);
-
+        //
         final double hoodPositionRotations = m_hoodPositionSignal.getValueAsDouble();
         inputs.hoodPositionRotations = hoodPositionRotations;
         inputs.hoodPositionDegrees = mechanismPositionToAngle(hoodPositionRotations).in(Degrees);
-
+        //
         inputs.hoodMotorDutyCycle = PhoenixUtil.getRequestDutyCycle(m_hoodMotor.getAppliedControl());
         inputs.hoodMotorVelocityRPS = m_hoodVelocitySignal.getValueAsDouble();
         inputs.hoodMotorCurrentAmps = m_hoodCurrentSignal.getValueAsDouble();
 
-
-        inputs.kickerTargetVelocityRPS = PhoenixUtil.getRequestVelocity(m_kickerMotor.getAppliedControl());
-
-        inputs.kickerMotorDutyCycle = PhoenixUtil.getRequestDutyCycle(m_kickerMotor.getAppliedControl());
-        inputs.kickerMotorVelocityRPS = m_kickerVelocitySignal.getValueAsDouble();
-        inputs.kickerMotorCurrentAmps = m_kickerCurrentSignal.getValueAsDouble();
+        inputs.upperKickerTargetVelocityRPS = PhoenixUtil.getRequestVelocity(m_upperKickerMotor.getAppliedControl());
+        //
+        inputs.upperKickerMotorDutyCycle = PhoenixUtil.getRequestDutyCycle(m_upperKickerMotor.getAppliedControl());
+        inputs.upperKickerMotorVelocityRPS = m_upperKickerVelocitySignal.getValueAsDouble();
+        inputs.upperKickerMotorCurrentAmps = m_upperKickerCurrentSignal.getValueAsDouble();
     }
 
     @Override
     public void idle() {
-        m_flywheelMotorLeft.disable();
-        m_kickerMotor.disable();
+        m_flywheelMotorTopLeft.disable();
+        m_upperKickerMotor.disable();
     }
 
     @Override
-    public void flywheelDutyCycle(double output) {
-        m_flywheelMotorLeft.setControl(m_flywheelDutyCycleRequest.withOutput(output));
-    }
-    @Override
     public void flywheelVelocity(AngularVelocity velocity) {
-        m_flywheelMotorLeft.setControl(m_flywheelVelocityRequest.withVelocity(velocity));
+        m_flywheelMotorTopLeft.setControl(m_flywheelVelocityRequest.withVelocity(velocity));
     }
     @Override
     public void flywheelStop() {
-        m_flywheelMotorLeft.disable();
+        m_flywheelMotorTopLeft.disable();
     }
 
     @Override
-    public void setHoodPosition(double position) {
+    public void hoodAngle(double position) {
         m_hoodTargetPosition = position;
         m_hoodMotor.setControl(m_hoodPositionRequest.withPosition(m_hoodTargetPosition));
     }
     @Override
-    public void setHoodPosition(Angle angle) {
-        setHoodPosition(angleToMechanismPosition(angle));
+    public void hoodAngle(Angle angle) {
+        hoodAngle(angleToMechanismPosition(angle));
     }
 
     @Override
-    public void kickerVelocity(AngularVelocity velocity) {
-        m_kickerMotor.setControl(m_kickerVelocityRequest.withVelocity(velocity));
+    public void upperKickerVelocity(AngularVelocity velocity) {
+        m_upperKickerMotor.setControl(m_kickerVelocityRequest.withVelocity(velocity));
     }
     @Override
-    public void kickerStop() {
-        m_kickerMotor.disable();
+    public void upperKickerStop() {
+        m_upperKickerMotor.disable();
     }
 }

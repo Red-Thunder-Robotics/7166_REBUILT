@@ -37,12 +37,16 @@ public final class IndexerSubsystem extends SubsystemBase {
             case Shooting:
                 if (StateMachine.shouldIndex()) {
                     isFeeding = true;
-                    m_io.runVelocity(outputVelocity);
+                    m_io.indexerVelocity(indexerOutputVelocity);
+                    m_io.topRollerVelocity(topRollerVelocity);
+                    m_io.lowerKickerVelocity(lowerKickerVelocity);
                 } else
                     setIdle();
                 break;
             case Reversing:
-                m_io.runVelocity(outputVelocityReverse);
+                m_io.indexerVelocity(indexerOutputVelocityReverse);
+                m_io.topRollerVelocity(topRollerVelocityReverse);
+                m_io.lowerKickerVelocity(lowerKickerVelocityReverse);
                 break;
         }
 
@@ -55,6 +59,8 @@ public final class IndexerSubsystem extends SubsystemBase {
     }
 
     public void setIdle() {
-        m_io.idle();
+        m_io.indexerStop();
+        m_io.topRollerStop();
+        m_io.lowerKickerStop();
     }
 }

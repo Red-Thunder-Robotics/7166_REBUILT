@@ -6,10 +6,18 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.measure.AngularVelocity;
 
 public final class IndexerIOSim implements IndexerIO {
-    private double m_targetVelocity = 0d;
-    private double m_velocity = 0d;
+    private double m_indexerTargetVelocity = 0d;
+    private double m_indexerVelocity = 0d;
 
-    private final PIDController m_PID = new PIDController(0.5d, 0d, 0d);
+    private double m_topRollerTargetVelocity = 0d;
+    private double m_topRollerVelocity = 0d;
+
+    private double m_lowerKickerTargetVelocity = 0d;
+    private double m_lowerKickerVelocity = 0d;
+
+    private final PIDController m_indexerPID = new PIDController(0.5d, 0d, 0d);
+    private final PIDController m_topRollerPID = new PIDController(0.5d, 0d, 0d);
+    private final PIDController m_lowerKickerPID = new PIDController(0.5d, 0d, 0d);
 
     public IndexerIOSim() {
 
@@ -17,20 +25,46 @@ public final class IndexerIOSim implements IndexerIO {
 
     @Override
     public void updateInputs(IndexerIOInputs inputs) {
-        inputs.targetVelocityRPS = m_targetVelocity;
+        inputs.indexerTargetVelocityRPS = m_indexerTargetVelocity;
+        m_indexerVelocity += m_indexerPID.calculate(m_indexerVelocity);
+        inputs.indexerVelocityRPS = m_indexerVelocity;
 
-        m_velocity += m_PID.calculate(m_velocity);
-        inputs.velocityRPS = m_velocity;
+        inputs.topRollerTargetVelocityRPS = m_topRollerTargetVelocity;
+        m_topRollerVelocity += m_topRollerPID.calculate(m_topRollerVelocity);
+        inputs.topRollerVelocityRPS = m_topRollerVelocity;
+
+        inputs.lowerKickerTargetVelocityRPS = m_lowerKickerTargetVelocity;
+        m_lowerKickerVelocity += m_lowerKickerPID.calculate(m_lowerKickerVelocity);
+        inputs.lowerKickerVelocityRPS = m_lowerKickerVelocity;
     }
 
     @Override
-    public void idle() {
-        m_targetVelocity = 0d;
+    public void indexerVelocity(AngularVelocity velocity) {
+        m_indexerTargetVelocity = velocity.in(RotationsPerSecond);
+        m_indexerPID.setSetpoint(m_indexerTargetVelocity);
+    }
+    @Override
+    public void indexerStop() {
+        m_indexerTargetVelocity = 0d;
     }
 
     @Override
-    public void runVelocity(AngularVelocity velocity) {
-        m_targetVelocity = velocity.in(RotationsPerSecond);
-        m_PID.setSetpoint(m_targetVelocity);
+    public void topRollerVelocity(AngularVelocity velocity) {
+        m_topRollerTargetVelocity = velocity.in(RotationsPerSecond);
+        m_topRollerPID.setSetpoint(m_topRollerTargetVelocity);
+    }
+    @Override
+    public void topRollerStop() {
+        m_topRollerTargetVelocity = 0d;
+    }
+
+    @Override
+    public void lowerKickerVelocity(AngularVelocity velocity) {
+        m_lowerKickerTargetVelocity = velocity.in(RotationsPerSecond);
+        m_lowerKickerPID.setSetpoint(m_lowerKickerTargetVelocity);
+    }
+    @Override
+    public void lowerKickerStop() {
+        m_lowerKickerTargetVelocity = 0d;
     }
 }

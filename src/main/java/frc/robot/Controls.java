@@ -27,7 +27,7 @@ public final class Controls {
     public static final Trigger rotationTargetBumpLeft = operatorController.leftBumper();
     public static final Trigger rotationTargetBumpRight = operatorController.rightBumper();
 
-    // CLIMBER MARK 1
+    // climber
     public static final Trigger leftClimbUp = operatorController.povUp();
     public static final Trigger leftClimbDown = operatorController.povDown();
 
@@ -35,9 +35,4 @@ public final class Controls {
     public static final Trigger rightClimbDown = operatorController.a();
 
     public static final Trigger eitherClimbUp = leftClimbUp.or(rightClimbUp);
-
-    // CLIMBER MARK 2
-    // public static final Trigger climbSafetyButton = driveController.b();
-    // public static final Trigger climbForward = driveController.povUp(); // bottom right paddle
-    // public static final Trigger climbBackward = driveController.povLeft(); // bottom left paddle
 }

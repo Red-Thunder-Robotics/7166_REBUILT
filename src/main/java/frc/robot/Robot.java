@@ -58,6 +58,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.AutoDriveCommands;
@@ -66,16 +67,16 @@ import frc.robot.commands.IntakeCommands;
 import frc.robot.commands.SimulationCommands;
 import frc.robot.commands.SimulationCommands.SimFuelCommand;
 import frc.robot.generated.TunerConstants;
-import frc.robot.state_machine.ClimberMark1State;
+import frc.robot.state_machine.ClimberState;
 import frc.robot.state_machine.IntakeState;
 import frc.robot.state_machine.LiveConfig;
 import frc.robot.state_machine.RobotEvent;
 import frc.robot.state_machine.StateMachine;
 import frc.robot.state_machine.StateMachine.RobotCommands;
-import frc.robot.subsystems.climbermark1.ClimberIO;
-import frc.robot.subsystems.climbermark1.ClimberIOReal;
-import frc.robot.subsystems.climbermark1.ClimberIOSim;
-import frc.robot.subsystems.climbermark1.ClimberSubsystem;
+import frc.robot.subsystems.climber.ClimberIO;
+import frc.robot.subsystems.climber.ClimberIOReal;
+import frc.robot.subsystems.climber.ClimberIOSim;
+import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -371,11 +372,10 @@ public class Robot extends LoggedRobot {
         RobotEvent.TurboOff.addListener(() -> System.out.println("TURBO MODE DISENGAGE\nTURBO MODE DISENGAGE"));
 
         if (Robot.isSimulation())
-            Controls.hubButton
-                .or(Controls.allianceFeedButton)
+            new Trigger(() -> StateMachine.isShooting())
                 .whileTrue(repeatingSimFuelCommand());
 
-        // CLIMBER MARK 1
+        // climber
         Controls.leftClimbUp.onTrue(RobotCommands.climberLeftDeployed());
         Controls.leftClimbDown.onTrue(RobotCommands.climberLeftHome());
 
@@ -384,18 +384,6 @@ public class Robot extends LoggedRobot {
 
         // bring intake out so the climber doesn't catch on it
         Controls.eitherClimbUp.onTrue(RobotCommands.setIntakeState(IntakeState.OscillateOff));
-
-        // CLIMBER MARK 2
-        // Controls.climbForward.onTrue(Commands.either(
-        //     RobotCommands.climberStateIncrease(),
-        //     Commands.none(),
-        //     Controls.climbSafetyButton
-        // ));
-        // Controls.climbBackward.onTrue(Commands.either(
-        //     RobotCommands.climberStateDecrease(),
-        //     Commands.none(),
-        //     Controls.climbSafetyButton
-        // ));
 
         if (Constants.USE_TURRET) {
             Controls.manualTurretToggle.onTrue(m_turretSubsystem.toggleManualModeCommand());
@@ -436,12 +424,8 @@ public class Robot extends LoggedRobot {
         // }, Set.of()));
         NamedCommands.registerCommand("ClimbRotate", cmdName(AutoDriveCommands.faceRotation2d(StateMachine.allianceFlip(Rotation2d.kZero)), "AutoClimbRotate"));
 
-        // CLIMBER MARK 1
-        NamedCommands.registerCommand("ClimbMark1Deploy", RobotCommands.setClimberBothState(ClimberMark1State.Deployed));
-        NamedCommands.registerCommand("ClimbMark1Home", RobotCommands.setClimberBothState(ClimberMark1State.Home));
-
-        // CLIMBER MARK 2
-        // NamedCommands.registerCommand("Climb", RobotCommands.autoClimb());
+        NamedCommands.registerCommand("ClimbMark1Deploy", RobotCommands.setClimberBothState(ClimberState.Deployed));
+        NamedCommands.registerCommand("ClimbMark1Home", RobotCommands.setClimberBothState(ClimberState.Home));
     }
 
     /** This function is called periodically during all modes. */
@@ -563,12 +547,8 @@ public class Robot extends LoggedRobot {
         if (RobotCommands.getHasAutoClimbRan()) {
             // prevent climber from jerking back to setpoint on enable
 
-            // CLIMBER MARK 1
-            StateMachine.setClimberLeftState(ClimberMark1State.Idle);
-            StateMachine.setClimberRightState(ClimberMark1State.Idle);
-
-            // CLIMBER MARK 2
-            // StateMachine.setClimberState(ClimberMark2State.Idle);
+            StateMachine.setClimberLeftState(ClimberState.Idle);
+            StateMachine.setClimberRightState(ClimberState.Idle);
         }
     }
 
@@ -583,13 +563,6 @@ public class Robot extends LoggedRobot {
         m_commandScheduler.cancelAll();
 
         resetState();
-
-        // CLIMBER MARK 2 MAYBE
-        // if (RobotCommands.getHasAutoClimbRan()) {
-        //     m_commandScheduler.schedule(
-        //         RobotCommands.setClimberState(ClimberMark1State.DeployedGrabHome)
-        //     );
-        // }
 
         RobotEvent.OnTeleopEnabled.trigger();
         RobotEvent.OnEnabled.trigger();

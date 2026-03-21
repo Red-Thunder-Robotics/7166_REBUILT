@@ -11,19 +11,15 @@ public interface ShooterIO {
         // flywheel
         double flywheelTargetVelocityRPS;
 
-        double flywheelMotorLeftDutyCycle;
         double flywheelMotorLeftVelocityRPS;
         double flywheelMotorLeftCurrentAmps;
 
-        double flywheelMotorMiddleUpperDutyCycle;
-        double flywheelMotorMiddleUpperVelocityRPS;
-        double flywheelMotorMiddleUpperCurrentAmps;
+        double flywheelMotorBottomLeftVelocityRPS;
+        double flywheelMotorBottomLeftCurrentAmps;
 
-        double flywheelMotorMiddleLowerDutyCycle;
         double flywheelMotorMiddleLowerVelocityRPS;
         double flywheelMotorMiddleLowerCurrentAmps;
 
-        double flywheelMotorRightDutyCycle;
         double flywheelMotorRightVelocityRPS;
         double flywheelMotorRightCurrentAmps;
 
@@ -41,24 +37,23 @@ public interface ShooterIO {
         double hoodMotorCurrentAmps;
 
         // kicker
-        double kickerTargetVelocityRPS;
+        double upperKickerTargetVelocityRPS;
 
-        double kickerMotorDutyCycle;
-        double kickerMotorVelocityRPS;
-        double kickerMotorCurrentAmps;
+        double upperKickerMotorDutyCycle;
+        double upperKickerMotorVelocityRPS;
+        double upperKickerMotorCurrentAmps;
     }
 
     public default void updateInputs(ShooterIOInputs inputs) {}
 
     public default void idle() {}
 
-    public default void flywheelDutyCycle(double output) {}
     public default void flywheelVelocity(AngularVelocity velocity) {}
     public default void flywheelStop() {}
 
-    public default void setHoodPosition(double position) {}
-    public default void setHoodPosition(Angle angle) {}
+    public default void hoodAngle(double position) {}
+    public default void hoodAngle(Angle angle) {}
 
-    public default void kickerVelocity(AngularVelocity velocity) {}
-    public default void kickerStop() {}
+    public default void upperKickerVelocity(AngularVelocity velocity) {}
+    public default void upperKickerStop() {}
 }
