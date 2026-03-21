@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 8.27,
-        "y": 6.775314995563442
+        "x": 7.767325301204821,
+        "y": 6.766927710843373
       },
       "prevControl": {
-        "x": 8.154791004027029,
-        "y": 7.036954769867811
+        "x": 7.65211630523185,
+        "y": 7.028567485147742
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "LeftNZ0"
+      "linkedName": null
     }
   ],
   "rotationTargets": [

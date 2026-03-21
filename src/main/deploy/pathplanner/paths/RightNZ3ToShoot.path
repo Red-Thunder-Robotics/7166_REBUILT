@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.789180722891565,
-        "y": 3.4339759036144573
+        "x": 8.248144578313253,
+        "y": 3.4011927710843373
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.752162089351193,
-        "y": 3.1040113960723104
+        "x": 8.211125944772881,
+        "y": 3.0712282635421904
       },
       "isLocked": false,
       "linkedName": "RightNZ3"
@@ -104,7 +104,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.25,
+    "maxVelocity": 3.5,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -119,7 +119,7 @@
   "folder": "Right",
   "idealStartingState": {
     "velocity": 1.0,
-    "rotation": 90.0
+    "rotation": -90.0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

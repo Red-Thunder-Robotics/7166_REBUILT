@@ -44,7 +44,20 @@
       "linkedName": "Left end second sweep"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5756929637526641,
+      "rotationDegrees": 90.0
+    },
+    {
+      "waypointRelativePos": 1.0106609808102387,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 1.3731343283582054,
+      "rotationDegrees": -90.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -58,13 +71,13 @@
   },
   "goalEndState": {
     "velocity": 2.0,
-    "rotation": 90.0
+    "rotation": -90.0
   },
   "reversed": false,
   "folder": "Left",
   "idealStartingState": {
     "velocity": 2.0,
-    "rotation": -90.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.789180722891565,
-        "y": 1.0845180722891563
+        "x": 7.735,
+        "y": 1.205
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.7996859309200826,
-        "y": 2.152265316788296
+        "x": 7.745505208028518,
+        "y": 2.272747244499139
       },
       "isLocked": false,
-      "linkedName": "RightNZ5"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 1.0,
-    "rotation": 90.0
+    "rotation": -90.0
   },
   "reversed": false,
   "folder": "Right",
   "idealStartingState": {
     "velocity": 1.0,
-    "rotation": 90.0
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }
