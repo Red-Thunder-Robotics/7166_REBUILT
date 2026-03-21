@@ -1,6 +1,6 @@
-# 7166 Rebuilt robot
+# 7166 Rebuilt robot v2
 
-This is the repository for Red Thunder Robotics' Rebuilt competition robot version two.
+This is the repository for Red Thunder Robotics' Rebuilt competition robot **v2**.
 
 This was written by one senior on the team (plus an 8th grader, finally a protégé!). I have yet to fully grasp AdvantageKit, so simulation and such is lacking.
 
