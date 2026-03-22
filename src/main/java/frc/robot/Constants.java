@@ -36,7 +36,7 @@ public final class Constants {
     public static final int DRIVER_CONTROLLER = 0;
     public static final int OPERATOR_CONTROLLER = USE_TWO_CONTROLLERS ? DRIVER_CONTROLLER : 1;
 
-    public static final CANBus CANBUS = new CANBus("Canivore");
+    public static final CANBus CANBUS = new CANBus("7166CANivore");
 
     public static final boolean USE_TURRET = false;
     public static final boolean USE_MACKINAC = false;

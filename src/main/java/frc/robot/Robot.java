@@ -177,13 +177,12 @@ public class Robot extends LoggedRobot {
                         new ModuleIOTalonFX(TunerConstants.BackRight));
                 if (Constants.USE_TURRET)
                     m_turretSubsystem = new TurretSubsystem(new TurretIOReal());
-                m_intakeSubsystem = new GroundIntakeSubsystem(new GroundIntakeIOReal());
+                // m_intakeSubsystem = new GroundIntakeSubsystem(new GroundIntakeIOReal());
+                m_intakeSubsystem = new GroundIntakeSubsystem(new GroundIntakeIOSim());
                 m_indexerSubsystem = new IndexerSubsystem(new IndexerIOReal());
-                // FIXME: real subsystems
                 m_shooterSubsystem = new ShooterSubsystem(new ShooterIOReal());
-                m_climberSubsystem = new ClimberSubsystem(new ClimberIOReal());
+                m_climberSubsystem = new ClimberSubsystem(new ClimberIOSim());
                 // m_lightEmittingDiodesSubsystem = new LightEmittingDiodesSubsystem(new LightEmittingDiodesIOReal());
-                // m_climberSubsystem = new ClimberSubsystem(new ClimberIO() {});
                 m_lightEmittingDiodesSubsystem = new LightEmittingDiodesSubsystem(new LightEmittingDiodesIO() {});
 
                 break;

@@ -163,20 +163,20 @@ public final class ShooterIOReal implements ShooterIO {
         inputs.flywheelTargetVelocityRPS = PhoenixUtil.getRequestVelocity(m_flywheelMotorTopLeft.getAppliedControl());
 
         final double topLeftCurrent = m_flywheelTopLeftCurrentSignal.getValueAsDouble();
-        inputs.flywheelMotorLeftVelocityRPS = m_flywheelTopLeftVelocitySignal.getValueAsDouble();
-        inputs.flywheelMotorLeftCurrentAmps = topLeftCurrent;
+        inputs.flywheelMotorTopLeftVelocityRPS = m_flywheelTopLeftVelocitySignal.getValueAsDouble();
+        inputs.flywheelMotorTopLeftCurrentAmps = topLeftCurrent;
         //
         final double bottomLeftCurrent = m_flywheelBottomLeftCurrentSignal.getValueAsDouble();
         inputs.flywheelMotorBottomLeftVelocityRPS = m_flywheelBottomLeftVelocitySignal.getValueAsDouble();
         inputs.flywheelMotorBottomLeftCurrentAmps = bottomLeftCurrent;
         //
         final double topRightCurrent = m_flywheelTopRightCurrentSignal.getValueAsDouble();
-        inputs.flywheelMotorMiddleLowerVelocityRPS = m_flywheelTopRightVelocitySignal.getValueAsDouble();
-        inputs.flywheelMotorMiddleLowerCurrentAmps = topRightCurrent;
+        inputs.flywheelMotorTopRightVelocityRPS = m_flywheelTopRightVelocitySignal.getValueAsDouble();
+        inputs.flywheelMotorTopRightCurrentAmps = topRightCurrent;
         //
         final double bottomRightCurrent = m_flywheelBottomRightCurrentSignal.getValueAsDouble();
-        inputs.flywheelMotorRightVelocityRPS = m_flywheelBottomRightVelocitySignal.getValueAsDouble();
-        inputs.flywheelMotorRightCurrentAmps = bottomRightCurrent;
+        inputs.flywheelMotorBottomRightVelocityRPS = m_flywheelBottomRightVelocitySignal.getValueAsDouble();
+        inputs.flywheelMotorBottomRightCurrentAmps = bottomRightCurrent;
         //
         inputs.flywheelTotalCurrentAmps = topLeftCurrent + bottomLeftCurrent + topRightCurrent + bottomRightCurrent;
 

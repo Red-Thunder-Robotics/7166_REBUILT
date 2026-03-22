@@ -111,7 +111,7 @@ public final class ShooterSubsystem extends SubsystemBase {
     }
 
     public boolean shouldIndex() {
-        final boolean flywheel = Math.abs(m_inputs.flywheelTargetVelocityRPS - m_inputs.flywheelMotorLeftVelocityRPS) <= shouldIndexFlywheelVelocityThresholdRPS;
+        final boolean flywheel = Math.abs(m_inputs.flywheelTargetVelocityRPS - m_inputs.flywheelMotorTopLeftVelocityRPS) <= shouldIndexFlywheelVelocityThresholdRPS;
         // final boolean kicker = Math.abs(m_inputs.upperKickerTargetVelocityRPS - m_inputs.upperKickerMotorVelocityRPS) <= shouldIndexKickerVelocityThresholdRPS;
 
         // return flywheel && kicker;
@@ -131,8 +131,8 @@ public final class ShooterSubsystem extends SubsystemBase {
         final double multiplier = 1.07d;
 
         // return InchesPerSecond.of(m_inputs.flywheelMotorLeftVelocityRPS * (2d * Math.PI) * flywheelRadius.in(Inches) / 2d);
-        final double vb = m_inputs.flywheelMotorLeftVelocityRPS * (2d * Math.PI) * flywheelRadiusBig.in(Inches);
-        final double vs = m_inputs.flywheelMotorLeftVelocityRPS * (2d * Math.PI) * flywheelRadiusSmall.in(Inches);
+        final double vb = m_inputs.flywheelMotorTopLeftVelocityRPS * (2d * Math.PI) * flywheelRadiusBig.in(Inches);
+        final double vs = m_inputs.flywheelMotorTopLeftVelocityRPS * (2d * Math.PI) * flywheelRadiusSmall.in(Inches);
         return InchesPerSecond.of(multiplier * (vb + vs) / 2d);
     }
 

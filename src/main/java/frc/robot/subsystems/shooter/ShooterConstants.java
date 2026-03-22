@@ -23,10 +23,10 @@ public final class ShooterConstants {
     public static final double shouldIndexKickerVelocityThresholdSeconds = 0.5d;
     public static final double latencyCompensationSeconds = 0.150d;
     
-    public static final int flywheelMotorIdTopLeft = 1;
-    public static final int flywheelMotorIdBottomLeft = 12;
-    public static final int flywheelMotorIdTopRight = 17;
-    public static final int flywheelMotorIdBottomRight = 16;
+    public static final int flywheelMotorIdTopLeft = 17;
+    public static final int flywheelMotorIdBottomLeft = 18;
+    public static final int flywheelMotorIdTopRight = 19;
+    public static final int flywheelMotorIdBottomRight = 20;
     public static final int flywheelCurrentLimit = 15;
     public static final NeutralModeValue flywheelNeutralMode = NeutralModeValue.Coast;
     public static final InvertedValue flywheelInvertedTopLeft = InvertedValue.CounterClockwise_Positive;
@@ -35,37 +35,36 @@ public final class ShooterConstants {
     public static final InvertedValue flywheelInvertedBottomRight = InvertedValue.Clockwise_Positive;
     // public static final AngularVelocity flywheelVelocityReverse = RPM.of(-2000d);
 
-    public static final double flywheelPidP = 0.5d;
+    public static final double flywheelPidP = 0.2d;
     public static final double flywheelPidV = 12d / (5800d / 60d);
     public static final double flywheelTargetAcceleration = 266d;
-    public static final Distance flywheelRadiusBig = Inches.of(2d);
+    public static final Distance flywheelRadiusBig = Inches.of(3d);
     public static final Distance flywheelRadiusSmall = Inches.of(1d);
 
-    public static final int hoodMotorId = 58;
+    public static final int hoodMotorId = 21;
     // public static final double hoodCurrentLimit = 40;
-    public static final double hoodMotorReduction = (50d / 12d) * (30d / 16d) * (155d / 10d);
+    public static final double hoodMotorReduction = (50d / 10d) * (54d / 22d) * (160d / 10d);
     public static final NeutralModeValue hoodNeutralMode = NeutralModeValue.Brake;
     public static final InvertedValue hoodInverted = InvertedValue.Clockwise_Positive;
 
     public static final double hoodPositionHome = angleToMechanismPosition(Degrees.of(0d));
-    public static final double hoodPositionMax = angleToMechanismPosition(Degrees.of(40d));
+    public static final double hoodPositionMax = angleToMechanismPosition(Degrees.of(37.55d));
 
     public static final double hoodPidP = 300d;
     public static final double hoodTargetAcceleration = 250d;
     public static final double hoodMaxVelocity = 10d;
     
     // shoot -> spin up upper kicker, wait for speed, then spin lower and top roller same time
-
-    public static final int upperKickerMotorId = 9;
+    public static final int upperKickerMotorId = 22;
     public static final int upperKickerCurrentLimit = 40;
     public static final NeutralModeValue upperKickerNeutralMode = NeutralModeValue.Coast;
     public static final InvertedValue upperKickerInverted = InvertedValue.CounterClockwise_Positive;
-    public static final AngularVelocity upperKickerVelocity = RPM.of(3500d);
+    public static final AngularVelocity upperKickerVelocity = RPM.of(2400d);
     public static final AngularVelocity upperKickerVelocityReverse = upperKickerVelocity.unaryMinus();
     //
-    public static final double upperKickerPidP = 0d;
+    public static final double upperKickerPidP = 0.6d;
     public static final double upperKickerPidV = 12d / (5800d / 60d);
-    public static final double upperKickerTargetAcceleration = 5d;
+    public static final double upperKickerTargetAcceleration = 266d;
 
     // https://blog.eeshwark.com/robotblog/shooting-on-the-fly-pt2
     public static record InterpolationShooterParams(double rpm, double degrees) { };

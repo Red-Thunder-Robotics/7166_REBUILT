@@ -106,7 +106,7 @@ public class PhoenixUtil {
                     refreshMotorConfig(name, motor, config).run();
                     configureMotor(name, motor, config).run();
 
-                    return null;
+                    return StatusCode.OK;
                 }
             );
         }

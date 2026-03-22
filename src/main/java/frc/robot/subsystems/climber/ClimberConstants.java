@@ -10,7 +10,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Distance;
 
 public final class ClimberConstants {
-    public static final int motorId = 31;
+    public static final int motorId = 23;
     public static final double currentLimit = 40;
     public static final InvertedValue inverted = InvertedValue.CounterClockwise_Positive;
     

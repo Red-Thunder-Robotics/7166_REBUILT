@@ -38,7 +38,7 @@ public final class ShooterIOSim implements ShooterIO {
         }
 
         inputs.flywheelTargetVelocityRPS = m_flywheelTargetVelocityRPS;
-        inputs.flywheelMotorLeftVelocityRPS = m_flywheelVelocityRPS;
+        inputs.flywheelMotorTopLeftVelocityRPS = m_flywheelVelocityRPS;
 
         if (!m_hoodStopped) {
             final double hoodOutput = m_hoodPID.calculate(m_hoodPosition);

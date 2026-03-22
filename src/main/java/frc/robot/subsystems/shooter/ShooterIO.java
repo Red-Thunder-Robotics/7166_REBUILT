@@ -11,17 +11,17 @@ public interface ShooterIO {
         // flywheel
         double flywheelTargetVelocityRPS;
 
-        double flywheelMotorLeftVelocityRPS;
-        double flywheelMotorLeftCurrentAmps;
+        double flywheelMotorTopLeftVelocityRPS;
+        double flywheelMotorTopLeftCurrentAmps;
 
         double flywheelMotorBottomLeftVelocityRPS;
         double flywheelMotorBottomLeftCurrentAmps;
 
-        double flywheelMotorMiddleLowerVelocityRPS;
-        double flywheelMotorMiddleLowerCurrentAmps;
+        double flywheelMotorTopRightVelocityRPS;
+        double flywheelMotorTopRightCurrentAmps;
 
-        double flywheelMotorRightVelocityRPS;
-        double flywheelMotorRightCurrentAmps;
+        double flywheelMotorBottomRightVelocityRPS;
+        double flywheelMotorBottomRightCurrentAmps;
 
         double flywheelTotalCurrentAmps;
 
