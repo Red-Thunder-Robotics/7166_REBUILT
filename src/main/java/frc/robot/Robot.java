@@ -51,6 +51,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -143,8 +144,11 @@ public class Robot extends LoggedRobot {
     private static final double rotationTargetMin = -rotationTargetMax;
 
     public Robot() {
+        // super(0.01);
         SignalLogger.setPath("/U/logs");
         SignalLogger.start();
+
+        // RobotController.setBrownoutVoltage(6d); // :DDDDD
         
         m_commandScheduler = CommandScheduler.getInstance();
 

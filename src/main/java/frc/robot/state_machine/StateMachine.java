@@ -134,7 +134,13 @@ public class StateMachine {
         withinJoystickRotationErrorThreshold = within;
     }
 
-    private static Timer kickerStartupTimer = new Timer();
+    private static boolean indexerShooterStuff = false;
+    public static boolean getIndexerShooterStuff() {
+        return indexerShooterStuff;
+    }
+    public static void setIndexerShooterStuff(boolean wants) {
+        indexerShooterStuff = wants;
+    }
 
     public static boolean turretShouldIndex() {
         if (LiveConfig.getIsPit())
@@ -142,7 +148,7 @@ public class StateMachine {
         return Constants.USE_TURRET ? TurretSubsystem.instance.shouldIndex() : Controls.lockWheelsButton.getAsBoolean() || withinJoystickRotationErrorThreshold;
     }
     public static boolean shouldIndex() {
-        return turretShouldIndex() && ShooterSubsystem.instance.shouldIndex() && kickerStartupTimer.hasElapsed(shouldIndexKickerVelocityThresholdSeconds);
+        return turretShouldIndex() && ShooterSubsystem.instance.shouldIndex();
     }
 
     private static ShooterState shooterState = ShooterState.Idle;
@@ -151,14 +157,13 @@ public class StateMachine {
         return shooterState;
     }
     public static void setShooterState(ShooterState newShooterState) {
+        final var oldShooterState = shooterState;
         shooterState = newShooterState;
         ShooterSubsystem.instance.stateUpdate(newShooterState);
-        if (newShooterState == ShooterState.Shooting) {
-            kickerStartupTimer.reset();
-            kickerStartupTimer.start();
-        } else {
-            kickerStartupTimer.stop();
-        }
+        if (newShooterState == ShooterState.Shooting)
+            RobotEvent.OnShootingStart.trigger();
+        else if (oldShooterState != ShooterState.Shooting)
+            RobotEvent.OnShootingEnd.trigger();
     }
 
     private static ClimberState climberState = ClimberState.Idle;
@@ -459,23 +464,21 @@ public class StateMachine {
 
         // set generalRobotState
         {
-            GeneralRobotState newGeneralRobotState = GeneralRobotState.Idle;
             final boolean isFiring = IndexerSubsystem.instance.getIsFeeding();
 
             switch (launcherTarget) {
                 case HubTracking:
-                    newGeneralRobotState = isFiring ? GeneralRobotState.HubTrackingFiring : GeneralRobotState.HubTracking;
+                    generalRobotState = isFiring ? GeneralRobotState.HubTrackingFiring : GeneralRobotState.HubTracking;
                     break;
                 case AllianceFeed:
-                    newGeneralRobotState = isFiring ? GeneralRobotState.AllianceFeedFiring : GeneralRobotState.AllianceFeed;
+                    generalRobotState = isFiring ? GeneralRobotState.AllianceFeedFiring : GeneralRobotState.AllianceFeed;
                     break;
                 default:
+                    generalRobotState = GeneralRobotState.Idle;
                     break;
             }
 
-            generalRobotState = newGeneralRobotState;
-
-            LightEmittingDiodesSubsystem.instance.stateUpdate(newGeneralRobotState);
+            LightEmittingDiodesSubsystem.instance.stateUpdate(generalRobotState);
 
             Logger.recordOutput("StateMachine/GeneralRobotState", generalRobotState);
         }

@@ -30,24 +30,34 @@ public final class IndexerSubsystem extends SubsystemBase {
 
         boolean isFeeding = false;
 
-        switch (StateMachine.getShooterState()) {
-            case Idle:
-                setIdle();
-                break;
-            case Shooting:
-                if (StateMachine.shouldIndex()) {
-                    isFeeding = true;
-                    m_io.indexerVelocity(indexerOutputVelocity);
-                    m_io.topRollerVelocity(topRollerVelocity);
-                    m_io.lowerKickerVelocity(lowerKickerVelocity);
-                } else
+        // if (StateMachine.getWantsReverseIndexerBeforeShoot()) {
+        //     m_io.indexerVelocity(indexerOutputVelocityReverse);
+        //     m_io.topRollerVelocity(topRollerVelocityReverse);
+        // } else
+        if (StateMachine.getIndexerShooterStuff()) {
+            m_io.indexerVelocity(indexerOutputVelocity);
+            m_io.topRollerVelocity(topRollerVelocity);
+        }
+        {
+            switch (StateMachine.getShooterState()) {
+                case Idle:
                     setIdle();
-                break;
-            case Reversing:
-                m_io.indexerVelocity(indexerOutputVelocityReverse);
-                m_io.topRollerVelocity(topRollerVelocityReverse);
-                m_io.lowerKickerVelocity(lowerKickerVelocityReverse);
-                break;
+                    break;
+                case Shooting:
+                    if (StateMachine.shouldIndex()) {
+                        isFeeding = true;
+                        // m_io.indexerVelocity(indexerOutputVelocity);
+                        // m_io.topRollerVelocity(topRollerVelocity);
+                        m_io.lowerKickerVelocity(lowerKickerVelocity);
+                    } else
+                        setIdle();
+                    break;
+                case Reversing:
+                    m_io.indexerVelocity(indexerOutputVelocityReverse);
+                    m_io.topRollerVelocity(topRollerVelocityReverse);
+                    m_io.lowerKickerVelocity(lowerKickerVelocityReverse);
+                    break;
+            }
         }
 
         m_isFeeding = isFeeding;

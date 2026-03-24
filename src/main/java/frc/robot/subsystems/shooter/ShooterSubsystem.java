@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Controls;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.state_machine.LiveConfig;
+import frc.robot.state_machine.RobotEvent;
 import frc.robot.state_machine.ShooterState;
 import frc.robot.state_machine.StateMachine;
 import frc.robot.subsystems.drive.Drive;
@@ -38,12 +39,25 @@ public final class ShooterSubsystem extends SubsystemBase {
     private final ShooterIOInputsAutoLogged m_inputs;
 
     private final Timer m_autoStowTimer = new Timer();
+    private final Timer m_kickerStartupTimer = new Timer();
+    private boolean m_flywheelHasSpunUp = false;
 
     public ShooterSubsystem(ShooterIO io) {
         instance = this;
 
         m_io = io;
         m_inputs = new ShooterIOInputsAutoLogged();
+
+        RobotEvent.OnShootingStart.addListener(() -> {
+            m_kickerStartupTimer.reset();
+            m_kickerStartupTimer.start();
+            m_flywheelHasSpunUp = true;
+        });
+        RobotEvent.OnShootingEnd.addListener(() -> {
+            StateMachine.setIndexerShooterStuff(false);
+            m_kickerStartupTimer.stop();
+            m_flywheelHasSpunUp = false;
+        });
     }
 
     @Override
@@ -112,10 +126,19 @@ public final class ShooterSubsystem extends SubsystemBase {
 
     public boolean shouldIndex() {
         final boolean flywheel = Math.abs(m_inputs.flywheelTargetVelocityRPS - m_inputs.flywheelMotorTopLeftVelocityRPS) <= shouldIndexFlywheelVelocityThresholdRPS;
-        // final boolean kicker = Math.abs(m_inputs.upperKickerTargetVelocityRPS - m_inputs.upperKickerMotorVelocityRPS) <= shouldIndexKickerVelocityThresholdRPS;
+        // // final boolean kicker = Math.abs(m_inputs.upperKickerTargetVelocityRPS - m_inputs.upperKickerMotorVelocityRPS) <= shouldIndexKickerVelocityThresholdRPS;
 
-        // return flywheel && kicker;
-        return flywheel;
+        // // return flywheel && kicker;
+        // return flywheel;
+
+        if (!m_flywheelHasSpunUp && flywheel)
+            m_flywheelHasSpunUp = true;
+        // if (m_kickerStartupTimer.hasElapsed(shooterReverseCountSeconds))
+        //     StateMachine.setWantsReverseIndexerBeforeShoot(false);
+        if (m_kickerStartupTimer.hasElapsed(shouldIndexKickerVelocityThresholdSeconds))
+            StateMachine.setIndexerShooterStuff(true);
+        // return m_flywheelHasSpunUp && m_kickerStartupTimer.hasElapsed(shouldIndexKickerVelocityThresholdSeconds);
+        return m_flywheelHasSpunUp;
     }
 
     private void setParams(InterpolationShooterParams params) {

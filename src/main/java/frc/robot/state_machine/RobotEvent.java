@@ -8,7 +8,10 @@ public enum RobotEvent {
     OnEnabled,
     OnDisabled,
     OnTeleopEnabled,
-    OnAutoEnabled;
+    OnAutoEnabled,
+    OnShootingStart,
+    OnShootingEnd,
+    ;
 
     private final ArrayList<Runnable> list = new ArrayList<>();
 

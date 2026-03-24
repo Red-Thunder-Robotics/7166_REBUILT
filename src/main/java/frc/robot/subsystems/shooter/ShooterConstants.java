@@ -21,13 +21,14 @@ public final class ShooterConstants {
     public static final double shouldIndexFlywheelVelocityThresholdRPS = 5.5d;
     // public static final double shouldIndexKickerVelocityThresholdRPS = 3d;
     public static final double shouldIndexKickerVelocityThresholdSeconds = 0.5d;
+    // public static final double shooterReverseCountSeconds = 0.1d;
     public static final double latencyCompensationSeconds = 0.150d;
     
     public static final int flywheelMotorIdTopLeft = 17;
     public static final int flywheelMotorIdBottomLeft = 18;
     public static final int flywheelMotorIdTopRight = 19;
     public static final int flywheelMotorIdBottomRight = 20;
-    public static final int flywheelCurrentLimit = 15;
+    public static final int flywheelCurrentLimit = 18; // 15
     public static final NeutralModeValue flywheelNeutralMode = NeutralModeValue.Coast;
     public static final InvertedValue flywheelInvertedTopLeft = InvertedValue.CounterClockwise_Positive;
     public static final InvertedValue flywheelInvertedBottomLeft = InvertedValue.CounterClockwise_Positive;
@@ -56,10 +57,10 @@ public final class ShooterConstants {
     
     // shoot -> spin up upper kicker, wait for speed, then spin lower and top roller same time
     public static final int upperKickerMotorId = 22;
-    public static final int upperKickerCurrentLimit = 40;
+    public static final int upperKickerCurrentLimit = 35; // 40
     public static final NeutralModeValue upperKickerNeutralMode = NeutralModeValue.Coast;
     public static final InvertedValue upperKickerInverted = InvertedValue.CounterClockwise_Positive;
-    public static final AngularVelocity upperKickerVelocity = RPM.of(2400d);
+    public static final AngularVelocity upperKickerVelocity = RPM.of(4000d);
     public static final AngularVelocity upperKickerVelocityReverse = upperKickerVelocity.unaryMinus();
     //
     public static final double upperKickerPidP = 0.6d;
@@ -72,7 +73,7 @@ public final class ShooterConstants {
     public static final InterpolationShooterParams allianceFeedParams =
         new InterpolationShooterParams(1700d, 40d);
     private static final InterpolationShooterParams trenchShooterParams =
-        new InterpolationShooterParams(1750d, 30d);
+        new InterpolationShooterParams(2625d, 20d);
     public static final InterpolationShooterParams hubCenterParams =
         new InterpolationShooterParams(1435d, 20d);
     // public static enum LauncherLocationParam {
