@@ -26,13 +26,6 @@ public final class VisionConstants {
     // };
     public static final String[] limelightPoseEstimationList = limelightList;
 
-    /*
-     * limelight front
-     * forward 0.33256 meters
-     * up 0.445871 meters
-     * pitch 15 degrees
-     */
-
     private static final boolean forceEnableInstanceLogging = true;
     @SuppressWarnings("unused")
     public static final boolean enableInstanceLogging =

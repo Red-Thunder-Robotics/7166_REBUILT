@@ -12,6 +12,7 @@ import static frc.robot.subsystems.shooter.ShooterConstants.*;
 import static frc.robot.subsystems.turret.TurretConstants.distanceAboveFunnel;
 import static frc.robot.subsystems.turret.TurretConstants.robotToTurretTransform;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -30,6 +31,7 @@ import frc.robot.state_machine.RobotEvent;
 import frc.robot.state_machine.ShooterState;
 import frc.robot.state_machine.StateMachine;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.indexer.IndexerSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.InterpolationShooterParams;
 
 public final class ShooterSubsystem extends SubsystemBase {
@@ -40,7 +42,7 @@ public final class ShooterSubsystem extends SubsystemBase {
 
     private final Timer m_autoStowTimer = new Timer();
     private final Timer m_kickerStartupTimer = new Timer();
-    private boolean m_flywheelHasSpunUp = false;
+    private boolean m_mechanismsPastThreshold = false;
 
     public ShooterSubsystem(ShooterIO io) {
         instance = this;
@@ -51,12 +53,12 @@ public final class ShooterSubsystem extends SubsystemBase {
         RobotEvent.OnShootingStart.addListener(() -> {
             m_kickerStartupTimer.reset();
             m_kickerStartupTimer.start();
-            m_flywheelHasSpunUp = true;
+            m_mechanismsPastThreshold = false;
         });
         RobotEvent.OnShootingEnd.addListener(() -> {
-            StateMachine.setIndexerShooterStuff(false);
+            // StateMachine.setIndexerShooterStuff(false);
             m_kickerStartupTimer.stop();
-            m_flywheelHasSpunUp = false;
+            m_mechanismsPastThreshold = false;
         });
     }
 
@@ -72,16 +74,18 @@ public final class ShooterSubsystem extends SubsystemBase {
             hoodStow();
         }
 
+        Logger.recordOutput("Shooter/HubDistanceMeters", getDistanceToTarget(StateMachine.odometryAndVision.getEstimatedPose(), StateMachine.getHubPose()).in(Meters));
         final boolean launcherTuning = LiveConfig.getLauncherTuning();
         switch (StateMachine.getShooterState()) {
             case Idle:
                 if (launcherTuning) {
-                    Logger.recordOutput("Shooter/HubDistanceMeters", getDistanceToTarget(StateMachine.odometryAndVision.getEstimatedPose(), StateMachine.getHubPose()).in(Meters));
                     m_io.hoodAngle(Degrees.of(LiveConfig.getLauncherTuningAngle()));
                     m_io.flywheelVelocity(RPM.of(LiveConfig.getLauncherTuningRPM()));
-                } else
+                    m_io.upperKickerVelocity(upperKickerVelocity);
+                } else {
                     m_io.flywheelStop();
-                m_io.upperKickerStop();
+                    m_io.upperKickerStop();
+                }
                 break;
             case Shooting:
                 var targetPose = StateMachine.getLauncherTargetPose();
@@ -100,14 +104,17 @@ public final class ShooterSubsystem extends SubsystemBase {
                             params = paramMap.map.get(3.249d);
                         else if (LiveConfig.getVisionFail())
                             params = hubCenterParams;
+                        else if (Controls.allianceFeedNoTurretButton.getAsBoolean())
+                            params = calculateParams(StateMachine.getAllianceFeedPose());
                         else
                             params = calculateParams(targetPose.get());
                         if (params != null)
                             setParams(params);
                     }
                 }
-                if (shouldIndex())
-                    m_io.upperKickerVelocity(upperKickerVelocity);
+                // if (shouldIndex())
+                //     m_io.upperKickerVelocity(upperKickerVelocity);
+                m_io.upperKickerVelocity(upperKickerVelocity);
                 break;
             case Reversing:
                 // m_io.flywheelVelocity(flywheelVelocityReverse);
@@ -124,21 +131,40 @@ public final class ShooterSubsystem extends SubsystemBase {
         m_io.hoodAngle(hoodPositionHome);
     }
 
+    @AutoLogOutput(key="Shooter/ShouldIndex")
     public boolean shouldIndex() {
-        final boolean flywheel = Math.abs(m_inputs.flywheelTargetVelocityRPS - m_inputs.flywheelMotorTopLeftVelocityRPS) <= shouldIndexFlywheelVelocityThresholdRPS;
-        // // final boolean kicker = Math.abs(m_inputs.upperKickerTargetVelocityRPS - m_inputs.upperKickerMotorVelocityRPS) <= shouldIndexKickerVelocityThresholdRPS;
+        // TODO: if we continue to not use the timer, use a boolean instead of the timer
+        if (!m_kickerStartupTimer.isRunning())
+            return false;
+
+        final double flywheelTarget = m_inputs.flywheelTargetVelocityRPS;
+        final double kickerTarget = m_inputs.upperKickerTargetVelocityRPS;
+
+        if (flywheelTarget == 0d || kickerTarget == 0d)
+            return false;
+
+        final boolean flywheel = Math.abs(flywheelTarget - m_inputs.flywheelMotorTopLeftVelocityRPS) <= shouldIndexFlywheelVelocityThresholdRPS;
+        final boolean kicker = Math.abs(kickerTarget - m_inputs.upperKickerMotorVelocityRPS) <= shouldIndexKickerVelocityThresholdRPS;
+
+        final boolean indexer = IndexerSubsystem.instance.getIsPastThreshold();
 
         // // return flywheel && kicker;
         // return flywheel;
 
-        if (!m_flywheelHasSpunUp && flywheel)
-            m_flywheelHasSpunUp = true;
-        // if (m_kickerStartupTimer.hasElapsed(shooterReverseCountSeconds))
-        //     StateMachine.setWantsReverseIndexerBeforeShoot(false);
-        if (m_kickerStartupTimer.hasElapsed(shouldIndexKickerVelocityThresholdSeconds))
-            StateMachine.setIndexerShooterStuff(true);
-        // return m_flywheelHasSpunUp && m_kickerStartupTimer.hasElapsed(shouldIndexKickerVelocityThresholdSeconds);
-        return m_flywheelHasSpunUp;
+        // if (!m_flywheelHasSpunUp && flywheel)
+        //     m_flywheelHasSpunUp = true;
+        // // if (m_kickerStartupTimer.hasElapsed(shooterReverseCountSeconds))
+        // //     StateMachine.setWantsReverseIndexerBeforeShoot(false);
+        // if (m_kickerStartupTimer.hasElapsed(shouldIndexKickerVelocityThresholdSeconds))
+        //     StateMachine.setIndexerShooterStuff(true);
+        // // return m_flywheelHasSpunUp && m_kickerStartupTimer.hasElapsed(shouldIndexKickerVelocityThresholdSeconds);
+        // return m_flywheelHasSpunUp;
+
+        if (!m_mechanismsPastThreshold && flywheel && kicker && indexer) {
+            m_mechanismsPastThreshold = true;
+            StateMachine.indexingProcessStart();
+        }
+        return m_mechanismsPastThreshold;
     }
 
     private void setParams(InterpolationShooterParams params) {
@@ -164,12 +190,11 @@ public final class ShooterSubsystem extends SubsystemBase {
         switch (shooterState) {
             case Idle:
                 m_io.upperKickerStop();
+            case Reversing:
                 m_autoStowTimer.reset();
                 m_autoStowTimer.start();
                 break;
             case Shooting:
-                break;
-            case Reversing:
                 break;
         }
     }

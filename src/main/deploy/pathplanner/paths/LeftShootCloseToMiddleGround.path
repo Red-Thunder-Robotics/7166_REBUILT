@@ -1,0 +1,109 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.556,
+        "y": 6.002715173025731
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.5881721384205854,
+        "y": 6.541925465838509
+      },
+      "isLocked": false,
+      "linkedName": "LeftShootClosePos"
+    },
+    {
+      "anchor": {
+        "x": 4.656486246672582,
+        "y": 7.378908606921029
+      },
+      "prevControl": {
+        "x": 2.8215329595416265,
+        "y": 7.391306939942184
+      },
+      "nextControl": {
+        "x": 5.847577639751552,
+        "y": 7.370860692102928
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.491,
+        "y": 4.796
+      },
+      "prevControl": {
+        "x": 6.869251996450754,
+        "y": 6.67921206743567
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "LeftMiddleGround"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.8461538461538455,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 1.1777188328912473,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 1.5915119363395227,
+      "rotationDegrees": 90.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 1.5503355704698027,
+      "maxWaypointRelativePos": 2.0,
+      "constraints": {
+        "maxVelocity": 1.2,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "IntakeDeployOn",
+      "waypointRelativePos": 1.2751677852349004,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "IntakeDeployOn"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": 90.0
+  },
+  "reversed": false,
+  "folder": "Left",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

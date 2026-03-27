@@ -13,6 +13,16 @@
 
 package frc.robot.commands;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.LinearFilter;
@@ -27,6 +37,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
@@ -34,16 +45,6 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.state_machine.StateMachine;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.turret.TurretConstants;
-
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
-
-import org.littletonrobotics.junction.Logger;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1d;
@@ -103,6 +104,11 @@ public class DriveCommands {
           new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
   static {
     angleController.enableContinuousInput(-Math.PI, Math.PI);
+
+    if (DriveConstants.ANGLE_LIVE_TUNE) {
+      SmartDashboard.putNumber("DriveOmegaP", DriveConstants.ANGLE_KP);
+      SmartDashboard.putNumber("DriveOmegaD", DriveConstants.ANGLE_KD);
+    }
   }
 
   public static void resetAngleController() {
@@ -110,8 +116,14 @@ public class DriveCommands {
   }
   private static final LinearFilter omegaFilter = LinearFilter.singlePoleIIR(0.1d, 0.02d);
   public static double calculateOmega(Drive drive, Rotation2d rotation) {
+    if (DriveConstants.ANGLE_LIVE_TUNE) {
+      angleController.setP(SmartDashboard.getNumber("DriveOmegaP", 0d));
+      angleController.setD(SmartDashboard.getNumber("DriveOmegaD", 0d));
+    }
+
     double target = rotation.getRadians();
     target = omegaFilter.calculate(target);
+
     final double output = angleController.calculate(
       StateMachine.odometryAndVision.getRotation().getRadians(), target);
 

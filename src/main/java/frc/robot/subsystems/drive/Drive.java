@@ -250,6 +250,7 @@ public class Drive extends SubsystemBase {
     Logger.recordOutput("Odometry/SpeedsY", speeds.vyMetersPerSecond);
   }
 
+  @AutoLogOutput(key="Odometry/IsMoving")
   public boolean isMoving() {
     final var speeds = getChassisSpeeds();
     return Math.abs(speeds.vxMetersPerSecond) >= DriveConstants.IS_MOVING_THRESHOLD_METERS ||
@@ -259,6 +260,10 @@ public class Drive extends SubsystemBase {
   public void lowerDriveCurrentLimits() {
     for (final var module : modules)
       module.lowerDriveCurrentLimits();
+  }
+  public void increaseDriveCurrentLimits() {
+    for (final var module : modules)
+      module.increaseDriveCurrentLimits();
   }
 
   /**

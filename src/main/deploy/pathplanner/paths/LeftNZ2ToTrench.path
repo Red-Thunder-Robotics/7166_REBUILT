@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.282938659058486,
-        "y": 4.830727532097005
+        "x": 7.843,
+        "y": 5.004773735581189
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.348504924118725,
-        "y": 6.732149218843992
+        "x": 7.908566265060239,
+        "y": 6.906195422328176
       },
       "isLocked": false,
       "linkedName": "LeftNZ2"
     },
     {
       "anchor": {
-        "x": 2.556,
-        "y": 6.002715173025731
+        "x": 3.3,
+        "y": 7.2
       },
       "prevControl": {
-        "x": 6.227397590361446,
-        "y": 6.015450112784767
+        "x": 6.9713975903614465,
+        "y": 7.212734939759036
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,7 +47,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -45.0
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": "Left",

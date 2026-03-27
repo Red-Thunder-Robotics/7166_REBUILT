@@ -55,7 +55,8 @@ public final class Constants {
 
     public static final class DriveConstants {
         public static final double TRANSLATION_KP = 5.5d;
-        public static final double ANGLE_KP = 1.25d;
+        public static final boolean ANGLE_LIVE_TUNE = false;
+        public static final double ANGLE_KP = 0.5d;
         public static final double ANGLE_KD = 0d;
 
         public static final Distance BUMPER_WIDTH = Inches.of(34.52d); // 31
@@ -65,12 +66,14 @@ public final class Constants {
         public static final double SHOULD_INDEX_THRESHOLD_MOVING_DEGREES = 3d;
         public static final double IS_MOVING_THRESHOLD_METERS = Units.inchesToMeters(2d);
 
+        public static final boolean DRIVE_HIGHER_AUTO_LIMITS = false;
+
         public static final double DRIVE_STATOR_LOW = TunerConstants.kSlipCurrent.in(Amps);
-        public static final double DRIVE_STATOR_AUTO = Math.max(DRIVE_STATOR_LOW, 200);
+        public static final double DRIVE_STATOR_AUTO = DRIVE_HIGHER_AUTO_LIMITS ? Math.max(DRIVE_STATOR_LOW, 200) : DRIVE_STATOR_LOW;
         public static final double DRIVE_STATOR_TURBO = Math.max(DRIVE_STATOR_LOW, 160);
 
         public static final double DRIVE_SUPPLY_LOW = 50;
-        public static final double DRIVE_SUPPLY_AUTO = Math.max(DRIVE_STATOR_LOW, 70);
-        public static final double DRIVE_SUPPLY_TURBO = Math.max(DRIVE_STATOR_LOW, 60);
+        public static final double DRIVE_SUPPLY_AUTO = DRIVE_HIGHER_AUTO_LIMITS ? Math.max(DRIVE_SUPPLY_LOW, 70) : DRIVE_SUPPLY_LOW;
+        public static final double DRIVE_SUPPLY_TURBO = Math.max(DRIVE_SUPPLY_LOW, 60);
     }
 }

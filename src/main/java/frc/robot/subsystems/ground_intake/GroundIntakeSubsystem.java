@@ -35,7 +35,7 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
     private boolean m_rollerReverse = false;
 
     private static final double oscillateFrequencySeconds = 0.7d;
-    private static final double oscillateStartDelaySeconds = 2d;
+    private static final double oscillateStartDelaySeconds = 1d; // 1
     private static final int oscillateCountStopThreshold = 6;
     private static final boolean oscillateStopAfterCounInTeleop = false;
     private Timer m_oscillatorTimer = new Timer();
@@ -63,8 +63,8 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
             retract();
 
         if (m_rollerForward) {
-            final var speedsX = Drive.instance.getChassisSpeeds().vxMetersPerSecond;
-            AngularVelocity rollerOutput = rollerOutputVelocity;
+            final double speedsX = Drive.instance.getChassisSpeeds().vxMetersPerSecond;
+            AngularVelocity rollerOutput;
 
             /*
              * goal is slow down rollers as you drive robot-relative forward.
@@ -72,12 +72,16 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
              * then divide by roller circumference -> rpm offset
              * substract rollerOutput minus rpm offset with a certain floor
              */
-            if (DriverStation.isTeleopEnabled() && speedsX > 0d) {
-                final double rpmOffset = speedsX * 60d / rollerCircumference.in(Meters);
-                double newRPM = rollerOutput.in(RPM) - rpmOffset;
-                newRPM = Math.max(newRPM, rollerOutputVelocityMinimum.in(RPM));
-                rollerOutput = RPM.of(newRPM);
-            }
+            if (DriverStation.isTeleopEnabled()) {
+                rollerOutput = rollerOutputVelocity;
+                if (speedsX > 0d) {
+                    final double rpmOffset = speedsX * 60d / rollerCircumference.in(Meters);
+                    double newRPM = rollerOutput.in(RPM) - rpmOffset;
+                    newRPM = Math.max(newRPM, rollerOutputVelocityMinimum.in(RPM));
+                    rollerOutput = RPM.of(newRPM);
+                }
+            } else
+                rollerOutput = rollerOutputVelocityAuto;
 
             m_io.rollerVelocity(rollerOutput);
         } else if (m_rollerReverse)
@@ -93,7 +97,7 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
                 if (!waiting && m_oscillatorTimer.advanceIfElapsed(oscillateFrequencySeconds)) {
                     final boolean skipStop = oscillateStopAfterCounInTeleop ? false : isTeleop;
                     if (skipStop || m_oscillateCount < oscillateCountStopThreshold) {
-                        StateMachine.setIntakeState(StateMachine.getIntakeState() == IntakeState.DeployedOn ? IntakeState.OscillateOff : IntakeState.DeployedOn);
+                        StateMachine.setIntakeState(StateMachine.getIntakeState() == IntakeState.DeployedOff ? IntakeState.OscillateOff : IntakeState.DeployedOff);
                         m_oscillateCount += 1;
                     } else
                         StateMachine.setIntakeState(IntakeState.HomeOff);

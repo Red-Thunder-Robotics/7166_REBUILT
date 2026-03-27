@@ -34,10 +34,10 @@ public final class IndexerSubsystem extends SubsystemBase {
         //     m_io.indexerVelocity(indexerOutputVelocityReverse);
         //     m_io.topRollerVelocity(topRollerVelocityReverse);
         // } else
-        if (StateMachine.getIndexerShooterStuff()) {
-            m_io.indexerVelocity(indexerOutputVelocity);
-            m_io.topRollerVelocity(topRollerVelocity);
-        }
+        // if (StateMachine.getIndexerShooterStuff()) {
+        //     m_io.indexerVelocity(indexerOutputVelocity);
+        //     m_io.topRollerVelocity(topRollerVelocity);
+        // }
         {
             switch (StateMachine.getShooterState()) {
                 case Idle:
@@ -46,11 +46,12 @@ public final class IndexerSubsystem extends SubsystemBase {
                 case Shooting:
                     if (StateMachine.shouldIndex()) {
                         isFeeding = true;
-                        // m_io.indexerVelocity(indexerOutputVelocity);
-                        // m_io.topRollerVelocity(topRollerVelocity);
-                        m_io.lowerKickerVelocity(lowerKickerVelocity);
+                        m_io.indexerVelocity(indexerOutputVelocity);
+                        m_io.topRollerVelocity(topRollerVelocity);
+                        // m_io.lowerKickerVelocity(lowerKickerVelocity);
                     } else
                         setIdle();
+                    m_io.lowerKickerVelocity(lowerKickerVelocity);
                     break;
                 case Reversing:
                     m_io.indexerVelocity(indexerOutputVelocityReverse);
@@ -66,6 +67,16 @@ public final class IndexerSubsystem extends SubsystemBase {
     @AutoLogOutput(key="IndexerIsFeeding")
     public boolean getIsFeeding() {
         return m_isFeeding;
+    }
+
+    public boolean getIsPastThreshold() {
+        final double lowerKickerTarget = m_inputs.lowerKickerVelocityRPS;
+        if (lowerKickerTarget == 0d)
+            return false;
+
+        final boolean lowerKicker = Math.abs(lowerKickerTarget - m_inputs.lowerKickerTargetVelocityRPS) <= lowerKickerVelocityThresholdRPS;
+
+        return lowerKicker;
     }
 
     public void setIdle() {

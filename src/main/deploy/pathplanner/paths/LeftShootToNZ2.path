@@ -1,0 +1,70 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.3,
+        "y": 7.2
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.270186335403727,
+        "y": 7.378908606921029
+      },
+      "isLocked": false,
+      "linkedName": "LeftShootPos"
+    },
+    {
+      "anchor": {
+        "x": 4.423,
+        "y": 7.412
+      },
+      "prevControl": {
+        "x": 4.173,
+        "y": 7.412
+      },
+      "nextControl": {
+        "x": 4.673,
+        "y": 7.412
+      },
+      "isLocked": false,
+      "linkedName": "LeftStartPos"
+    },
+    {
+      "anchor": {
+        "x": 7.843,
+        "y": 5.004773735581189
+      },
+      "prevControl": {
+        "x": 7.864855421686748,
+        "y": 7.332376145219744
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "LeftNZ2"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 3.0,
+    "rotation": 90.0
+  },
+  "reversed": false,
+  "folder": "Left",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

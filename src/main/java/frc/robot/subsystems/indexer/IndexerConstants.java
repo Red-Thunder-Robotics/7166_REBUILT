@@ -21,7 +21,7 @@ public final class IndexerConstants {
     public static final double indexerTargetAcceleration = 266d;
 
     public static final int topRollerMotorId = 15;
-    public static final int topRollerCurrentLimit = 35; // 40
+    public static final int topRollerCurrentLimit = 40; // 40; 35
     public static final NeutralModeValue topRollerNeutralMode = NeutralModeValue.Coast;
     public static final InvertedValue topRollerInverted = InvertedValue.CounterClockwise_Positive;
     public static final double topRollerReduction = (30d / 24d);
@@ -33,11 +33,14 @@ public final class IndexerConstants {
     public static final double topRollerTargetAcceleration = 266d;
 
     public static final int lowerKickerMotorId = 16;
-    public static final int lowerKickerCurrentLimit = 20; // 40
+    public static final int lowerKickerCurrentLimit = 25; // 40; 20
     public static final NeutralModeValue lowerKickerNeutralMode = NeutralModeValue.Coast;
     public static final InvertedValue lowerKickerInverted = InvertedValue.Clockwise_Positive;
     public static final AngularVelocity lowerKickerVelocity = RPM.of(3500d);
     public static final AngularVelocity lowerKickerVelocityReverse = lowerKickerVelocity.unaryMinus();
+
+    public static final double lowerKickerVelocityThresholdRPS = 1.5d;
+
     //
     public static final double lowerKickerPidP = 0.1d;
     public static final double lowerKickerPidV = 12d / (5800d / 60d);

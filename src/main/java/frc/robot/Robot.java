@@ -181,8 +181,7 @@ public class Robot extends LoggedRobot {
                         new ModuleIOTalonFX(TunerConstants.BackRight));
                 if (Constants.USE_TURRET)
                     m_turretSubsystem = new TurretSubsystem(new TurretIOReal());
-                // m_intakeSubsystem = new GroundIntakeSubsystem(new GroundIntakeIOReal());
-                m_intakeSubsystem = new GroundIntakeSubsystem(new GroundIntakeIOSim());
+                m_intakeSubsystem = new GroundIntakeSubsystem(new GroundIntakeIOReal());
                 m_indexerSubsystem = new IndexerSubsystem(new IndexerIOReal());
                 m_shooterSubsystem = new ShooterSubsystem(new ShooterIOReal());
                 m_climberSubsystem = new ClimberSubsystem(new ClimberIOSim());
@@ -342,6 +341,13 @@ public class Robot extends LoggedRobot {
                 Controls.hubButton::getAsBoolean), "AllianceFeedDisengage")
         );
 
+        // Controls.allianceFeedNoTurretButton.onTrue(
+        //     RobotCommands.setShooterShooting()
+        // );
+        // Controls.allianceFeedNoTurretButton.onFalse(
+        //     RobotCommands.setShooterIdle()
+        // );
+
         final double rotationTargetOffsetAddend = Units.inchesToMeters(3d);
         Controls.rotationTargetBumpLeft
             .and(Controls.rotationTargetBumpRight.negate())
@@ -363,14 +369,14 @@ public class Robot extends LoggedRobot {
             .onTrue(cmdName(Commands.runOnce(() -> m_rotationTargetMeterOffset = 0d), "RotationTargetBumpReset"));
 
         // NOTE: turbo mode is used in ModuleIOTalonFX.java
-        Controls.turboButton
-            .whileTrue(Commands.either(
-                Commands.runOnce(RobotEvent.TurboOn::trigger)
-                    .andThen(Commands.waitUntil(() -> !StateMachine.isTurboAvailable()))
-                    .andThen(StateMachine.eventTurboOff()),
-                Commands.none(),
-                StateMachine::isTurboAvailable))
-            .onFalse(StateMachine.eventTurboOff());
+        // Controls.turboButton
+        //     .whileTrue(Commands.either(
+        //         Commands.runOnce(RobotEvent.TurboOn::trigger)
+        //             .andThen(Commands.waitUntil(() -> !StateMachine.isTurboAvailable()))
+        //             .andThen(StateMachine.eventTurboOff()),
+        //         Commands.none(),
+        //         StateMachine::isTurboAvailable))
+        //     .onFalse(StateMachine.eventTurboOff());
 
         if (Robot.isSimulation())
             new Trigger(() -> StateMachine.isShooting())
@@ -394,16 +400,19 @@ public class Robot extends LoggedRobot {
         }
     }
 
-    private boolean m_hasLoweredDriveStatorInAuto = false;
+    private boolean m_hasLoweredDriveStator = false;
+    private void lowerDriveStator() {
+        if (!m_hasLoweredDriveStator) {
+            m_hasLoweredDriveStator = true;
+            m_driveSubsystem.lowerDriveCurrentLimits();
+        }
+    }
 
     private void setupNamedCommands() {
-        var engageShooterHub = RobotCommands.engageShooterHub()
+        var engageShooterHub = cmdName(RobotCommands.engageShooterHub()
             .andThen(Commands.runOnce(() -> {
-                if (!m_hasLoweredDriveStatorInAuto) {
-                    m_hasLoweredDriveStatorInAuto = true;
-                    m_driveSubsystem.lowerDriveCurrentLimits();
-                }
-            }));
+                lowerDriveStator();
+            })), "Auto_EngageShooterHub");
         NamedCommands.registerCommand("EngageShooterHub", engageShooterHub);
         NamedCommands.registerCommand("DisengageShooter", RobotCommands.disengageShooter());
 
@@ -411,7 +420,15 @@ public class Robot extends LoggedRobot {
         NamedCommands.registerCommand("IntakeHomeOff", RobotCommands.retractIntakeOff());
 
         // FIXME: waitForEmptyHopper command using vision
-        Command waitForEmptyHopper = Commands.waitSeconds(12d);
+        Command waitForEmptyHopper = Commands.waitSeconds(5d); // 12
+        // NamedCommands.registerCommand("AfterShoot", cmdName(waitForEmptyHopper
+        //     .andThen(
+        //         RobotCommands.disengageShooter())
+        //     .andThen(
+        //         RobotCommands.setShooterReversing()
+        //             .andThen(Commands.waitSeconds(0.4d))
+        //             .andThen(RobotCommands.setShooterIdle())
+        //     ), "AfterShoot"));
         NamedCommands.registerCommand("AfterShoot", cmdName(waitForEmptyHopper.andThen(RobotCommands.disengageShooter()), "AfterShoot"));
 
         // NamedCommands.registerCommand("ClimbRotate", Commands.defer(() -> {
@@ -461,18 +478,19 @@ public class Robot extends LoggedRobot {
         if (NTGyroButton != m_lastNTGyroButton) {
             var command = m_autoChooser.get();
 
-            resetGyroFromPathPlanner(command);
+            resetPoseFromPathPlanner(command);
         }
         m_lastNTGyroButton = NTGyroButton;
     }
 
-    private void resetGyroFromPathPlanner(Command command) {
+    private void resetPoseFromPathPlanner(Command command) {
         if (command == null)
             return;
 
         if (command instanceof PathPlannerAuto) {
             var auto = (PathPlannerAuto) command;
-            resetGyro(auto.getStartingPose().getRotation());
+            // resetGyro(auto.getStartingPose().getRotation());
+            resetPose(auto.getStartingPose());
         }
     }
 
@@ -482,7 +500,9 @@ public class Robot extends LoggedRobot {
     /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
     @Override
     public void autonomousInit() {
-        m_hasLoweredDriveStatorInAuto = false;
+        m_hasLoweredDriveStator = false;
+
+        m_driveSubsystem.increaseDriveCurrentLimits();
 
         // ensure flywheel is spinning if we want it to be
         StateMachine.setShooterState(StateMachine.getShooterState());
@@ -494,7 +514,7 @@ public class Robot extends LoggedRobot {
 
         if (m_autoCommand != null)
             m_commandScheduler.schedule(m_autoCommand);
-        resetGyroFromPathPlanner(m_autoCommand);
+        resetPoseFromPathPlanner(m_autoCommand);
 
         if (m_autoSimFuelCommand == null)
             m_autoSimFuelCommand = repeatingSimFuelCommand();
@@ -557,6 +577,7 @@ public class Robot extends LoggedRobot {
         m_commandScheduler.cancelAll();
 
         resetState();
+        lowerDriveStator();
 
         RobotEvent.OnTeleopEnabled.trigger();
         RobotEvent.OnEnabled.trigger();
@@ -612,6 +633,11 @@ public class Robot extends LoggedRobot {
     }
     public void resetGyro() {
         resetGyro(Rotation2d.kZero);
+    }
+
+    public void resetPose(Pose2d pose) {
+        System.out.println("resetPose called");
+        StateMachine.odometryAndVision.resetPose(pose);
     }
 
     private Command repeatingSimFuelCommand() {

@@ -7,19 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftStartPosToNZ1"
+            "pathName": "RightStartToNZ5"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "LeftNZStartToNZ2"
+            "pathName": "RightPickUpNZ3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "LeftNZ2ToShoot"
+            "pathName": "RightNZ3ToShootClose"
           }
         },
         {
@@ -37,25 +37,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left Shoot to Start With Volcity"
+            "pathName": "Right Shoot To start With Volcity"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "LeftStartPosToNZ1 1.5"
+            "pathName": "RightStartToNZ5 1.5"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "LeftNZStartToNZ3"
+            "pathName": "RightPickUpNZ2"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Left",
+  "folder": "Right",
   "choreoAuto": false
 }

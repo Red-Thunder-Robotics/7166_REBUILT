@@ -65,6 +65,7 @@ public class PhoenixUtil {
             return false;
         }
         public void run() {
+            System.out.println("Running MotorAction: " + this.description);
             if (!tryRun())
                 throw new RuntimeException("FATAL: Failed to " + this.description);
         }

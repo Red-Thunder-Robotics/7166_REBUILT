@@ -19,7 +19,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftNZ2ToShoot"
+            "pathName": "LeftNZ2ToShootFar"
           }
         },
         {
@@ -32,6 +32,12 @@
           "type": "named",
           "data": {
             "name": "AfterShoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LeftShootFarToMiddleGround"
           }
         }
       ]

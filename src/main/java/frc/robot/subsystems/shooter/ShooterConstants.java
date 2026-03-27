@@ -18,9 +18,9 @@ import edu.wpi.first.units.measure.Distance;
 
 public final class ShooterConstants {
     // public static final long spinUpDurationMilliseconds = 800L;
-    public static final double shouldIndexFlywheelVelocityThresholdRPS = 5.5d;
-    // public static final double shouldIndexKickerVelocityThresholdRPS = 3d;
-    public static final double shouldIndexKickerVelocityThresholdSeconds = 0.5d;
+    public static final double shouldIndexFlywheelVelocityThresholdRPS = 1.5d; // 5.5
+    public static final double shouldIndexKickerVelocityThresholdRPS = 1.5d;
+    // public static final double shouldIndexKickerVelocityThresholdSeconds = 0.5d;
     // public static final double shooterReverseCountSeconds = 0.1d;
     public static final double latencyCompensationSeconds = 0.150d;
     
@@ -28,7 +28,7 @@ public final class ShooterConstants {
     public static final int flywheelMotorIdBottomLeft = 18;
     public static final int flywheelMotorIdTopRight = 19;
     public static final int flywheelMotorIdBottomRight = 20;
-    public static final int flywheelCurrentLimit = 18; // 15
+    public static final int flywheelCurrentLimit = 20; // 15; 18
     public static final NeutralModeValue flywheelNeutralMode = NeutralModeValue.Coast;
     public static final InvertedValue flywheelInvertedTopLeft = InvertedValue.CounterClockwise_Positive;
     public static final InvertedValue flywheelInvertedBottomLeft = InvertedValue.CounterClockwise_Positive;
@@ -57,7 +57,7 @@ public final class ShooterConstants {
     
     // shoot -> spin up upper kicker, wait for speed, then spin lower and top roller same time
     public static final int upperKickerMotorId = 22;
-    public static final int upperKickerCurrentLimit = 35; // 40
+    public static final int upperKickerCurrentLimit = 40; // 40; 35
     public static final NeutralModeValue upperKickerNeutralMode = NeutralModeValue.Coast;
     public static final InvertedValue upperKickerInverted = InvertedValue.CounterClockwise_Positive;
     public static final AngularVelocity upperKickerVelocity = RPM.of(4000d);
@@ -73,60 +73,13 @@ public final class ShooterConstants {
     public static final InterpolationShooterParams allianceFeedParams =
         new InterpolationShooterParams(1700d, 40d);
     private static final InterpolationShooterParams trenchShooterParams =
-        new InterpolationShooterParams(2625d, 20d);
+        new InterpolationShooterParams(2800d, 18.75d);
     public static final InterpolationShooterParams hubCenterParams =
-        new InterpolationShooterParams(1435d, 20d);
-    // public static enum LauncherLocationParam {
-    //     TrenchLeft(
-    //         new Translation2d(Meters.of(4.138d), Meters.of(7.632d)),
-    //         trenchShooterParams),
-    //     TrenchRight(
-    //         new Translation2d(Meters.of(4.138d), Meters.of(0.444d)),
-    //         trenchShooterParams),
-    //     HubCenter(
-    //         new Translation2d(Meters.of(2.985594d), StateMachine.getHubPoseBlue().getMeasureY()),
-    //         hubCenterParams,
-    //     TowerLeft(
-    //         new Translation2d(Meters.of(1.52d), Meters.of(4.177d)),
-    //         new InterpolationShooterParams(1600d, 30d)),
-    //     FieldLeft(
-    //         new Translation2d(Meters.of(0.456d), Meters.of(7.633d)),
-    //         new InterpolationShooterParams(2200d, 30d));
-
-    //     private Translation2d m_location;
-    //     public final InterpolationShooterParams m_params;
-
-    //     LauncherLocationParam(Translation2d location, InterpolationShooterParams params) {
-    //         m_location = location;
-    //         m_params = params;
-    //     }
-
-    //     static Optional<LauncherLocationParam> getFromRobot(Translation2d robot) {
-    //         double furthestDistance = 9999d;
-    //         LauncherLocationParam result = null;
-    //         final var values = LauncherLocationParam.values();
-    //         for (int i = 0; i < values.length; i++) {
-    //             final var value = values[i];
-    //             final double distance = robot.getDistance(StateMachine.allianceFlip(value.m_location));
-    //             // if we're closer than the previous point and we're not within a few inches to the last distance (avoid being between and constantly flipping between two)
-    //             if (distance < furthestDistance && (furthestDistance == 9999d ? true : Math.abs(distance - furthestDistance) > Units.inchesToMeters(4d))) {
-    //                 furthestDistance = distance;
-    //                 result = value;
-    //             }
-    //         }
-
-    //         if (result == null) {
-    //             Logger.recordOutput("Shooter/ClosestParamLocation", "[NONE]");
-    //             return Optional.empty();
-    //         }
-    //         Logger.recordOutput("Shooter/ClosestParamLocation", result.name());
-    //         return Optional.of(result);
-    //     }
-    // }
+        new InterpolationShooterParams(2300d, 11d);
 
     public static enum InterpolationParamMap {
-        Normal,
-        Low;
+        Normal;
+        // Low;
 
         public final InterpolatingTreeMap<Double, InterpolationShooterParams> map =
             new InterpolatingTreeMap<Double, InterpolationShooterParams>(
@@ -139,24 +92,17 @@ public final class ShooterConstants {
             );
 
         static {
-            // Normal.map.put(1d, new InterpolationShooterParams(3000d, 60d));
-            // Normal.map.put(2d, new InterpolationShooterParams(3000d, 60d));
+            // Normal.map.put(1.65, hubCenterParams);
+            Normal.map.put(1.78, hubCenterParams);
+            Normal.map.put(3.1, new InterpolationShooterParams(2800d, 15d)); // tower left
+            // Normal.map.put(3.63, trenchShooterParams);
+            Normal.map.put(3.38, trenchShooterParams);
+            Normal.map.put(4.14, new InterpolationShooterParams(3025d, 18.75d));
+            Normal.map.put(5.47, new InterpolationShooterParams(3200d, 27d)); // field left
 
-            // for (final var value : LauncherLocationParam.values()) {
-            //     final double distance = value.m_location.getDistance(StateMachine.getHubPoseBlue().toTranslation2d());
-            //     System.out.println(value.name() + "; " + distance);
-            //     Normal.map.put(distance, value.m_params);
-            // }
-
-            Normal.map.put(1.65, hubCenterParams);
-            Normal.map.put(3.1, new InterpolationShooterParams(1600d, 30d)); // tower left
-            Normal.map.put(3.63, trenchShooterParams);
-            Normal.map.put(5.5, new InterpolationShooterParams(2200d, 30d)); // field left
-            // cross map (only x direction so not horizontal) alliance feed
-            // Normal.map.put(11d, new InterpolationShooterParams(3000d, mechanismPositionToAngle(hoodPositionHome).in(Degrees)));
-            Normal.map.put(11d, new InterpolationShooterParams(3000d, 20d));
-
-            // TODO: low map, if we want to use it
+            // crossmap (only x direction so not horizontal) alliance feed
+            // FIXME: DO NOT HAVE THIS IN THE INTERPOLATION MAP
+            // Normal.map.put(11d, new InterpolationShooterParams(3000d, 20d));
         }
     }
     public static final InterpolationParamMap paramMap = InterpolationParamMap.Normal;

@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
-import static frc.robot.subsystems.shooter.ShooterConstants.shouldIndexKickerVelocityThresholdSeconds;
 import static frc.robot.util.CommandUtil.*;
 
 import java.util.Optional;
@@ -24,6 +23,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
@@ -134,13 +134,21 @@ public class StateMachine {
         withinJoystickRotationErrorThreshold = within;
     }
 
-    private static boolean indexerShooterStuff = false;
-    public static boolean getIndexerShooterStuff() {
-        return indexerShooterStuff;
-    }
-    public static void setIndexerShooterStuff(boolean wants) {
-        indexerShooterStuff = wants;
-    }
+    // private static boolean indexerShooterStuff = false;
+    // public static boolean getIndexerShooterStuff() {
+    //     return indexerShooterStuff;
+    // }
+    // public static void setIndexerShooterStuff(boolean wants) {
+    //     indexerShooterStuff = wants;
+    // }
+
+    // private static boolean indexerQuickReverse = false;
+    // public static boolean getIndexerQuickReverse() {
+    //     return indexerQuickReverse;
+    // }
+    // public static void setIndexerQuickReverse(boolean wants) {
+    //     indexerQuickReverse = wants;
+    // }
 
     public static boolean turretShouldIndex() {
         if (LiveConfig.getIsPit())
@@ -175,6 +183,8 @@ public class StateMachine {
         climberState = newClimberState;
         ClimberSubsystem.instance.stateUpdate(climberState);
     }
+
+    private static final Timer m_debugTimer1 = new Timer();
 
     public static final class RobotCommands {
         // intake
@@ -260,7 +270,11 @@ public class StateMachine {
 
         // shooter + turret
         public static Command engageShooterHub() {
-            return cmdName(setLauncherTargetHubTracking()
+            // return cmdName(setLauncherTargetHubTracking()
+            return cmdName(Commands.runOnce(() -> {
+                m_debugTimer1.restart();
+            })
+                .andThen(setLauncherTargetHubTracking())
                 .andThen(Commands.waitUntil(StateMachine::turretShouldIndex))
                 .andThen(setShooterShooting()), "EngageShooterHub");
         }
@@ -364,6 +378,10 @@ public class StateMachine {
     public static final Translation3d allianceFeedRight = new Translation3d(
         Inches.of(90), FieldConstants.FIELD_WIDTH.div(2).minus(Inches.of(85)), Inches.zero());
 
+    public static final Translation3d getAllianceFeedPose() {
+        return allianceFlip(isRobotOnAllianceLeft() ? allianceFeedLeft : allianceFeedRight);
+    }
+
     public static final OdometryAndVision odometryAndVision = new OdometryAndVision();
 
     private static boolean isRobotOnAllianceLeft() {
@@ -406,6 +424,14 @@ public class StateMachine {
             Commands.runOnce(RobotEvent.TurboOff::trigger),
             Commands.none(),
             turboTimer::isRunning);
+    }
+
+    static {
+        SmartDashboard.putNumber("DebugTimer1", -1d);
+    }
+    public static void indexingProcessStart() {
+        m_debugTimer1.stop();
+        SmartDashboard.putNumber("DebugTimer1", m_debugTimer1.get());
     }
 
     private static boolean needsToUpdateRobot = true;
@@ -456,7 +482,7 @@ public class StateMachine {
             setLauncherTargetPose(
                 switch (StateMachine.getLauncherTarget()) {
                     case HubTracking -> Optional.of(hubPose);
-                    case AllianceFeed -> Optional.of(allianceFlip(isRobotOnAllianceLeft() ? allianceFeedLeft : allianceFeedRight));
+                    case AllianceFeed -> Optional.of(getAllianceFeedPose());
                     default -> Optional.empty();
                 }
             );

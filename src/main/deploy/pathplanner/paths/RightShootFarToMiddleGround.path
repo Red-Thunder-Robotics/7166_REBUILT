@@ -1,0 +1,114 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.311,
+        "y": 0.87
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.8919343389529724,
+        "y": 0.5462289263531488
+      },
+      "isLocked": false,
+      "linkedName": "RightShootPos"
+    },
+    {
+      "anchor": {
+        "x": 4.656,
+        "y": 0.578420585625554
+      },
+      "prevControl": {
+        "x": 3.2641969831410824,
+        "y": 0.5220851818988458
+      },
+      "nextControl": {
+        "x": 6.489498656380148,
+        "y": 0.6526343111229052
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.5,
+        "y": 3.2986157941437444
+      },
+      "prevControl": {
+        "x": 6.435075421472938,
+        "y": 2.3972493345164154
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "RightMiddleGround"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.18832891246684397,
+      "rotationDegrees": 180.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 1.5503355704698027,
+      "maxWaypointRelativePos": 2.0,
+      "constraints": {
+        "maxVelocity": 1.2,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.8624161073825509,
+      "maxWaypointRelativePos": 1.1442953020134228,
+      "constraints": {
+        "maxVelocity": 1.7,
+        "maxAcceleration": 1.2,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "IntakeDeployOn",
+      "waypointRelativePos": 1.2751677852349004,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "IntakeDeployOn"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": -90.0
+  },
+  "reversed": false,
+  "folder": "Right",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

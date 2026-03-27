@@ -22,6 +22,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import frc.robot.Constants.DriveConstants;
+
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
@@ -78,7 +80,10 @@ public class Module {
   }
 
   public void lowerDriveCurrentLimits() {
-    io.setDriveCurrentLimits(constants.SlipCurrent, 50d);
+    io.setDriveCurrentLimits(DriveConstants.DRIVE_STATOR_LOW, DriveConstants.DRIVE_SUPPLY_LOW);
+  }
+  public void increaseDriveCurrentLimits() {
+    io.setDriveCurrentLimits(DriveConstants.DRIVE_STATOR_AUTO, DriveConstants.DRIVE_SUPPLY_AUTO);
   }
 
   public double getStatorCurrent() {

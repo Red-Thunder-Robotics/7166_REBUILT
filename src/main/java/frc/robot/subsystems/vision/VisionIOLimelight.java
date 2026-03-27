@@ -38,6 +38,12 @@ public final class VisionIOLimelight implements VisionIO {
         boolean megaTagSuccess = false;
         for (var name : limelightPoseEstimationList)
             megaTagSuccess |= updateVisionMegaTag2(name);
+        
+        // for (var name : limelightList) {
+        //     final var hardware = LimelightHelpers.getLimelightNTDoubleArray(name, "hw");
+        //     if (hardware.length > 0)
+        //         Logger.recordOutput("Vision/" + name + "/Temperature", hardware[1]);
+        // }
 
         inputs.megaTagSuccess = megaTagSuccess;
     }

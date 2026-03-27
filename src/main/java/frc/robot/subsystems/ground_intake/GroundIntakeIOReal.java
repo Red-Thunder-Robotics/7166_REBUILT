@@ -46,6 +46,8 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
         rollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
         rollerConfig.CurrentLimits.SupplyCurrentLimit = rollerCurrentLimit;
 
+        // rollerConfig.Feedback.SensorToMechanismRatio = rollerMotorReduction;
+
         rollerConfig.Slot0.kP = rollerPidP;
         rollerConfig.Slot0.kV = rollerPidV;
         rollerConfig.MotionMagic.MotionMagicAcceleration = rollerTargetAcceleration;
