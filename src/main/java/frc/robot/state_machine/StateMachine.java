@@ -203,6 +203,12 @@ public class StateMachine {
         public static Command retractIntakeOff() {
             return cmdName(setIntakeState(IntakeState.HomeOff), "IntakeHomeOff");
         }
+        public static Command oscillateIntakeOff() {
+            return cmdName(setIntakeState(IntakeState.OscillateOff), "IntakeOscillatedOff");
+        }
+        public static Command oscillateIntakeOn() {
+            return cmdName(setIntakeState(IntakeState.OscillateOn), "IntakeOscillatedOn");
+        }
 
         public static Command intakeDynamicOn() {
             return cmdName(Commands.defer(
@@ -231,6 +237,19 @@ public class StateMachine {
                 deployIntakeOff(),
                 Commands.none(),
                 () -> intakeState.isDeployed()), "IntakeDeployedToOffConditional");
+        }
+
+        public static Command intakeOscillateToOnConditional() {
+            return cmdName(Commands.either(
+                oscillateIntakeOn(),
+                Commands.none(),
+                () -> intakeState.isOscillate()), "IntakeOscillateToOnConditional");
+        }
+        public static Command intakeOscillateToOffConditional() {
+            return cmdName(Commands.either(
+                oscillateIntakeOff(),
+                Commands.none(),
+                () -> intakeState.isOscillate()), "IntakeOscillateToOffConditional");
         }
 
         // turret

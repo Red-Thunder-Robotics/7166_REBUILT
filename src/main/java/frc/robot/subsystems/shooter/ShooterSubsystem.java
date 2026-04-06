@@ -68,7 +68,7 @@ public final class ShooterSubsystem extends SubsystemBase {
         Logger.processInputs("Shooter", m_inputs);
         Logger.recordOutput("ShooterShouldIndex", shouldIndex());
 
-        if (m_autoStowTimer.isRunning() && m_autoStowTimer.hasElapsed(1d)) {
+        if (m_autoStowTimer.isRunning() && m_autoStowTimer.hasElapsed(hoodAutoStowSeconds)) {
             m_autoStowTimer.stop();
             m_autoStowTimer.reset();
             hoodStow();

@@ -316,6 +316,18 @@ public class Robot extends LoggedRobot {
         // Controls.deployIntakeButton.debounce(0.5d).whileTrue(
         //     IntakeCommands.joystickAssist(m_driveSubsystem, driverX, driverY, driverOmega, () -> false));
 
+        // Controls.halfwayIntakeButton
+        //     .onTrue(cmdName(Commands.either(
+        //         RobotCommands.oscillateIntakeOn(),
+        //         RobotCommands.oscillateIntakeOff(),
+        //         () -> StateMachine.getIntakeState().isOscillate()
+        //     ), "HalfwayIntakeInitial"));
+        // Controls.halfwayIntakeButton
+        //     .debounce(0.25d)
+        //     .onTrue(cmdName(RobotCommands.intakeOscillateToOnConditional(), "HalfwayIntakeDelayed"));
+        Controls.halfwayIntakeButton.onTrue(cmdName(RobotCommands.oscillateIntakeOn(), "HalfwayIntakeOn"));
+        Controls.halfwayIntakeButton.onFalse(cmdName(RobotCommands.intakeOscillateToOffConditional(), "HalfwayIntakeOff"));
+
         Controls.retractIntakeButton.onTrue(RobotCommands.retractIntakeOff());
 
         Controls.reverseButton.onTrue(RobotCommands.generalReversing());
@@ -420,7 +432,7 @@ public class Robot extends LoggedRobot {
         NamedCommands.registerCommand("IntakeHomeOff", RobotCommands.retractIntakeOff());
 
         // FIXME: waitForEmptyHopper command using vision
-        Command waitForEmptyHopper = Commands.waitSeconds(5d); // 12
+        Command waitForEmptyHopper = Commands.waitSeconds(4d); // 12; 5
         // NamedCommands.registerCommand("AfterShoot", cmdName(waitForEmptyHopper
         //     .andThen(
         //         RobotCommands.disengageShooter())
@@ -490,7 +502,7 @@ public class Robot extends LoggedRobot {
         if (command instanceof PathPlannerAuto) {
             var auto = (PathPlannerAuto) command;
             // resetGyro(auto.getStartingPose().getRotation());
-            resetPose(auto.getStartingPose());
+            resetPose(StateMachine.allianceFlip(auto.getStartingPose()));
         }
     }
 

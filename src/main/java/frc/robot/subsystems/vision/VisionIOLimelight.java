@@ -23,14 +23,14 @@ public final class VisionIOLimelight implements VisionIO {
                 PortForwarder.add(port + (i * 10), name + ".local", port);
         }
         
-        RobotEvent.OnDisabled.addListener(() -> {
-            for (var name : limelightList)
-                LimelightHelpers.SetThrottle(name, 200);
-        });
-        RobotEvent.OnEnabled.addListener(() -> {
-            for (var name : limelightList)
-                LimelightHelpers.SetThrottle(name, 0);
-        });
+        // RobotEvent.OnDisabled.addListener(() -> {
+        //     for (var name : limelightList)
+        //         LimelightHelpers.SetThrottle(name, 200);
+        // });
+        // RobotEvent.OnEnabled.addListener(() -> {
+        //     for (var name : limelightList)
+        //         LimelightHelpers.SetThrottle(name, 0);
+        // });
     }
 
     @Override

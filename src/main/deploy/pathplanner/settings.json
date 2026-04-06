@@ -5,9 +5,9 @@
   "pathFolders": [
     "Center",
     "Left",
-    "old",
     "Right",
-    "Test"
+    "Test",
+    "old"
   ],
   "autoFolders": [
     "Center",

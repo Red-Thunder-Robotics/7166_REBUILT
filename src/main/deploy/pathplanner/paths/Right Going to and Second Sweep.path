@@ -48,16 +48,16 @@
     },
     {
       "anchor": {
-        "x": 6.368578313253011,
-        "y": 0.84410843373494
+        "x": 5.68661934338953,
+        "y": 0.658
       },
       "prevControl": {
-        "x": 6.051674698795181,
-        "y": 0.47256626506024185
+        "x": 5.369715728931699,
+        "y": 0.28645783132530184
       },
       "nextControl": {
-        "x": 6.530814964773699,
-        "y": 1.0343169217247117
+        "x": 5.848855994910217,
+        "y": 0.8482084879897717
       },
       "isLocked": false,
       "linkedName": "Right trench waypoint NZ side"
@@ -117,7 +117,7 @@
   "folder": "Right",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 67.81757325798449
   },
   "useDefaultConstraints": true
 }

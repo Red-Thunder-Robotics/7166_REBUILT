@@ -9,7 +9,7 @@
       "prevControl": null,
       "nextControl": {
         "x": 3.1148120481927712,
-        "y": -0.18819999999999992
+        "y": -0.1881999999999998
       },
       "isLocked": false,
       "linkedName": "RightShootPos"
@@ -53,7 +53,7 @@
   "folder": "Right",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 67.81757325798449
   },
   "useDefaultConstraints": true
 }

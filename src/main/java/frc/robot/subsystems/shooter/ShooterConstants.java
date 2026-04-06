@@ -54,6 +54,8 @@ public final class ShooterConstants {
     public static final double hoodPidP = 300d;
     public static final double hoodTargetAcceleration = 250d;
     public static final double hoodMaxVelocity = 10d;
+
+    public static final double hoodAutoStowSeconds = 0.25d;
     
     // shoot -> spin up upper kicker, wait for speed, then spin lower and top roller same time
     public static final int upperKickerMotorId = 22;

@@ -47,6 +47,7 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
         m_io = io;
     }
 
+    @SuppressWarnings("unused")
     @Override
     public void periodic() {
         m_io.updateInputs(m_inputs);
@@ -64,7 +65,7 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
 
         if (m_rollerForward) {
             final double speedsX = Drive.instance.getChassisSpeeds().vxMetersPerSecond;
-            AngularVelocity rollerOutput;
+            AngularVelocity rollerOutput = rollerOutputVelocity;
 
             /*
              * goal is slow down rollers as you drive robot-relative forward.
@@ -72,8 +73,7 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
              * then divide by roller circumference -> rpm offset
              * substract rollerOutput minus rpm offset with a certain floor
              */
-            if (DriverStation.isTeleopEnabled()) {
-                rollerOutput = rollerOutputVelocity;
+            if (rollerOutputVelocityUsesChassisSpeeds && DriverStation.isTeleopEnabled()) {
                 if (speedsX > 0d) {
                     final double rpmOffset = speedsX * 60d / rollerCircumference.in(Meters);
                     double newRPM = rollerOutput.in(RPM) - rpmOffset;
@@ -88,8 +88,9 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
             m_io.rollerVelocity(rollerOutputVelocityReverse);
 
         final boolean isTeleop = DriverStation.isTeleop();
-        final boolean shouldOscillate = StateMachine.wantsToShoot() && (isTeleop ? Controls.oscillateIntakeButton.getAsBoolean() : true);
-        // final boolean shouldOscillate = (DriverStation.isAutonomousEnabled() || Robot.isSimulation()) && StateMachine.wantsToShoot();
+        // final boolean shouldOscillate = StateMachine.wantsToShoot() && (isTeleop ? Controls.oscillateIntakeButton.getAsBoolean() : true);
+        final boolean shouldOscillate = StateMachine.wantsToShoot() && !isTeleop;
+
         Logger.recordOutput("Intake/ShouldOscillate", shouldOscillate);
         if (m_oscillatorTimer.isRunning()) {
             if (shouldOscillate) {
@@ -141,10 +142,11 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
                 break;
             case DeployedOn:
                 deploy();
-                if (oldIntakeState.isDeployed())
-                    startRoller();
-                else
-                    m_startRollerWaiter.activate();
+                // if (oldIntakeState.isDeployed())
+                //     startRoller();
+                // else
+                //     m_startRollerWaiter.activate();
+                startRoller();
                 break;
             case DeployedReverse:
                 deploy();
@@ -156,6 +158,11 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
             case OscillateOff:
                 deployOscillate();
                 stopRoller();
+                break;
+            case OscillateOn:
+                deployOscillate();
+                stopRoller();
+                m_io.rollerVelocity(rollerOutputVelocityHalfway);
                 break;
         }
     }

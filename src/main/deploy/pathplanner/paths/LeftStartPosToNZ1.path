@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "IntakeDeployOn",
-      "waypointRelativePos": 0.15,
+      "waypointRelativePos": 0.38124999999999976,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -53,7 +53,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.5,
+    "velocity": 1.6,
     "rotation": 90.0
   },
   "reversed": false,

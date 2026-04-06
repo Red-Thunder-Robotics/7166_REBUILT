@@ -14,15 +14,18 @@ import edu.wpi.first.units.measure.Distance;
 public final class GroundIntakeConstants {
     public static final int rollerMotorId = 12;
     public static final int rollerCurrentLimit = 45;
-    public static final int rollerCurrentLimitAuto = 45;
+    public static final int rollerCurrentLimitAuto = 50;
     // public static final double rollerMotorReduction = (18d / 12d);
     public static final NeutralModeValue rollerNeutralMode = NeutralModeValue.Coast;
     public static final InvertedValue rollerInverted = InvertedValue.CounterClockwise_Positive;
     public static final Distance rollerCircumference = Meters.of(0.11172d);
+    // NOTE: there is no gear reduction yet so velocities are all motor-relative
+    public static final boolean rollerOutputVelocityUsesChassisSpeeds = false;
     public static final AngularVelocity rollerOutputVelocityMinimum = RPM.of(2000d);
-    public static final AngularVelocity rollerOutputVelocity = RPM.of(3500d);
-    public static final AngularVelocity rollerOutputVelocityAuto = RPM.of(5000d); // 4500
+    public static final AngularVelocity rollerOutputVelocity = RPM.of(5800d); // 3500
+    public static final AngularVelocity rollerOutputVelocityAuto = RPM.of(5000d); // 4500; 5000; 5500
     public static final AngularVelocity rollerOutputVelocityReverse = rollerOutputVelocity.unaryMinus();
+    public static final AngularVelocity rollerOutputVelocityHalfway = RPM.of(500d);
 
     public static final double rollerPidP = 0.3d;
     public static final double rollerPidV = 12d / (5800d / 60d);

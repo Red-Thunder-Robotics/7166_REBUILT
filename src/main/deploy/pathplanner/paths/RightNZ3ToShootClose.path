@@ -4,28 +4,28 @@
     {
       "anchor": {
         "x": 7.795,
-        "y": 3.041082519964507
+        "y": 3.3308074534161483
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.757981366459628,
-        "y": 2.71111801242236
+        "x": 7.7468855368234255,
+        "y": 0.9164330079858019
       },
       "isLocked": false,
       "linkedName": "RightNZ3"
     },
     {
       "anchor": {
-        "x": 6.368578313253011,
-        "y": 0.84410843373494
+        "x": 5.68661934338953,
+        "y": 0.658
       },
       "prevControl": {
-        "x": 7.153456273366748,
-        "y": 0.8441084337349404
+        "x": 6.471497303503266,
+        "y": 0.6580000000000004
       },
       "nextControl": {
-        "x": 6.118578313253011,
-        "y": 0.8441084337349404
+        "x": 5.43661934338953,
+        "y": 0.6580000000000004
       },
       "isLocked": false,
       "linkedName": "Right trench waypoint NZ side"
@@ -36,24 +36,40 @@
         "y": 0.658
       },
       "prevControl": {
-        "x": 5.255265728332687,
-        "y": 0.647878622302782
+        "x": 5.255328094503236,
+        "y": 0.6579999999999999
       },
       "nextControl": {
-        "x": 3.054951197870452,
-        "y": 0.6749955634427682
+        "x": 3.960171191024014,
+        "y": 0.6580000000000001
       },
       "isLocked": false,
       "linkedName": "RightStartPos"
     },
     {
       "anchor": {
-        "x": 2.871,
-        "y": 2.372
+        "x": 3.326127450980392,
+        "y": 0.658
       },
       "prevControl": {
-        "x": 2.8939929015084287,
-        "y": 2.0109494232475593
+        "x": 3.6843954824131644,
+        "y": 0.658
+      },
+      "nextControl": {
+        "x": 2.989289759214309,
+        "y": 0.658
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.009,
+        "y": 2.542
+      },
+      "prevControl": {
+        "x": 3.0319929015084286,
+        "y": 2.1809494232475592
       },
       "nextControl": null,
       "isLocked": false,
@@ -62,21 +78,21 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.3474801061007988,
+      "waypointRelativePos": 0.5053050397877983,
       "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 2.3,
+      "waypointRelativePos": 2.6,
       "rotationDegrees": 0.0
     }
   ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.7449664429530201,
-      "maxWaypointRelativePos": 2.05,
+      "minWaypointRelativePos": 0.4983221476510071,
+      "maxWaypointRelativePos": 2.1,
       "constraints": {
-        "maxVelocity": 1.75,
+        "maxVelocity": 1.5,
         "maxAcceleration": 3.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -97,7 +113,7 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": 0.0
+    "rotation": 42.75764070417591
   },
   "reversed": false,
   "folder": "Right",
