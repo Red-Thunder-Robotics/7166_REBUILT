@@ -19,6 +19,8 @@ public final class Controls {
     // public static final Trigger oscillateIntakeButton = driveController.rightTrigger();
     public static final Trigger halfwayIntakeButton = driveController.rightTrigger();
 
+    // public static final Trigger debugFullForwardButton = driveController.paddleBottomLeft();
+
     public static final Trigger reverseButton = operatorController.leftTrigger().or(driveController.leftTrigger());
     public static final Trigger hubButton = operatorController.rightTrigger();
     public static final Trigger allianceFeedButton = operatorController.x();

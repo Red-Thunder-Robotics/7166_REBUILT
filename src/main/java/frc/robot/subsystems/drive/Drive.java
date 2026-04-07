@@ -417,6 +417,16 @@ public class Drive extends SubsystemBase {
     return gyroInputs.yawVelocityRadPerSec;
   }
 
+  private double lastDriveGainP = 0d;
+  public void setDriveGainP(double gainP) {
+    if (gainP == lastDriveGainP)
+      return;
+    lastDriveGainP = gainP;
+    for (int i = 0; i < 4; i++) {
+      modules[i].setDriveGainP(gainP);
+    }
+  }
+
   /** Returns an array of module translations. */
   public static Translation2d[] getModuleTranslations() {
     return new Translation2d[] {

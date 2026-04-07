@@ -305,4 +305,11 @@ public class ModuleIOTalonFX implements ModuleIO {
               rotation.getRotations());
         });
   }
+
+  @Override
+  public void setDriveGainP(double gainP) {
+    MotorAction.updateMotorConfig("Unknown Drive", driveTalon, (config) -> {
+      config.Slot0.kP = gainP;
+    }).queue();
+  }
 }

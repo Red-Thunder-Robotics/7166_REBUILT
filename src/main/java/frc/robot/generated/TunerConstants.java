@@ -23,14 +23,14 @@ public class TunerConstants {
     // The steer motor uses any SwerveModule.SteerRequestType control request with the
     // output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
     private static final Slot0Configs steerGains = new Slot0Configs()
-        .withKP(50).withKI(0).withKD(0.5)
-        .withKS(0.1).withKV(2.48).withKA(0)
+        .withKP(108).withKI(0).withKD(0)
+        .withKS(0).withKV(0).withKA(0)
         .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
     // When using closed-loop control, the drive motor uses the control
     // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
     private static final Slot0Configs driveGains = new Slot0Configs()
-        .withKP(1.75).withKI(0).withKD(0) // 1.8, 0, 0
-        .withKS(0.35839).withKV(0.62095); // 0, 0.124; 0.35542, 0.62073
+        .withKP(1.8).withKI(0).withKD(0) // 1.8, 0, 0
+        .withKS(0.021).withKV(0.55);
 
     // The closed-loop output type to use for the steer motors;
     // This affects the PID/FF gains for the steer motors
@@ -50,7 +50,7 @@ public class TunerConstants {
 
     // The stator current at which the wheels start to slip;
     // This needs to be tuned to your individual robot
-    public static final Current kSlipCurrent = Amps.of(120); // 120; 80
+    public static final Current kSlipCurrent = Amps.of(105); // 120;
 
     // Initial configs for the drive and steer motors and the azimuth encoder; these cannot be null.
     // Some configs will be overwritten; check the `with*InitialConfigs()` API documentation.
@@ -81,7 +81,7 @@ public class TunerConstants {
 
     private static final double kDriveGearRatio = 4.9411764705882355;
     private static final double kSteerGearRatio = 25.9;
-    private static final Distance kWheelRadius = Inches.of(1.713); // real - 1.75; 1.707; 1.719
+    private static final Distance kWheelRadius = Inches.of(1.696); // real - 1.75; 1.707; 1.719; 1.713
 
     private static final boolean kInvertLeftSide = false;
     private static final boolean kInvertRightSide = true;

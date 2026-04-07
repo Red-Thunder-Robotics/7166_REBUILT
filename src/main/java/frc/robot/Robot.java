@@ -40,6 +40,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.MathSharedStore;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -410,6 +411,18 @@ public class Robot extends LoggedRobot {
                 return 0d;
             });
         }
+
+        // final var limiter = new SlewRateLimiter(3d);
+        // limiter.reset(0d);
+        // Controls.debugFullForwardButton.whileTrue(m_driveSubsystem.runEnd(() -> {
+        //     m_driveSubsystem.runVelocity(new ChassisSpeeds(
+        //         limiter.calculate(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond)),
+        //         0,
+        //         0));
+        // }, () -> {
+        //     m_driveSubsystem.stop();
+        //     limiter.reset(0d);
+        // }));
     }
 
     private boolean m_hasLoweredDriveStator = false;
@@ -468,6 +481,11 @@ public class Robot extends LoggedRobot {
         StateMachine.periodic(this);
         MotorAction.process();
         Logger.recordOutput("Pose3dZero", Pose3d.kZero);
+
+        // if (LiveConfig.getDriveTuning()) {
+        //     // NOTE: this can happen in periodic because change detection occurs in the drive subsystem
+        //     m_driveSubsystem.setDriveGainP(LiveConfig.getDriveGainP());
+        // }
     }
 
     /** This function is called once when the robot is disabled. */

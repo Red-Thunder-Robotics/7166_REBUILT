@@ -160,4 +160,8 @@ public class Module {
   public double getFFCharacterizationVelocity() {
     return Units.radiansToRotations(inputs.driveVelocityRadPerSec);
   }
+
+  public void setDriveGainP(double gainP) {
+    io.setDriveGainP(gainP);
+  }
 }

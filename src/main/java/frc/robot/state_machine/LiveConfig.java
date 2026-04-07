@@ -26,12 +26,20 @@ public final class LiveConfig {
     private static final DoubleTopic launcherTuningAngle = networkTable.getDoubleTopic("LauncherTuningAngle");
     private static final DoubleSubscriber launcherTuningAngleSubscriber = launcherTuningAngle.subscribe(0d);
 
+    // private static final BooleanTopic driveTuning = networkTable.getBooleanTopic("DriveTuning");
+    // private static final BooleanSubscriber driveTuningSubscriber = driveTuning.subscribe(false);
+
+    // private static final DoubleTopic driveGainP = networkTable.getDoubleTopic("DriveGainP");
+    // private static final DoubleSubscriber driveGainPSubscriber = driveGainP.subscribe(0d);
+
     static {
-        isPitTopic.publish().set(false);
-        visionFailTopic.publish().set(false);
-        launcherTuning.publish().set(false);
+        isPitTopic.publish().set(isPitSubscriber.get());
+        visionFailTopic.publish().set(visionFailSubscriber.get());
+        launcherTuning.publish().set(launcherTuningSubscriber.get());
         launcherTuningRPM.publish().set(launcherTuningRPMSubscriber.get());
         launcherTuningAngle.publish().set(launcherTuningAngleSubscriber.get());
+        // driveTuning.publish().set(driveTuningSubscriber.get());
+        // driveGainP.publish().set(driveGainPSubscriber.get());
     }
 
     public static boolean getIsPit() {
@@ -53,4 +61,11 @@ public final class LiveConfig {
     public static double getLauncherTuningAngle() {
         return launcherTuningAngleSubscriber.get();
     }
+
+    // public static boolean getDriveTuning() {
+    //     return driveTuningSubscriber.get();
+    // }
+    // public static double getDriveGainP() {
+    //     return driveGainPSubscriber.get();
+    // }
 }
