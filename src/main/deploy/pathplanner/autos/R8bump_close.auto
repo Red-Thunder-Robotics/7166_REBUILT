@@ -37,13 +37,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RightShootCloseToMiddleGround"
+            "pathName": "RightShootBumpToMiddleGround"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "RightNZ3ToShootBumpClose"
+            "pathName": "RightMiddleGroundToShootBumpClose"
           }
         },
         {

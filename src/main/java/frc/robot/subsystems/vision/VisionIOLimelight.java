@@ -49,8 +49,7 @@ public final class VisionIOLimelight implements VisionIO {
     }
 
     
-    // private final Matrix<N3, N1> stdDevs = VecBuilder.fill(.7,.7,9999999);
-    private final Matrix<N3, N1> stdDevs = VecBuilder.fill(.35,.35,9999999);
+    // private final Matrix<N3, N1> stdDevs = VecBuilder.fill(.35,.35,9999999); // .7, .7
     private boolean updateVisionMegaTag2(String limelightName) {
         final Drive drive = Drive.instance;
 
@@ -66,8 +65,18 @@ public final class VisionIOLimelight implements VisionIO {
         if(mt2.tagCount == 0)
             return false;
 
+        // https://www.frc5712.com/vision-implementation
+        final double avgTagDistSquared = mt2.avgTagDist * mt2.avgTagDist;
+        final double tagCount = mt2.tagCount;
+        final double xyStandardDev = 0.01d * avgTagDistSquared / tagCount;
+        // final double rotationStandardDev =
+        //     0.02d * avgTagDistSquared / tagCount;
+        // NOTE: we use MegaTag2 with a gyro-provided rotation, so trust the estimate's rotation fully instead of calculating a deviation
+        final double rotationStandardDev = 9999999;
+
         Logger.recordOutput("Vision/" + limelightName + "/Pose", mt2.pose);
-        StateMachine.odometryAndVision.addVisionObservation(new VisionObservation(mt2.pose, mt2.timestampSeconds, stdDevs));
+        // StateMachine.odometryAndVision.addVisionObservation(new VisionObservation(mt2.pose, mt2.timestampSeconds, stdDevs));
+        StateMachine.odometryAndVision.addVisionObservation(new VisionObservation(mt2.pose, mt2.timestampSeconds, VecBuilder.fill(xyStandardDev, xyStandardDev, rotationStandardDev)));
 
         return true;
     }

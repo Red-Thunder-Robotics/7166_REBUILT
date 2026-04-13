@@ -4,13 +4,21 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.InchesPerSecond;
 import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Seconds;
-import static frc.robot.subsystems.shooter.ShooterConstants.*;
-import static frc.robot.subsystems.turret.TurretConstants.distanceAboveFunnel;
-import static frc.robot.subsystems.turret.TurretConstants.robotToTurretTransform;
+import static frc.robot.subsystems.shooter.ShooterConstants.allianceFeedParamsFar;
+import static frc.robot.subsystems.shooter.ShooterConstants.allianceFeedParamsNeutralZone;
+import static frc.robot.subsystems.shooter.ShooterConstants.flywheelRadiusBig;
+import static frc.robot.subsystems.shooter.ShooterConstants.flywheelRadiusSmall;
+import static frc.robot.subsystems.shooter.ShooterConstants.hoodAutoStowSeconds;
+import static frc.robot.subsystems.shooter.ShooterConstants.hoodPositionHome;
+import static frc.robot.subsystems.shooter.ShooterConstants.hubCenterParams;
+import static frc.robot.subsystems.shooter.ShooterConstants.paramMap;
+import static frc.robot.subsystems.shooter.ShooterConstants.shouldIndexFlywheelVelocityThresholdRPS;
+import static frc.robot.subsystems.shooter.ShooterConstants.shouldIndexKickerVelocityThresholdRPS;
+import static frc.robot.subsystems.shooter.ShooterConstants.timeOfFlightMap;
+import static frc.robot.subsystems.shooter.ShooterConstants.upperKickerVelocity;
+import static frc.robot.subsystems.shooter.ShooterConstants.upperKickerVelocityReverse;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -23,9 +31,12 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Controls;
-import frc.robot.Constants.FieldConstants;
+import frc.robot.commands.ZeroingCommand;
+import frc.robot.state_machine.LauncherTarget;
 import frc.robot.state_machine.LiveConfig;
 import frc.robot.state_machine.RobotEvent;
 import frc.robot.state_machine.ShooterState;
@@ -68,13 +79,15 @@ public final class ShooterSubsystem extends SubsystemBase {
         Logger.processInputs("Shooter", m_inputs);
         Logger.recordOutput("ShooterShouldIndex", shouldIndex());
 
+        if (ZeroingCommand.isSubsystemZeroing(this))
+            return;
+
         if (m_autoStowTimer.isRunning() && m_autoStowTimer.hasElapsed(hoodAutoStowSeconds)) {
             m_autoStowTimer.stop();
             m_autoStowTimer.reset();
             hoodStow();
         }
 
-        Logger.recordOutput("Shooter/HubDistanceMeters", getDistanceToTarget(StateMachine.odometryAndVision.getEstimatedPose(), StateMachine.getHubPose()).in(Meters));
         final boolean launcherTuning = LiveConfig.getLauncherTuning();
         switch (StateMachine.getShooterState()) {
             case Idle:
@@ -88,26 +101,26 @@ public final class ShooterSubsystem extends SubsystemBase {
                 }
                 break;
             case Shooting:
-                var targetPose = StateMachine.getLauncherTargetPose();
                 if (!launcherTuning) {
-                    /*if (StateMachine.getLauncherTarget() == LauncherTarget.AllianceFeed)
-                        setParams(allianceFeedParams);
-                    else */if (targetPose.isPresent()) {
-                        // if (StateMachine.getLauncherTargetPoseIsHub())
-                        //     paramsOptional = LauncherLocationParam.getFromRobot(StateMachine.odometryAndVision.getEstimatedPose().getTranslation())
-                        //         .map((value) -> value.m_params);
-                        // else
+                    if (StateMachine.getLauncherTarget() == LauncherTarget.AllianceFeed) {
+                        setParams(StateMachine.isRobotFar() ? allianceFeedParamsFar : allianceFeedParamsNeutralZone);
+                    } else {
+                        var targetPose = StateMachine.getLauncherTargetPose();
+                        InterpolationShooterParams params = null;
 
-                        InterpolationShooterParams params;
-                        // if (LiveConfig.getIsPit())
                         if (Controls.visionFail1.getAsBoolean())
                             params = paramMap.map.get(3.249d);
+                        // if (LiveConfig.getIsPit())
                         else if (LiveConfig.getVisionFail())
                             params = hubCenterParams;
-                        else if (Controls.allianceFeedNoTurretButton.getAsBoolean())
-                            params = calculateParams(StateMachine.getAllianceFeedPose());
-                        else
+                        else if (targetPose.isPresent()) {
+                            // if (StateMachine.getLauncherTargetPoseIsHub())
+                            //     paramsOptional = LauncherLocationParam.getFromRobot(StateMachine.odometryAndVision.getEstimatedPose().getTranslation())
+                            //         .map((value) -> value.m_params);
+                            // else
+
                             params = calculateParams(targetPose.get());
+                        }
                         if (params != null)
                             setParams(params);
                     }
@@ -121,6 +134,12 @@ public final class ShooterSubsystem extends SubsystemBase {
                 m_io.upperKickerVelocity(upperKickerVelocityReverse);
                 break;
         }
+    }
+
+    public Command zeroMechanisms(boolean skipDrive) {
+        return skipDrive
+            ? Commands.runOnce(m_io::hoodZero, this)
+            : new ZeroingCommand(this, m_io::hoodZeroingDrive, m_io::hoodCanZero, m_io::hoodStop, m_io::hoodZero);
     }
 
     public Angle getHoodAngle() {

@@ -53,6 +53,11 @@ public interface ShooterIO {
 
     public default void hoodAngle(double position) {}
     public default void hoodAngle(Angle angle) {}
+    public default void hoodStop() {}
+
+    public default void hoodZeroingDrive() {}
+    public default void hoodZero() {}
+    public default boolean hoodCanZero() { return true; }
 
     public default void upperKickerVelocity(AngularVelocity velocity) {}
     public default void upperKickerStop() {}

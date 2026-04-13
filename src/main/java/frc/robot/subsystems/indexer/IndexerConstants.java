@@ -22,9 +22,9 @@ public final class IndexerConstants {
 
     public static final int topRollerMotorId = 15;
     public static final int topRollerCurrentLimit = 40; // 40; 35
-    public static final NeutralModeValue topRollerNeutralMode = NeutralModeValue.Coast;
+    public static final NeutralModeValue topRollerNeutralMode = NeutralModeValue.Brake;
     public static final InvertedValue topRollerInverted = InvertedValue.CounterClockwise_Positive;
-    public static final double topRollerReduction = (30d / 24d);
+    public static final double topRollerReduction = (30d / 12d); // 30d / 24d
     public static final AngularVelocity topRollerVelocity = RPM.of(2000d);
     public static final AngularVelocity topRollerVelocityReverse = RPM.of(-1000d);
     //

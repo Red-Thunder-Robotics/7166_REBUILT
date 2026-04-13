@@ -17,7 +17,7 @@ public final class SimulationCommands {
     public static class SimFuelCommand extends Command {
         private static ArrayList<Pair<Supplier<Pose3d>, Timer>> poseList = new ArrayList<>();
         public static void step() {
-            Logger.recordOutput("SimFuel", poseList
+            Logger.recordOutput("SimFuel/Poses", poseList
                 .stream()
                 .map(v -> v.getFirst().get())
                 .collect(Collectors.toList()).toArray(Pose3d[]::new));

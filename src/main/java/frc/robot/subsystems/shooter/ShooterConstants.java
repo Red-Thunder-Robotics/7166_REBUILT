@@ -29,6 +29,7 @@ public final class ShooterConstants {
     public static final int flywheelMotorIdTopRight = 19;
     public static final int flywheelMotorIdBottomRight = 20;
     public static final int flywheelCurrentLimit = 20; // 15; 18
+    public static final double flywheelReduction = (24d / 18d);
     public static final NeutralModeValue flywheelNeutralMode = NeutralModeValue.Coast;
     public static final InvertedValue flywheelInvertedTopLeft = InvertedValue.CounterClockwise_Positive;
     public static final InvertedValue flywheelInvertedBottomLeft = InvertedValue.CounterClockwise_Positive;
@@ -36,7 +37,7 @@ public final class ShooterConstants {
     public static final InvertedValue flywheelInvertedBottomRight = InvertedValue.Clockwise_Positive;
     // public static final AngularVelocity flywheelVelocityReverse = RPM.of(-2000d);
 
-    public static final double flywheelPidP = 0.2d;
+    public static final double flywheelPidP = 0.7d; // 0.2
     public static final double flywheelPidV = 12d / (5800d / 60d);
     public static final double flywheelTargetAcceleration = 266d;
     public static final Distance flywheelRadiusBig = Inches.of(3d);
@@ -49,13 +50,16 @@ public final class ShooterConstants {
     public static final InvertedValue hoodInverted = InvertedValue.Clockwise_Positive;
 
     public static final double hoodPositionHome = angleToMechanismPosition(Degrees.of(0d));
-    public static final double hoodPositionMax = angleToMechanismPosition(Degrees.of(37.55d));
+    public static final double hoodPositionMax = angleToMechanismPosition(Degrees.of(50d)); // 37.55
 
     public static final double hoodPidP = 300d;
     public static final double hoodTargetAcceleration = 250d;
     public static final double hoodMaxVelocity = 10d;
 
     public static final double hoodAutoStowSeconds = 0.25d;
+
+    public static final double hoodZeroDutyCycle = -0.07d;
+    public static final double hoodZeroVelocityThresholdRPS = 0.00002d;
     
     // shoot -> spin up upper kicker, wait for speed, then spin lower and top roller same time
     public static final int upperKickerMotorId = 22;
@@ -72,12 +76,15 @@ public final class ShooterConstants {
     // https://blog.eeshwark.com/robotblog/shooting-on-the-fly-pt2
     public static record InterpolationShooterParams(double rpm, double degrees) { };
 
-    public static final InterpolationShooterParams allianceFeedParams =
-        new InterpolationShooterParams(1700d, 40d);
+    public static final InterpolationShooterParams allianceFeedParamsNeutralZone =
+        new InterpolationShooterParams(3000d, 48d);
+    public static final InterpolationShooterParams allianceFeedParamsFar =
+        new InterpolationShooterParams(4000d, 48d);
+
     private static final InterpolationShooterParams trenchShooterParams =
         new InterpolationShooterParams(2800d, 18.75d);
     public static final InterpolationShooterParams hubCenterParams =
-        new InterpolationShooterParams(2300d, 11d);
+        new InterpolationShooterParams(2150d, 7d);
 
     public static enum InterpolationParamMap {
         Normal;
@@ -94,17 +101,22 @@ public final class ShooterConstants {
             );
 
         static {
-            // Normal.map.put(1.65, hubCenterParams);
-            Normal.map.put(1.78, hubCenterParams);
-            Normal.map.put(3.1, new InterpolationShooterParams(2800d, 15d)); // tower left
-            // Normal.map.put(3.63, trenchShooterParams);
-            Normal.map.put(3.38, trenchShooterParams);
-            Normal.map.put(4.14, new InterpolationShooterParams(3025d, 18.75d));
-            Normal.map.put(5.47, new InterpolationShooterParams(3200d, 27d)); // field left
+            // Normal.map.put(1.78, hubCenterParams);
+            // Normal.map.put(3.1, new InterpolationShooterParams(2800d, 15d)); // tower left
+            // // Normal.map.put(3.63, trenchShooterParams);
+            // Normal.map.put(3.38, trenchShooterParams);
+            // Normal.map.put(4.14, new InterpolationShooterParams(3025d, 18.75d));
+            // Normal.map.put(5.47, new InterpolationShooterParams(3200d, 27d)); // field left
 
-            // crossmap (only x direction so not horizontal) alliance feed
-            // FIXME: DO NOT HAVE THIS IN THE INTERPOLATION MAP
-            // Normal.map.put(11d, new InterpolationShooterParams(3000d, 20d));
+            // half a meter increments (in theory)
+            Normal.map.put(1.76d, hubCenterParams);
+            Normal.map.put(2.25d, new InterpolationShooterParams(2300d, 10d));
+            Normal.map.put(2.75d, new InterpolationShooterParams(2450d, 12d));
+            Normal.map.put(3.26d, new InterpolationShooterParams(2600d, 15d));
+            Normal.map.put(3.79d, new InterpolationShooterParams(2725d, 17d));
+            Normal.map.put(4.25d, new InterpolationShooterParams(2900d, 19d));
+            Normal.map.put(4.75d, new InterpolationShooterParams(3000d, 21d));
+            Normal.map.put(5.00d, new InterpolationShooterParams(3200d, 21.5d));
         }
     }
     public static final InterpolationParamMap paramMap = InterpolationParamMap.Normal;

@@ -42,6 +42,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.state_machine.LauncherTarget;
 import frc.robot.state_machine.StateMachine;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.turret.TurretConstants;
@@ -107,6 +108,7 @@ public class DriveCommands {
 
     if (DriveConstants.ANGLE_LIVE_TUNE) {
       SmartDashboard.putNumber("DriveOmegaP", DriveConstants.ANGLE_KP);
+      SmartDashboard.putNumber("DriveOmegaI", DriveConstants.ANGLE_KI);
       SmartDashboard.putNumber("DriveOmegaD", DriveConstants.ANGLE_KD);
     }
   }
@@ -118,27 +120,51 @@ public class DriveCommands {
   public static double calculateOmega(Drive drive, Rotation2d rotation) {
     if (DriveConstants.ANGLE_LIVE_TUNE) {
       angleController.setP(SmartDashboard.getNumber("DriveOmegaP", 0d));
+      angleController.setI(SmartDashboard.getNumber("DriveOmegaI", 0d));
       angleController.setD(SmartDashboard.getNumber("DriveOmegaD", 0d));
     }
+
+    final double drivetrain = StateMachine.odometryAndVision.getRotation().getRadians();
 
     double target = rotation.getRadians();
     target = omegaFilter.calculate(target);
 
-    final double output = angleController.calculate(
-      StateMachine.odometryAndVision.getRotation().getRadians(), target);
+    final double output = angleController.calculate(drivetrain, target);
 
-    double tolerance = Units.degreesToRadians(Constants.USE_TURRET ? TurretConstants.shouldIndexThresholdDegrees : DriveConstants.SHOULD_INDEX_THRESHOLD_DEGREES);
-    if (drive.isMoving() && !Constants.USE_TURRET)
-      tolerance = Units.degreesToRadians(DriveConstants.SHOULD_INDEX_THRESHOLD_MOVING_DEGREES);
-    final boolean atGoal = Math.abs(angleController.getPositionError()) < tolerance;
+    double tolerance = 0d;
+    if (Constants.USE_TURRET)
+      tolerance = TurretConstants.shouldIndexThresholdDegrees;
+    else {
+      // if (drive.isMoving())
+      //   tolerance = DriveConstants.SHOULD_INDEX_THRESHOLD_MOVING_DEGREES;
+      // else {
+      {
+        tolerance = DriveConstants.SHOULD_INDEX_THRESHOLD_DEGREES_MAX;
+        if (StateMachine.getLauncherTarget() == LauncherTarget.HubTracking) {
+          double distance = StateMachine.getHubDistanceMeters();
+          distance = Math.min(distance, DriveConstants.SHOULD_INDEX_THRESHOLD_METERS_MAX);
+          distance = Math.max(distance, DriveConstants.SHOULD_INDEX_THRESHOLD_METERS_MIN);
+          var x0 = DriveConstants.SHOULD_INDEX_THRESHOLD_METERS_MIN;
+          var y0 = DriveConstants.SHOULD_INDEX_THRESHOLD_DEGREES_MIN;
+          var x1 = DriveConstants.SHOULD_INDEX_THRESHOLD_METERS_MAX;
+          var y1 = DriveConstants.SHOULD_INDEX_THRESHOLD_DEGREES_MAX;
+          tolerance = y0 + (distance - x0) * ((y1 - y0) / (x1 - x0));
+        }
+      }
+    }
+    tolerance = Units.degreesToRadians(tolerance);
+
+    // final boolean atGoal = Math.abs(angleController.getPositionError()) < tolerance;
+    final boolean atGoal = Math.abs(drivetrain - target) < tolerance;
 
     StateMachine.setWithinJoystickRotationErrorThreshold(atGoal);
 
     Logger.recordOutput("DriveOmega/Output", output);
-    Logger.recordOutput("DriveOmega/Drivetrain", StateMachine.odometryAndVision.getRotation().getDegrees());
-    Logger.recordOutput("DriveOmega/Target", rotation.getDegrees());
+    Logger.recordOutput("DriveOmega/Drivetrain", drivetrain);
+    Logger.recordOutput("DriveOmega/Target", target);
     Logger.recordOutput("DriveOmega/PositionError", angleController.getPositionError());
     Logger.recordOutput("DriveOmega/AtGoal", atGoal);
+    Logger.recordOutput("DriveOmega/Tolerance", tolerance);
 
     return atGoal ? 0d : output;
   }
@@ -155,11 +181,13 @@ public class DriveCommands {
     return Commands.run(
         () -> {
           ChassisSpeeds speeds = getChassisSpeedsFromJoysticks(drive, xSupplier.getAsDouble(), ySupplier.getAsDouble(), omegaSupplier.getAsDouble(), rotationSupplier.get());
+          if (StateMachine.getLauncherTarget() == LauncherTarget.AllianceFeed)
+            speeds.vyMetersPerSecond = Math.copySign(Math.min(Math.abs(speeds.vyMetersPerSecond), DriveConstants.ALLIANCE_FEED_MAX_SPEEDY), speeds.vyMetersPerSecond);
           boolean isFlipped =
               DriverStation.getAlliance().isPresent()
                   && DriverStation.getAlliance().get() == Alliance.Red;
           var rotation = StateMachine.odometryAndVision.getRotation();
-          // below allows resetgyro to not be overidden by vision :/
+          // below allows resetgyro to not be overidden by northstar :/
           // var rotation = StateMachine.odometryAndVision.getOdometryPose().getRotation();
           drive.runVelocity(
               ChassisSpeeds.fromFieldRelativeSpeeds(

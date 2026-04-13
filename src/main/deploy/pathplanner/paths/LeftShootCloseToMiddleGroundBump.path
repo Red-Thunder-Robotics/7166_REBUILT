@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.009,
-        "y": 5.556
+        "x": 3.326,
+        "y": 6.47
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.4889436274509804,
-        "y": 5.135931885797798
+        "x": 3.8059436274509806,
+        "y": 6.049931885797798
       },
       "isLocked": false,
       "linkedName": "LeftShootClosePos"
@@ -93,13 +93,13 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": 90.0
+    "rotation": -90.0
   },
   "reversed": false,
   "folder": "Left",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -43.53695369416225
+    "rotation": -62.43048312209843
   },
   "useDefaultConstraints": true
 }

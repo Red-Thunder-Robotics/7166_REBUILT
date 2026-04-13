@@ -58,6 +58,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -109,6 +110,7 @@ import frc.robot.subsystems.vision.VisionIOMackinac;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.util.ApriltagUtil;
 import frc.robot.util.ConversionUtil;
+import frc.robot.util.SmartDashboardItem;
 import frc.robot.util.SystemTimeValidReader;
 import frc.robot.util.PhoenixUtil.MotorAction;
 
@@ -143,6 +145,8 @@ public class Robot extends LoggedRobot {
 
     private static final double rotationTargetMax = Units.inchesToMeters(24d);
     private static final double rotationTargetMin = -rotationTargetMax;
+
+    private Command m_dashboardZeroMechanismsCommand = null;
 
     public Robot() {
         // super(0.01);
@@ -276,7 +280,19 @@ public class Robot extends LoggedRobot {
         m_autoChooser.addOption(
             "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(m_driveSubsystem));
 
-        SmartDashboard.putBoolean("NTGyro", false);
+        SmartDashboardItem.newButtonDisabled("NTGyro", () -> resetPoseFromPathPlanner(m_autoChooser.get()));
+        
+        SmartDashboardItem.newTogglePeriodic("ZeroMechanisms", (boolean value) -> {
+            if (m_dashboardZeroMechanismsCommand != null) {
+                m_dashboardZeroMechanismsCommand.cancel();
+                m_dashboardZeroMechanismsCommand = null;
+            }
+            if (value) {
+                m_dashboardZeroMechanismsCommand = RobotCommands.zeroMechanisms(true, InterruptionBehavior.kCancelIncoming);
+                m_commandScheduler.schedule(m_dashboardZeroMechanismsCommand);
+            }
+        });
+
         resetGyro(Rotation2d.kZero);
         configureButtons();
         m_commandScheduler.onCommandInterrupt((Command command, Optional<Command> interruptor) -> {
@@ -326,8 +342,10 @@ public class Robot extends LoggedRobot {
         // Controls.halfwayIntakeButton
         //     .debounce(0.25d)
         //     .onTrue(cmdName(RobotCommands.intakeOscillateToOnConditional(), "HalfwayIntakeDelayed"));
-        Controls.halfwayIntakeButton.onTrue(cmdName(RobotCommands.oscillateIntakeOn(), "HalfwayIntakeOn"));
-        Controls.halfwayIntakeButton.onFalse(cmdName(RobotCommands.intakeOscillateToOffConditional(), "HalfwayIntakeOff"));
+        // Controls.halfwayIntakeButton.onTrue(cmdName(RobotCommands.oscillateIntakeOn(), "HalfwayIntakeOn"));
+        // Controls.halfwayIntakeButton.onFalse(cmdName(RobotCommands.intakeOscillateToOffConditional(), "HalfwayIntakeOff"));
+
+        Controls.halfwayIntakeButton.onTrue(cmdName(RobotCommands.oscillateIntakeOff(), "HalfwayIntakeOff"));
 
         Controls.retractIntakeButton.onTrue(RobotCommands.retractIntakeOff());
 
@@ -354,12 +372,7 @@ public class Robot extends LoggedRobot {
                 Controls.hubButton::getAsBoolean), "AllianceFeedDisengage")
         );
 
-        // Controls.allianceFeedNoTurretButton.onTrue(
-        //     RobotCommands.setShooterShooting()
-        // );
-        // Controls.allianceFeedNoTurretButton.onFalse(
-        //     RobotCommands.setShooterIdle()
-        // );
+        Controls.zeroMechanisms.whileTrue(RobotCommands.zeroMechanisms(false, InterruptionBehavior.kCancelSelf));
 
         final double rotationTargetOffsetAddend = Units.inchesToMeters(3d);
         Controls.rotationTargetBumpLeft
@@ -480,6 +493,7 @@ public class Robot extends LoggedRobot {
 
         StateMachine.periodic(this);
         MotorAction.process();
+        SmartDashboardItem.processPeriodic();
         Logger.recordOutput("Pose3dZero", Pose3d.kZero);
 
         // if (LiveConfig.getDriveTuning()) {
@@ -500,17 +514,10 @@ public class Robot extends LoggedRobot {
         // RobotCommands.setIntakeState(StateMachine.getIntakeState().off());
     }
 
-    private boolean m_lastNTGyroButton = false;
     /** This function is called periodically when disabled. */
     @Override
     public void disabledPeriodic() {
-        final boolean NTGyroButton = SmartDashboard.getBoolean("NTGyro", m_lastNTGyroButton);
-        if (NTGyroButton != m_lastNTGyroButton) {
-            var command = m_autoChooser.get();
-
-            resetPoseFromPathPlanner(command);
-        }
-        m_lastNTGyroButton = NTGyroButton;
+        SmartDashboardItem.processAll();
     }
 
     private void resetPoseFromPathPlanner(Command command) {

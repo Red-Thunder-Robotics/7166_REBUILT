@@ -7,19 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftStartPosToNZ1"
+            "pathName": "LeftStartPosToNZ2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "LeftNZStartToNZ2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "LeftNZ2ToShootClose"
+            "pathName": "LeftNZ2ToShootBumpClose"
           }
         },
         {
@@ -37,7 +31,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftShootCloseToMiddleGround"
+            "pathName": "LeftShootBumpToMiddleGround"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LeftMiddleGroundToShootBumpClose"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "EngageShooterHub"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AfterShoot"
           }
         }
       ]

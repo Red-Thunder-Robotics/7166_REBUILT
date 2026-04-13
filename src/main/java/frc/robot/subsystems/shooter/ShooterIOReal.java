@@ -9,6 +9,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -57,10 +58,13 @@ public final class ShooterIOReal implements ShooterIO {
     private final MotionMagicVoltage m_hoodPositionRequest = new MotionMagicVoltage(m_hoodTargetPosition);
         private final MotionMagicVelocityVoltage m_kickerVelocityRequest = new MotionMagicVelocityVoltage(0d)
         .withEnableFOC(true);
+    private final DutyCycleOut m_hoodDutyCycle = new DutyCycleOut(hoodZeroDutyCycle);
 
     public ShooterIOReal() {
         var flywheelConfig = new TalonFXConfiguration();
         flywheelConfig.MotorOutput.NeutralMode = flywheelNeutralMode;
+
+        flywheelConfig.Feedback.SensorToMechanismRatio = flywheelReduction;
 
         flywheelConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
         flywheelConfig.CurrentLimits.SupplyCurrentLimit = flywheelCurrentLimit;
@@ -83,8 +87,8 @@ public final class ShooterIOReal implements ShooterIO {
 
         hoodConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
         hoodConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = hoodPositionMax;
-        hoodConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-        hoodConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = hoodPositionHome;
+        // hoodConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+        // hoodConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = hoodPositionHome;
 
         var upperKickerConfig = new TalonFXConfiguration();
         upperKickerConfig.MotorOutput.NeutralMode = upperKickerNeutralMode;
@@ -135,8 +139,7 @@ public final class ShooterIOReal implements ShooterIO {
             m_upperKickerVelocitySignal,
             m_upperKickerCurrentSignal);
 
-        // PhoenixUtil.tryUntilOk(5, () -> m_hoodMotor.setPosition(m_hoodTargetPosition));
-        MotorAction.setMotorPosition("Shooter Hood", m_hoodMotor, m_hoodTargetPosition).run();
+        hoodZero();
 
         m_flywheelMotorBottomLeft.setControl(new Follower(flywheelMotorIdTopLeft, flywheelInvertedBottomLeft == flywheelInvertedTopLeft ? MotorAlignmentValue.Aligned : MotorAlignmentValue.Opposed));
         m_flywheelMotorTopRight.setControl(new Follower(flywheelMotorIdTopLeft, flywheelInvertedTopRight == flywheelInvertedTopLeft ? MotorAlignmentValue.Aligned : MotorAlignmentValue.Opposed));
@@ -222,6 +225,24 @@ public final class ShooterIOReal implements ShooterIO {
     @Override
     public void hoodAngle(Angle angle) {
         hoodAngle(angleToMechanismPosition(angle));
+    }
+    @Override
+    public void hoodStop() {
+        m_hoodMotor.disable();
+    }
+
+    @Override
+    public void hoodZeroingDrive() {
+        m_hoodMotor.setControl(m_hoodDutyCycle);
+    }
+    @Override
+    public void hoodZero() {
+        // PhoenixUtil.tryUntilOk(5, () -> m_hoodMotor.setPosition(hoodPositionHome));
+        MotorAction.setMotorPosition("Shooter Hood", m_hoodMotor, hoodPositionHome).run();
+    }
+    @Override
+    public boolean hoodCanZero() {
+        return Math.abs(m_hoodVelocitySignal.getValueAsDouble()) <= hoodZeroVelocityThresholdRPS;
     }
 
     @Override

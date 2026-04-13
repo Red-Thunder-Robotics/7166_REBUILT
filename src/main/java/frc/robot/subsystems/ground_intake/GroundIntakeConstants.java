@@ -6,18 +6,23 @@ import static edu.wpi.first.units.Units.RPM;
 import static frc.robot.util.ConversionUtil.*;
 
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 
 public final class GroundIntakeConstants {
-    public static final int rollerMotorId = 12;
+    public static final int rightRollerMotorId = 12;
     public static final int rollerCurrentLimit = 45;
     public static final int rollerCurrentLimitAuto = 50;
     // public static final double rollerMotorReduction = (18d / 12d);
     public static final NeutralModeValue rollerNeutralMode = NeutralModeValue.Coast;
-    public static final InvertedValue rollerInverted = InvertedValue.CounterClockwise_Positive;
+    public static final InvertedValue rightRollerInverted = InvertedValue.CounterClockwise_Positive;
+
+    public static final int leftRollerMotorId = 100;
+    public static final MotorAlignmentValue leftRollerMotorAlignment = MotorAlignmentValue.Opposed;
+
     public static final Distance rollerCircumference = Meters.of(0.11172d);
     // NOTE: there is no gear reduction yet so velocities are all motor-relative
     public static final boolean rollerOutputVelocityUsesChassisSpeeds = false;
@@ -44,4 +49,7 @@ public final class GroundIntakeConstants {
     // public static final double actuatorTargetAcceleration = 50d;
     public static final double actuatorTargetAcceleration = 20d;
     public static final double actuatorMaxVelocity = 5d;
+
+    public static final double actuatorZeroDutyCycle = -0.065d;
+    public static final double actuatorZeroVelocityThresholdRPS = 0.00002d;
 }

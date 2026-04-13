@@ -21,12 +21,13 @@ public final class Controls {
 
     // public static final Trigger debugFullForwardButton = driveController.paddleBottomLeft();
 
-    public static final Trigger reverseButton = operatorController.leftTrigger().or(driveController.leftTrigger());
+    public static final Trigger reverseButton = operatorController.leftTrigger().or(driveController.b());
     public static final Trigger hubButton = operatorController.rightTrigger();
     public static final Trigger allianceFeedButton = operatorController.x();
-    public static final Trigger allianceFeedNoTurretButton = operatorController.paddleTopRight();
 
     public static final Trigger visionFail1 = operatorController.b();
+
+    public static final Trigger zeroMechanisms = operatorController.back().and(operatorController.start()).debounce(1d);
 
     public static final Trigger rotationTargetBumpLeft = operatorController.leftBumper();
     public static final Trigger rotationTargetBumpRight = operatorController.rightBumper();

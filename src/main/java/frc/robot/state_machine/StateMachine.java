@@ -26,8 +26,10 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.Constants;
 import frc.robot.Controls;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.Robot;
@@ -153,10 +155,12 @@ public class StateMachine {
     public static boolean turretShouldIndex() {
         if (LiveConfig.getIsPit())
             return true;
-        return Constants.USE_TURRET ? TurretSubsystem.instance.shouldIndex() : Controls.lockWheelsButton.getAsBoolean() || withinJoystickRotationErrorThreshold;
+        final boolean allianceFeedGood = getLauncherTarget() == LauncherTarget.AllianceFeed ? isFacingAllianceZone() : false;
+        return Constants.USE_TURRET ? TurretSubsystem.instance.shouldIndex() : Controls.lockWheelsButton.getAsBoolean() || (withinJoystickRotationErrorThreshold || allianceFeedGood);
     }
     public static boolean shouldIndex() {
-        return turretShouldIndex() && ShooterSubsystem.instance.shouldIndex();
+        return turretShouldIndex() &&
+            ShooterSubsystem.instance.shouldIndex();
     }
 
     private static ShooterState shooterState = ShooterState.Idle;
@@ -294,12 +298,12 @@ public class StateMachine {
                 m_debugTimer1.restart();
             })
                 .andThen(setLauncherTargetHubTracking())
-                .andThen(Commands.waitUntil(StateMachine::turretShouldIndex))
+                // .andThen(Commands.waitUntil(StateMachine::turretShouldIndex))
                 .andThen(setShooterShooting()), "EngageShooterHub");
         }
         public static Command engageShooterAllianceFeed() {
             return cmdName(setLauncherTargetAllianceFeed()
-                .andThen(Commands.waitUntil(StateMachine::turretShouldIndex))
+                // .andThen(Commands.waitUntil(StateMachine::turretShouldIndex))
                 .andThen(setShooterShooting()), "EngageShooterAllianceFeed");
         }
         public static Command disengageShooter() {
@@ -332,6 +336,16 @@ public class StateMachine {
         public static Command generalReversingIdle() {
             return cmdName(setShooterIdle()
                 .alongWith(intakeDynamicOff()), "GeneralReversingIdle");
+        }
+
+        public static Command zeroMechanisms(boolean skipDrive, InterruptionBehavior interruptionBehavior) {
+            return cmdName(Commands.parallel(
+                ShooterSubsystem.instance.zeroMechanisms(skipDrive),
+                // GroundIntakeSubsystem.instance.zeroMechanisms(skipDrive)
+                GroundIntakeSubsystem.instance.zeroMechanisms(true)
+            )
+                .withInterruptBehavior(interruptionBehavior)
+                .ignoringDisable(true), "ZeroMechanisms");
         }
     }
 
@@ -390,16 +404,16 @@ public class StateMachine {
 
     // https://github.com/hammerheads5000/2026Rebuilt/blob/b32c384e337b1a89d3d651c05696c9366a105504/src/main/java/frc/robot/Constants.java#L398
     // see 5000-License.md
-    public static final Translation3d allianceFeedLeft = new Translation3d(
-        Inches.of(90), FieldConstants.FIELD_WIDTH.div(2).plus(Inches.of(85)), Inches.zero());
-    public static final Translation3d allianceFeedCenter =
-        new Translation3d(Inches.of(90), FieldConstants.FIELD_WIDTH.div(2), Inches.zero());
-    public static final Translation3d allianceFeedRight = new Translation3d(
-        Inches.of(90), FieldConstants.FIELD_WIDTH.div(2).minus(Inches.of(85)), Inches.zero());
+    // public static final Translation3d allianceFeedLeft = new Translation3d(
+    //     Inches.of(90), FieldConstants.FIELD_WIDTH.div(2).plus(Inches.of(85)), Inches.zero());
+    // public static final Translation3d allianceFeedCenter =
+    //     new Translation3d(Inches.of(90), FieldConstants.FIELD_WIDTH.div(2), Inches.zero());
+    // public static final Translation3d allianceFeedRight = new Translation3d(
+    //     Inches.of(90), FieldConstants.FIELD_WIDTH.div(2).minus(Inches.of(85)), Inches.zero());
 
-    public static final Translation3d getAllianceFeedPose() {
-        return allianceFlip(isRobotOnAllianceLeft() ? allianceFeedLeft : allianceFeedRight);
-    }
+    // public static final Translation3d getAllianceFeedPose() {
+    //     return allianceFlip(isRobotOnAllianceLeft() ? allianceFeedLeft : allianceFeedRight);
+    // }
 
     public static final OdometryAndVision odometryAndVision = new OdometryAndVision();
 
@@ -412,6 +426,25 @@ public class StateMachine {
             return y.lte(threshold);
         else
             return y.gt(threshold);
+    }
+
+    public static boolean isRobotFar() {
+        final var x = odometryAndVision.getEstimatedPose()
+                .getMeasureX();
+
+        final double redNumerator = 1d;
+        final double denominator = 4d;
+
+        if (ALLIANCE == Alliance.Red)
+            return x.lte(FieldConstants.FIELD_LENGTH.times(redNumerator / denominator));
+        else
+            return x.gte(FieldConstants.FIELD_LENGTH.times((denominator - redNumerator) / denominator));
+    }
+
+    public static boolean isFacingAllianceZone() {
+        final var targetRotation = ALLIANCE == Alliance.Red ? Rotation2d.kZero : Rotation2d.k180deg;
+        final var offset = odometryAndVision.getRotation().minus(targetRotation).getDegrees();
+        return Math.abs(offset) <= DriveConstants.IS_FACING_ALLIANCE_ZONE_THRESHOLD;
     }
 
     public static boolean wantsToShoot() {
@@ -451,6 +484,11 @@ public class StateMachine {
     public static void indexingProcessStart() {
         m_debugTimer1.stop();
         SmartDashboard.putNumber("DebugTimer1", m_debugTimer1.get());
+    }
+
+    private static double hubDistanceMeters = 4d;
+    public static double getHubDistanceMeters() {
+        return hubDistanceMeters;
     }
 
     private static boolean needsToUpdateRobot = true;
@@ -495,13 +533,13 @@ public class StateMachine {
             //     VisionSubsystem.RelativeReefLocation.postUpdate(m_visionSubsystem);
         }
 
-        if (Constants.USE_TURRET && TurretSubsystem.instance.getManualEnabled())
+        if (Constants.USE_TURRET ? TurretSubsystem.instance.getManualEnabled() : false)
             setLauncherTargetPose(Optional.empty());
         else {
             setLauncherTargetPose(
                 switch (StateMachine.getLauncherTarget()) {
                     case HubTracking -> Optional.of(hubPose);
-                    case AllianceFeed -> Optional.of(getAllianceFeedPose());
+                    // case AllianceFeed -> Optional.of(getAllianceFeedPose());
                     default -> Optional.empty();
                 }
             );
@@ -528,10 +566,17 @@ public class StateMachine {
             Logger.recordOutput("StateMachine/GeneralRobotState", generalRobotState);
         }
 
+        hubDistanceMeters = ShooterSubsystem.getDistanceToTarget(odometryAndVision.getEstimatedPose(), getHubPose()).in(Meters);
+        Logger.recordOutput("Shooter/HubDistanceMeters", hubDistanceMeters);
+
         Logger.recordOutput("StateMachine/LauncherTargetPose", new Pose3d(launcherTargetPose.orElse(new Translation3d()), new Rotation3d()));
 
         Logger.recordOutput("StateMachine/ShouldIndex", shouldIndex());
         Logger.recordOutput("StateMachine/TurretShouldIndex", turretShouldIndex());
+        Logger.recordOutput("StateMachine/WithinJoystickRotationErrorThreshold", withinJoystickRotationErrorThreshold);
+        Logger.recordOutput("StateMachine/IsRobotOnAllianceLeft", isRobotOnAllianceLeft());
+        Logger.recordOutput("StateMachine/IsRobotFar", isRobotFar());
+        Logger.recordOutput("StateMachine/IsRobotFacingAllianceZone", isFacingAllianceZone());
 
         HubActiveState.periodic();
 

@@ -11,9 +11,12 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Controls;
 import frc.robot.Robot;
+import frc.robot.commands.ZeroingCommand;
 import frc.robot.state_machine.IntakeState;
 import frc.robot.state_machine.ShooterState;
 import frc.robot.state_machine.StateMachine;
@@ -53,6 +56,9 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
         m_io.updateInputs(m_inputs);
         
         Logger.processInputs("GroundIntake", m_inputs);
+
+        if (ZeroingCommand.isSubsystemZeroing(this))
+            return;
 
         if (m_startRollerWaiter.process())
             startRoller();
@@ -112,11 +118,17 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
         }
     }
 
+    public Command zeroMechanisms(boolean skipDrive) {
+        return skipDrive
+            ? Commands.runOnce(m_io::actuatorZero, this)
+            : new ZeroingCommand(this, m_io::actuatorZeroingDrive, m_io::actuatorCanZero, m_io::actuatorStop, m_io::actuatorZero);
+    }
+
     public boolean isAtDeployedPosition() {
         return m_inputs.isDeployed && Math.abs(m_inputs.actuatorPositionDegrees - m_inputs.targetActuatorPositionDegrees) < 10d;
     }
     public boolean areRollersStopped() {
-        return Math.abs(m_inputs.rollerMotorVelocityRPS) < 10d;
+        return Math.abs(m_inputs.rightRollerMotorVelocityRPS) < 10d;
     }
 
     public void stateUpdate(IntakeState intakeState, IntakeState oldIntakeState) {

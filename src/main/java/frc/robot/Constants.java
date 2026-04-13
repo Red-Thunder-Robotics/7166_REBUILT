@@ -11,6 +11,7 @@ import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Centimeters;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Millimeters;
 
 import com.ctre.phoenix6.CANBus;
 
@@ -57,13 +58,26 @@ public final class Constants {
         public static final double TRANSLATION_KP = 5.5d;
         public static final boolean ANGLE_LIVE_TUNE = false;
         public static final double ANGLE_KP = 0.5d;
+        public static final double ANGLE_KI = 0d;
         public static final double ANGLE_KD = 0d;
+        
+        // degrees
+        public static final double IS_FACING_ALLIANCE_ZONE_THRESHOLD = 25; // 22
+        // meters per second
+        public static final double ALLIANCE_FEED_MAX_SPEEDY = 2d;
 
-        public static final Distance BUMPER_WIDTH = Inches.of(34.52d); // 31
+        // public static final Distance BUMPER_WIDTH = Inches.of(34.52d); // 31
+        public static final Distance BUMPER_WIDTH = Millimeters.of(880d); // FIXME: should be 840
         public static final Distance BUMPER_LENGTH = BUMPER_WIDTH;
 
-        public static final double SHOULD_INDEX_THRESHOLD_DEGREES = 1d;
-        public static final double SHOULD_INDEX_THRESHOLD_MOVING_DEGREES = 3d;
+        // at meters min distance, degrees min threshold will be used, etc
+        public static final double SHOULD_INDEX_THRESHOLD_METERS_MIN = 1d;
+        public static final double SHOULD_INDEX_THRESHOLD_DEGREES_MIN = 5d;
+        public static final double SHOULD_INDEX_THRESHOLD_METERS_MAX = 5.3d;
+        public static final double SHOULD_INDEX_THRESHOLD_DEGREES_MAX = 1d;
+
+        // NOTE: below is not used
+        // public static final double SHOULD_INDEX_THRESHOLD_MOVING_DEGREES = 3d;
         public static final double IS_MOVING_THRESHOLD_METERS = Units.inchesToMeters(2d);
 
         public static final boolean DRIVE_HIGHER_AUTO_LIMITS = false;

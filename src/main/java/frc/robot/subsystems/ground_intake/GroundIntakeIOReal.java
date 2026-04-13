@@ -7,10 +7,13 @@ import static frc.robot.util.ConversionUtil.*;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -21,15 +24,20 @@ import frc.robot.util.PhoenixUtil;
 import frc.robot.util.PhoenixUtil.MotorAction;
 
 public final class GroundIntakeIOReal implements GroundIntakeIO {
-    private final TalonFX m_rollerMotor = new TalonFX(rollerMotorId, Constants.CANBUS);
+    private final TalonFX m_rightRollerMotor = new TalonFX(rightRollerMotorId, Constants.CANBUS);
+    // private final TalonFX m_leftRollerMotor = new TalonFX(leftRollerMotorId, Constants.CANBUS);
     private final TalonFX m_actuatorMotor = new TalonFX(actuatorMotorId, Constants.CANBUS);
 
     private double m_actuatorTargetPosition = actuatorPositionHome;
 
-    private final StatusSignal<AngularVelocity> m_rollerVelocitySignal = m_rollerMotor.getVelocity();
-    private final StatusSignal<Current> m_rollerCurrentSignal = m_rollerMotor.getSupplyCurrent();
+    private final StatusSignal<AngularVelocity> m_rightRollerVelocitySignal = m_rightRollerMotor.getVelocity();
+    private final StatusSignal<Current> m_rightRollerCurrentSignal = m_rightRollerMotor.getSupplyCurrent();
+
+    // private final StatusSignal<AngularVelocity> m_leftRollerVelocitySignal = m_rightRollerMotor.getVelocity();
+    // private final StatusSignal<Current> m_leftRollerCurrentSignal = m_rightRollerMotor.getSupplyCurrent();
 
     private final StatusSignal<Angle> m_actuatorPositionSignal = m_actuatorMotor.getPosition();
+    private final StatusSignal<AngularVelocity> m_actuatorVelocitySignal = m_actuatorMotor.getVelocity();
     private final StatusSignal<Current> m_actuatorCurrentSignal = m_actuatorMotor.getSupplyCurrent();
 
     private final MotionMagicVoltage m_actuatorPositionRequest = new MotionMagicVoltage(m_actuatorTargetPosition)
@@ -37,11 +45,12 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
     // private final DutyCycleOut m_rollerDutyCycleRequest = new DutyCycleOut(0d);
     private final MotionMagicVelocityVoltage m_rollerVelocityRequest = new MotionMagicVelocityVoltage(0d)
         .withEnableFOC(true);
+    private final DutyCycleOut m_actuatorDutyCycle = new DutyCycleOut(actuatorZeroDutyCycle);
 
     public GroundIntakeIOReal() {
         var rollerConfig = new TalonFXConfiguration();
         rollerConfig.MotorOutput.NeutralMode = rollerNeutralMode;
-        rollerConfig.MotorOutput.Inverted = rollerInverted;
+        rollerConfig.MotorOutput.Inverted = rightRollerInverted;
 
         rollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
         rollerConfig.CurrentLimits.SupplyCurrentLimit = rollerCurrentLimit;
@@ -69,13 +78,22 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
 
         // PhoenixUtil.tryUntilOk(5, () -> m_rollerMotor.getConfigurator().apply(rollerConfig));
         // PhoenixUtil.tryUntilOk(5, () -> m_actuatorMotor.getConfigurator().apply(actuatorConfig));
-        MotorAction.configureMotor("Intake Roller", m_rollerMotor, rollerConfig).run();
+        MotorAction.configureMotor("Intake Roller", m_rightRollerMotor, rollerConfig).run();
         MotorAction.configureMotor("Intake Actuator", m_actuatorMotor, actuatorConfig).run();
 
-        BaseStatusSignal.setUpdateFrequencyForAll(50d, m_rollerVelocitySignal, m_rollerCurrentSignal, m_actuatorPositionSignal, m_actuatorCurrentSignal);
+        BaseStatusSignal.setUpdateFrequencyForAll(50d,
+            m_rightRollerVelocitySignal,
+            m_rightRollerCurrentSignal,
+            // m_leftRollerVelocitySignal,
+            // m_leftRollerCurrentSignal,
+            m_actuatorPositionSignal,
+            m_actuatorVelocitySignal,
+            m_actuatorCurrentSignal);
 
         // PhoenixUtil.tryUntilOk(5, () -> m_actuatorMotor.setPosition(m_actuatorTargetPosition));
         MotorAction.setMotorPosition("Intake Acuator", m_actuatorMotor, m_actuatorTargetPosition).run();
+
+        // m_leftRollerMotor.setControl(new Follower(rightRollerMotorId, leftRollerMotorAlignment));
 
         RobotEvent.OnTeleopEnabled.addListener(() -> setRollerCurrentLimit(rollerCurrentLimit));
         RobotEvent.OnAutoEnabled.addListener(() -> setRollerCurrentLimit(rollerCurrentLimitAuto));
@@ -83,7 +101,14 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
     
     @Override
     public void updateInputs(GroundIntakeIOInputs inputs) {
-        BaseStatusSignal.refreshAll(m_rollerVelocitySignal, m_rollerCurrentSignal, m_actuatorPositionSignal, m_actuatorCurrentSignal);
+        BaseStatusSignal.refreshAll(
+            m_rightRollerVelocitySignal,
+            m_rightRollerCurrentSignal,
+            // m_leftRollerVelocitySignal,
+            // m_leftRollerCurrentSignal,
+            m_actuatorPositionSignal,
+            m_actuatorVelocitySignal,
+            m_actuatorCurrentSignal);
 
         final double actuatorTargetPosition = m_actuatorTargetPosition;
 
@@ -97,14 +122,18 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
         inputs.actuatorPositionDegrees = mechanismPositionToAngle(actuatorPositionRotations).in(Degrees);
         inputs.actuatorMotorCurrentAmps = m_actuatorCurrentSignal.getValueAsDouble();
 
-        inputs.rollerMotorDutyCycle = PhoenixUtil.getRequestDutyCycle(m_rollerMotor.getAppliedControl());
-        inputs.rollerMotorVelocityRPS = m_rollerVelocitySignal.getValueAsDouble();
-        inputs.rollerMotorCurrentAmps = m_rollerCurrentSignal.getValueAsDouble();
+        inputs.rightRollerMotorDutyCycle = PhoenixUtil.getRequestDutyCycle(m_rightRollerMotor.getAppliedControl());
+        inputs.rightRollerMotorVelocityRPS = m_rightRollerVelocitySignal.getValueAsDouble();
+        inputs.rightRollerMotorCurrentAmps = m_rightRollerCurrentSignal.getValueAsDouble();
+
+        // inputs.leftRollerMotorDutyCycle = PhoenixUtil.getRequestDutyCycle(m_leftRollerMotor.getAppliedControl());
+        // inputs.leftRollerMotorVelocityRPS = m_leftRollerVelocitySignal.getValueAsDouble();
+        // inputs.leftRollerMotorCurrentAmps = m_leftRollerCurrentSignal.getValueAsDouble();
     }
 
     @Override
     public void idle() {
-        m_rollerMotor.disable();
+        m_rightRollerMotor.disable();
         m_actuatorMotor.disable();
     }
 
@@ -114,16 +143,35 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
         m_actuatorMotor.setControl(m_actuatorPositionRequest.withPosition(position));
     }
     @Override
+    public void actuatorStop() {
+        m_actuatorMotor.disable();
+    }
+
+    @Override
     public void rollerVelocity(AngularVelocity velocity) {
-        m_rollerMotor.setControl(m_rollerVelocityRequest.withVelocity(velocity));
+        m_rightRollerMotor.setControl(m_rollerVelocityRequest.withVelocity(velocity));
     }
     @Override
     public void rollerStop() {
-        m_rollerMotor.disable();
+        m_rightRollerMotor.disable();
+    }
+
+    @Override
+    public void actuatorZeroingDrive() {
+        m_actuatorMotor.setControl(m_actuatorDutyCycle);
+    }
+    @Override
+    public void actuatorZero() {
+        // PhoenixUtil.tryUntilOk(5, () -> m_actuatorMotor.setPosition(actuatorPositionHome));
+        MotorAction.setMotorPosition("Shooter actuator", m_actuatorMotor, actuatorPositionHome).run();
+    }
+    @Override
+    public boolean actuatorCanZero() {
+        return Math.abs(m_actuatorVelocitySignal.getValueAsDouble()) <= actuatorZeroVelocityThresholdRPS;
     }
 
     private void setRollerCurrentLimit(double limit) {
-        MotorAction.updateMotorConfig("Intake Roller", m_rollerMotor, (config) -> {
+        MotorAction.updateMotorConfig("Intake Roller", m_rightRollerMotor, (config) -> {
             config.CurrentLimits.SupplyCurrentLimit = limit;
         }).queue();
     }

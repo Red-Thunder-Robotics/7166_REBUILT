@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.473256433007986,
-        "y": 5.3588819875776394
+        "x": 7.915891748003549,
+        "y": 3.676867790594498
       },
       "isLocked": false,
       "linkedName": "LeftNZ2"
@@ -17,15 +17,15 @@
     {
       "anchor": {
         "x": 5.884044117647059,
-        "y": 5.555778186274511
+        "y": 5.65
       },
       "prevControl": {
         "x": 6.284044117647059,
-        "y": 5.555778186274511
+        "y": 5.65
       },
       "nextControl": {
         "x": 5.184044117647058,
-        "y": 5.555778186274511
+        "y": 5.65
       },
       "isLocked": false,
       "linkedName": null
@@ -36,12 +36,12 @@
         "y": 5.556
       },
       "prevControl": {
-        "x": 3.7089999999999996,
-        "y": 5.556
+        "x": 3.6263531499556345,
+        "y": 5.71299023957409
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "LeftShootBump"
     }
   ],
   "rotationTargets": [
@@ -50,7 +50,7 @@
       "rotationDegrees": 90.0
     },
     {
-      "waypointRelativePos": 1.1,
+      "waypointRelativePos": 1.8912466843501332,
       "rotationDegrees": 90.0
     }
   ],
@@ -60,7 +60,7 @@
       "minWaypointRelativePos": 0.3833333333333335,
       "maxWaypointRelativePos": 1.810416666666669,
       "constraints": {
-        "maxVelocity": 4.0,
+        "maxVelocity": 3.0,
         "maxAcceleration": 10.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -81,12 +81,12 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": 90.0
+    "rotation": -42.77815773281422
   },
   "reversed": false,
   "folder": "Left",
   "idealStartingState": {
-    "velocity": 1.6,
+    "velocity": 2.5,
     "rotation": 90.0
   },
   "useDefaultConstraints": true
