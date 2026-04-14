@@ -20,8 +20,6 @@ public final class ShooterConstants {
     // public static final long spinUpDurationMilliseconds = 800L;
     public static final double shouldIndexFlywheelVelocityThresholdRPS = 1.5d; // 5.5
     public static final double shouldIndexKickerVelocityThresholdRPS = 1.5d;
-    // public static final double shouldIndexKickerVelocityThresholdSeconds = 0.5d;
-    // public static final double shooterReverseCountSeconds = 0.1d;
     public static final double latencyCompensationSeconds = 0.150d;
     
     public static final int flywheelMotorIdTopLeft = 17;

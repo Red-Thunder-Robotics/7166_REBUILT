@@ -30,6 +30,7 @@ public final class IndexerIOReal implements IndexerIO {
 
     private final MotionMagicVelocityVoltage m_indexerVelocityRequest = new MotionMagicVelocityVoltage(0d)
         .withEnableFOC(true);
+        // .withEnableFOC(false);
     private final MotionMagicVelocityVoltage m_topRollerVelocityRequest = new MotionMagicVelocityVoltage(0d)
         .withEnableFOC(true);
     private final MotionMagicVelocityVoltage m_lowerKickerVelocityRequest = new MotionMagicVelocityVoltage(0d)

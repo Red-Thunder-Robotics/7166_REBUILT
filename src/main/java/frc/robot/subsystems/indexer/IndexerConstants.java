@@ -10,14 +10,16 @@ import edu.wpi.first.units.measure.AngularVelocity;
 public final class IndexerConstants {
     public static final int indexerMotorId = 14;
     public static final int indexerCurrentLimit = 25; // 30
-    public static final double indexerMotorReduction = (18d / 12d);
+    public static final double indexerMotorReduction = (24d / 12d); // 18 / 12
     public static final NeutralModeValue indexerNeutralMode = NeutralModeValue.Coast;
     public static final InvertedValue indexerInverted = InvertedValue.CounterClockwise_Positive;
-    public static final AngularVelocity indexerOutputVelocity = RPM.of(3500d);
+    // public static final AngularVelocity indexerOutputVelocity = RPM.of(3500d);
+    public static final AngularVelocity indexerOutputVelocity = RPM.of(2600d);
     public static final AngularVelocity indexerOutputVelocityReverse = RPM.of(-1000d);
 
-    public static final double indexerPidP = 0.9d;
+    public static final double indexerPidP = 1.75d; // 0.9
     public static final double indexerPidV = 12d / (5800d / 60d);
+    // public static final double indexerPidV = 12d / (6000d / 60d);
     public static final double indexerTargetAcceleration = 266d;
 
     public static final int topRollerMotorId = 15;

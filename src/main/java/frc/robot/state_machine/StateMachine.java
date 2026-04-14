@@ -341,8 +341,8 @@ public class StateMachine {
         public static Command zeroMechanisms(boolean skipDrive, InterruptionBehavior interruptionBehavior) {
             return cmdName(Commands.parallel(
                 ShooterSubsystem.instance.zeroMechanisms(skipDrive),
-                // GroundIntakeSubsystem.instance.zeroMechanisms(skipDrive)
-                GroundIntakeSubsystem.instance.zeroMechanisms(true)
+                GroundIntakeSubsystem.instance.zeroMechanisms(skipDrive)
+                // GroundIntakeSubsystem.instance.zeroMechanisms(true)
             )
                 .withInterruptBehavior(interruptionBehavior)
                 .ignoringDisable(true), "ZeroMechanisms");

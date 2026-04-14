@@ -52,7 +52,7 @@ public final class ShooterSubsystem extends SubsystemBase {
     private final ShooterIOInputsAutoLogged m_inputs;
 
     private final Timer m_autoStowTimer = new Timer();
-    private final Timer m_kickerStartupTimer = new Timer();
+    private boolean m_isRobotShooting = false;
     private boolean m_mechanismsPastThreshold = false;
 
     public ShooterSubsystem(ShooterIO io) {
@@ -62,14 +62,12 @@ public final class ShooterSubsystem extends SubsystemBase {
         m_inputs = new ShooterIOInputsAutoLogged();
 
         RobotEvent.OnShootingStart.addListener(() -> {
-            m_kickerStartupTimer.reset();
-            m_kickerStartupTimer.start();
             m_mechanismsPastThreshold = false;
+            m_isRobotShooting = true;
         });
         RobotEvent.OnShootingEnd.addListener(() -> {
-            // StateMachine.setIndexerShooterStuff(false);
-            m_kickerStartupTimer.stop();
             m_mechanismsPastThreshold = false;
+            m_isRobotShooting = false;
         });
     }
 
@@ -152,8 +150,7 @@ public final class ShooterSubsystem extends SubsystemBase {
 
     @AutoLogOutput(key="Shooter/ShouldIndex")
     public boolean shouldIndex() {
-        // TODO: if we continue to not use the timer, use a boolean instead of the timer
-        if (!m_kickerStartupTimer.isRunning())
+        if (!m_isRobotShooting)
             return false;
 
         final double flywheelTarget = m_inputs.flywheelTargetVelocityRPS;
@@ -166,18 +163,6 @@ public final class ShooterSubsystem extends SubsystemBase {
         final boolean kicker = Math.abs(kickerTarget - m_inputs.upperKickerMotorVelocityRPS) <= shouldIndexKickerVelocityThresholdRPS;
 
         final boolean indexer = IndexerSubsystem.instance.getIsPastThreshold();
-
-        // // return flywheel && kicker;
-        // return flywheel;
-
-        // if (!m_flywheelHasSpunUp && flywheel)
-        //     m_flywheelHasSpunUp = true;
-        // // if (m_kickerStartupTimer.hasElapsed(shooterReverseCountSeconds))
-        // //     StateMachine.setWantsReverseIndexerBeforeShoot(false);
-        // if (m_kickerStartupTimer.hasElapsed(shouldIndexKickerVelocityThresholdSeconds))
-        //     StateMachine.setIndexerShooterStuff(true);
-        // // return m_flywheelHasSpunUp && m_kickerStartupTimer.hasElapsed(shouldIndexKickerVelocityThresholdSeconds);
-        // return m_flywheelHasSpunUp;
 
         if (!m_mechanismsPastThreshold && flywheel && kicker && indexer) {
             m_mechanismsPastThreshold = true;
@@ -196,7 +181,8 @@ public final class ShooterSubsystem extends SubsystemBase {
     //     return m_exitVelocity;
     // }
     public LinearVelocity getExitVelocity() {
-        final double multiplier = 1.07d;
+        // final double multiplier = 1.07d;
+        final double multiplier = 0.6d;
 
         // return InchesPerSecond.of(m_inputs.flywheelMotorLeftVelocityRPS * (2d * Math.PI) * flywheelRadius.in(Inches) / 2d);
         final double vb = m_inputs.flywheelMotorTopLeftVelocityRPS * (2d * Math.PI) * flywheelRadiusBig.in(Inches);

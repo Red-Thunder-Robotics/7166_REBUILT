@@ -689,28 +689,21 @@ public class Robot extends LoggedRobot {
 
                     Angle turretAngle = Constants.USE_TURRET ? m_turretSubsystem.getAngle() : Degrees.of(0d);
                     Rotation2d fieldYaw = robot.getRotation().plus(new Rotation2d(turretAngle.in(Radians)));
-                    double pitchRad = m_shooterSubsystem.getHoodAngle().plus(mechanismPositionToAngle(hoodPositionHome)).in(Radians);
+                    double pitchRad = Degrees.of(90d).minus(m_shooterSubsystem.getHoodAngle().plus(mechanismPositionToAngle(hoodPositionHome))).in(Radians);
 
-                    Translation3d localDirection = new Translation3d(
-                        Math.cos(pitchRad),
-                        0d,
-                        Math.sin(pitchRad)
-                    );
-                    Rotation3d fieldRotation = new Rotation3d(
-                        0d,
-                        0d,
-                        fieldYaw.getRadians()
-                    );
+                    double vHorizontal = vel.in(MetersPerSecond) * Math.cos(pitchRad);
+                    double vVertical = vel.in(MetersPerSecond) * Math.sin(pitchRad);
 
-                    Translation3d fieldDirection = localDirection.rotateBy(fieldRotation);
-                    fieldDirection = fieldDirection.times(vel.in(MetersPerSecond));
-                    // is this maliciously ensuring "works in sim"??? idk
-                    fieldDirection = fieldDirection.plus(ConversionUtil.chassisSpeedsToTranslation3d(m_driveSubsystem.getChassisSpeeds()));
+                    double vx = vHorizontal * Math.cos(fieldYaw.getRadians());
+                    double vy = vHorizontal * Math.sin(fieldYaw.getRadians());
+
+                    Translation3d fieldDirection = new Translation3d(vx, vy, vVertical);
 
                     return fieldDirection;
                 }
             ))), Commands.none(), m_indexerSubsystem::getIsFeeding),
-            Commands.waitSeconds(0.002d)
+            // Commands.waitSeconds(0.002d)
+            Commands.waitSeconds(1d / 15d)
         ), "RepeatingSimFuel");
     }
 }

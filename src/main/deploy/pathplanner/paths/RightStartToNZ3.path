@@ -8,38 +8,33 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.1843296023692655,
-        "y": 0.6708332594032357
+        "x": 6.433720663874379,
+        "y": 0.6914255362532076
       },
       "isLocked": false,
       "linkedName": "RightStartPos"
     },
     {
       "anchor": {
-        "x": 0.7854392191659267,
-        "y": 0.636
+        "x": 7.795,
+        "y": 3.3308074534161483
       },
       "prevControl": {
-        "x": 1.0712007249475863,
-        "y": 0.6197131433804058
+        "x": 7.891748003549246,
+        "y": 1.3349245785270625
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "OutPostPos"
+      "linkedName": "RightNZ3"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.7586206896551718,
-      "rotationDegrees": 180.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "IntakeDeployOn",
-      "waypointRelativePos": 0.647651006711411,
+      "waypointRelativePos": 0.33760972316003773,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -58,13 +53,13 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 180.0
+    "velocity": 2.5,
+    "rotation": -90.0
   },
   "reversed": false,
   "folder": "Right",
   "idealStartingState": {
-    "velocity": 0,
+    "velocity": 0.0,
     "rotation": 180.0
   },
   "useDefaultConstraints": true

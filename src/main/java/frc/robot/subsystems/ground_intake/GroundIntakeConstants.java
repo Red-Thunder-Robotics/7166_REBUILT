@@ -13,14 +13,14 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 
 public final class GroundIntakeConstants {
-    public static final int rightRollerMotorId = 12;
-    public static final int rollerCurrentLimit = 45;
-    public static final int rollerCurrentLimitAuto = 50;
+    public static final int rightRollerMotorId = 23;
+    public static final int rollerCurrentLimit = 25; // 45
+    public static final int rollerCurrentLimitAuto = 40; // 30
     // public static final double rollerMotorReduction = (18d / 12d);
     public static final NeutralModeValue rollerNeutralMode = NeutralModeValue.Coast;
     public static final InvertedValue rightRollerInverted = InvertedValue.CounterClockwise_Positive;
 
-    public static final int leftRollerMotorId = 100;
+    public static final int leftRollerMotorId = 12;
     public static final MotorAlignmentValue leftRollerMotorAlignment = MotorAlignmentValue.Opposed;
 
     public static final Distance rollerCircumference = Meters.of(0.11172d);

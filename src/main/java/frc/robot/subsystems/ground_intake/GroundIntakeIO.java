@@ -16,6 +16,9 @@ public interface GroundIntakeIO {
         double actuatorPositionDegrees;
         double actuatorMotorCurrentAmps;
 
+        double rollerTargetVelocityRPS;
+        double rollerTotalCurrentAmps;
+
         double rightRollerMotorDutyCycle;
         double rightRollerMotorVelocityRPS;
         double rightRollerMotorCurrentAmps;
