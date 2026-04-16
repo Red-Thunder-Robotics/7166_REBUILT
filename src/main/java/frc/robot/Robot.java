@@ -466,7 +466,7 @@ public class Robot extends LoggedRobot {
         //             .andThen(Commands.waitSeconds(0.4d))
         //             .andThen(RobotCommands.setShooterIdle())
         //     ), "AfterShoot"));
-        Command waitForEmptyHopper = Commands.waitSeconds(4d); // 12; 5
+        Command waitForEmptyHopper = Commands.waitSeconds(3.75d); // 12; 5; 4
         NamedCommands.registerCommand("AfterShoot", cmdName(waitForEmptyHopper.andThen(RobotCommands.disengageShooter()), "AfterShoot"));
         NamedCommands.registerCommand("AfterShootQuick", cmdName(Commands.waitSeconds(2.5d).andThen(RobotCommands.disengageShooter()), "AfterShootQuick"));
 
