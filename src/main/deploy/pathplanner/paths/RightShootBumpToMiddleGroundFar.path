@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.152,
-        "y": 1.448
+        "x": 3.4895385980479148,
+        "y": 2.4
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.9744720496894406,
-        "y": 1.085439219165927
+        "x": 2.564028393966282,
+        "y": 1.8741348713398396
       },
       "isLocked": false,
-      "linkedName": "RightShootBump"
+      "linkedName": "RightBumpLanding"
     },
     {
       "anchor": {
@@ -140,7 +140,7 @@
       "minWaypointRelativePos": 3.3,
       "maxWaypointRelativePos": 6.0,
       "constraints": {
-        "maxVelocity": 2.25,
+        "maxVelocity": 2.3,
         "maxAcceleration": 4.0,
         "maxAngularVelocity": 360.0,
         "maxAngularAcceleration": 720.0,
@@ -172,14 +172,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 2.25,
+    "velocity": 2.3,
     "rotation": 90.0
   },
   "reversed": false,
   "folder": "Right",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 60.88971241988325
+    "rotation": 55.07483691976046
   },
   "useDefaultConstraints": true
 }

@@ -39,25 +39,9 @@
         "x": 4.5116237799467624,
         "y": 2.3892014196983133
       },
-      "nextControl": {
-        "x": 3.0167492516598773,
-        "y": 2.404995135252101
-      },
-      "isLocked": false,
-      "linkedName": "RightBumpLanding"
-    },
-    {
-      "anchor": {
-        "x": 3.152,
-        "y": 1.448
-      },
-      "prevControl": {
-        "x": 2.709651771937075,
-        "y": 1.6008137596212806
-      },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "RightShootBump"
+      "linkedName": "RightBumpLanding"
     }
   ],
   "rotationTargets": [
@@ -97,12 +81,12 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": 60.88971241988325
+    "rotation": 55.07483691976046
   },
   "reversed": false,
   "folder": "Right",
   "idealStartingState": {
-    "velocity": 2.25,
+    "velocity": 2.3,
     "rotation": -90.0
   },
   "useDefaultConstraints": true
