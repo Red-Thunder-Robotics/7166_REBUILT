@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.803220940550133,
-        "y": 4.071215616681455
+        "x": 7.795,
+        "y": 4.031
       },
       "isLocked": false,
       "linkedName": "RightNZ3"
@@ -32,12 +32,28 @@
     },
     {
       "anchor": {
-        "x": 3.009,
+        "x": 3.4895385980479148,
         "y": 2.4
       },
       "prevControl": {
-        "x": 3.7089999999999996,
-        "y": 2.4
+        "x": 4.5116237799467624,
+        "y": 2.3892014196983133
+      },
+      "nextControl": {
+        "x": 3.0167492516598773,
+        "y": 2.404995135252101
+      },
+      "isLocked": false,
+      "linkedName": "RightBumpLanding"
+    },
+    {
+      "anchor": {
+        "x": 3.152,
+        "y": 1.448
+      },
+      "prevControl": {
+        "x": 2.709651771937075,
+        "y": 1.6008137596212806
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,8 +62,12 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.888594164456233,
-      "rotationDegrees": -90.0
+      "waypointRelativePos": 1,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.8938992042440326,
+      "rotationDegrees": 0.0
     }
   ],
   "constraintZones": [
@@ -77,12 +97,12 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": 42.835
+    "rotation": 60.88971241988325
   },
   "reversed": false,
   "folder": "Right",
   "idealStartingState": {
-    "velocity": 2.5,
+    "velocity": 2.25,
     "rotation": -90.0
   },
   "useDefaultConstraints": true

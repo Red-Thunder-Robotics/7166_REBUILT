@@ -33,7 +33,6 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.ctre.phoenix6.SignalLogger;
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
@@ -70,6 +69,7 @@ import frc.robot.commands.IntakeCommands;
 import frc.robot.commands.SimulationCommands;
 import frc.robot.commands.SimulationCommands.SimFuelCommand;
 import frc.robot.generated.TunerConstants;
+import frc.robot.modified.ModifiedAutoBuilder;
 import frc.robot.state_machine.ClimberState;
 import frc.robot.state_machine.IntakeState;
 import frc.robot.state_machine.LiveConfig;
@@ -273,7 +273,7 @@ public class Robot extends LoggedRobot {
         setupNamedCommands();
         m_driveSubsystem.configurePathPlanner();
         
-        m_autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+        m_autoChooser = new LoggedDashboardChooser<>("Auto Choices", ModifiedAutoBuilder.buildAutoChooser());
 
         m_autoChooser.addOption(
             "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(m_driveSubsystem));
@@ -458,7 +458,6 @@ public class Robot extends LoggedRobot {
         NamedCommands.registerCommand("IntakeHomeOff", RobotCommands.retractIntakeOff());
 
         // FIXME: waitForEmptyHopper command using vision
-        Command waitForEmptyHopper = Commands.waitSeconds(4d); // 12; 5
         // NamedCommands.registerCommand("AfterShoot", cmdName(waitForEmptyHopper
         //     .andThen(
         //         RobotCommands.disengageShooter())
@@ -467,12 +466,14 @@ public class Robot extends LoggedRobot {
         //             .andThen(Commands.waitSeconds(0.4d))
         //             .andThen(RobotCommands.setShooterIdle())
         //     ), "AfterShoot"));
+        Command waitForEmptyHopper = Commands.waitSeconds(4d); // 12; 5
         NamedCommands.registerCommand("AfterShoot", cmdName(waitForEmptyHopper.andThen(RobotCommands.disengageShooter()), "AfterShoot"));
+        NamedCommands.registerCommand("AfterShootQuick", cmdName(Commands.waitSeconds(2.5d).andThen(RobotCommands.disengageShooter()), "AfterShootQuick"));
 
         // NamedCommands.registerCommand("ClimbRotate", Commands.defer(() -> {
         //     var robotPose = StateMachine.odometryAndVision.getEstimatedPose();
         //     robotPose = new Pose2d(robotPose.getTranslation(), Rotation2d.kZero);
-        //     return AutoBuilder.pathfindToPose(robotPose, new PathConstraints(
+        //     return ModifiedAutoBuilder.pathfindToPose(robotPose, new PathConstraints(
         //         MetersPerSecond.of(1d), MetersPerSecondPerSecond.of(1d),
         //         RadiansPerSecond.of(360d), RadiansPerSecondPerSecond.of(720d)));
         // }, Set.of()));

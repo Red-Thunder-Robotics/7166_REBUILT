@@ -109,6 +109,9 @@ public class OdometryAndVision {
     }
 
     public void addVisionObservation(VisionObservation observation) {
+        // if (estimatedPose.getX() > FieldConstants.FIELD_LENGTH.in(Meters) || estimatedPose.getY() > FieldConstants.FIELD_WIDTH.in(Meters))
+        //     estimatedPose = new Pose2d();
+
         // If the measurement is old enough to be outside the pose buffer's timespan, skip
         try {
             if (poseBuffer.getInternalBuffer().lastKey() - poseBufferSizeSeconds > observation.timestamp())

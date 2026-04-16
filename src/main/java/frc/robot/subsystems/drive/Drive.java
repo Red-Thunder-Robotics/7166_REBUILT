@@ -21,6 +21,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.controllers.PathFollowingController;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
@@ -45,12 +46,14 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.Mode;
 import frc.robot.generated.TunerConstants;
+import frc.robot.modified.ModifiedAutoBuilder;
 import frc.robot.modified.ModifiedPPHolonomicDriveController;
 import frc.robot.state_machine.OdometryAndVision;
 import frc.robot.state_machine.StateMachine;
@@ -60,6 +63,9 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -144,7 +150,7 @@ public class Drive extends SubsystemBase {
 
   public void configurePathPlanner() {
     // Configure AutoBuilder for PathPlanner
-    AutoBuilder.configure(
+    configureAutoBuilder(
       // this::getPose,
       StateMachine.odometryAndVision::getEstimatedPose,
       // this::setPose,
@@ -169,6 +175,20 @@ public class Drive extends SubsystemBase {
           Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
         });
   }
+
+  private void configureAutoBuilder(
+        Supplier<Pose2d> poseSupplier,
+        Consumer<Pose2d> resetPose,
+        Supplier<ChassisSpeeds> robotRelativeSpeedsSupplier,
+        Consumer<ChassisSpeeds> output,
+        PathFollowingController controller,
+        RobotConfig robotConfig,
+        BooleanSupplier shouldFlipPath,
+        Subsystem... driveRequirements)
+    {
+      ModifiedAutoBuilder.configure(poseSupplier, resetPose, robotRelativeSpeedsSupplier, output, controller, robotConfig, shouldFlipPath, driveRequirements);
+      AutoBuilder.configure(poseSupplier, resetPose, robotRelativeSpeedsSupplier, output, controller, robotConfig, shouldFlipPath, driveRequirements);
+    }
 
   @Override
   public void periodic() {

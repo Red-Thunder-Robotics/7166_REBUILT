@@ -45,7 +45,7 @@ public final class IndexerIOSim implements IndexerIO {
     }
     @Override
     public void indexerStop() {
-        m_indexerTargetVelocity = 0d;
+        indexerVelocity(RotationsPerSecond.of(0d));
     }
 
     @Override
@@ -55,7 +55,7 @@ public final class IndexerIOSim implements IndexerIO {
     }
     @Override
     public void topRollerStop() {
-        m_topRollerTargetVelocity = 0d;
+        topRollerVelocity(RotationsPerSecond.of(0d));
     }
 
     @Override
@@ -65,6 +65,6 @@ public final class IndexerIOSim implements IndexerIO {
     }
     @Override
     public void lowerKickerStop() {
-        m_lowerKickerTargetVelocity = 0d;
+        lowerKickerVelocity(RotationsPerSecond.of(0d));
     }
 }

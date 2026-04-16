@@ -5,7 +5,9 @@ import static frc.robot.subsystems.indexer.IndexerConstants.*;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.state_machine.RobotEvent;
 import frc.robot.state_machine.StateMachine;
 
 public final class IndexerSubsystem extends SubsystemBase {
@@ -16,10 +18,20 @@ public final class IndexerSubsystem extends SubsystemBase {
 
     private boolean m_isFeeding;
 
+    private Timer m_reverseTimer = new Timer();
+
     public IndexerSubsystem(IndexerIO io) {
         instance = this;
 
         m_io = io;
+
+        RobotEvent.OnShootingStart.addListener(() -> {
+            m_io.topRollerVelocity(topRollerVelocityReverse);
+            m_reverseTimer.restart();
+        });
+        RobotEvent.OnShootingEnd.addListener(() -> {
+            m_reverseTimer.stop();
+        });
     }
 
     @Override
@@ -44,14 +56,15 @@ public final class IndexerSubsystem extends SubsystemBase {
                     setIdle();
                     break;
                 case Shooting:
-                    if (StateMachine.shouldIndex()) {
-                        isFeeding = true;
-                        m_io.indexerVelocity(indexerOutputVelocity);
-                        m_io.topRollerVelocity(topRollerVelocity);
-                        // m_io.lowerKickerVelocity(lowerKickerVelocity);
-                    } else
-                        setIdle();
-                    m_io.lowerKickerVelocity(lowerKickerVelocity);
+                    if (m_reverseTimer.hasElapsed(reverseTime)) {
+                        if (StateMachine.shouldIndex()) {
+                            isFeeding = true;
+                            m_io.indexerVelocity(indexerOutputVelocity);
+                            m_io.topRollerVelocity(topRollerVelocity);
+                        } else
+                            setIdle();
+                        m_io.lowerKickerVelocity(lowerKickerVelocity);
+                    }
                     break;
                 case Reversing:
                     m_io.indexerVelocity(indexerOutputVelocityReverse);

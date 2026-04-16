@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.915891748003549,
-        "y": 3.676867790594498
+        "x": 7.843,
+        "y": 4.087480035492458
       },
       "isLocked": false,
       "linkedName": "LeftNZ2"
@@ -33,11 +33,11 @@
     {
       "anchor": {
         "x": 3.009,
-        "y": 5.556
+        "y": 5.662
       },
       "prevControl": {
         "x": 3.6263531499556345,
-        "y": 5.71299023957409
+        "y": 5.81899023957409
       },
       "nextControl": null,
       "isLocked": false,

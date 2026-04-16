@@ -152,6 +152,7 @@ public class StateMachine {
     //     indexerQuickReverse = wants;
     // }
 
+    private static boolean turretShouldIndexFlagCleared = false;
     public static boolean turretShouldIndex() {
         if (LiveConfig.getIsPit())
             return true;
@@ -159,7 +160,9 @@ public class StateMachine {
         return Constants.USE_TURRET ? TurretSubsystem.instance.shouldIndex() : Controls.lockWheelsButton.getAsBoolean() || (withinJoystickRotationErrorThreshold || allianceFeedGood);
     }
     public static boolean shouldIndex() {
-        return turretShouldIndex() &&
+        if (turretShouldIndex())
+            turretShouldIndexFlagCleared = true;
+        return turretShouldIndexFlagCleared &&
             ShooterSubsystem.instance.shouldIndex();
     }
 
@@ -174,8 +177,10 @@ public class StateMachine {
         ShooterSubsystem.instance.stateUpdate(newShooterState);
         if (newShooterState == ShooterState.Shooting)
             RobotEvent.OnShootingStart.trigger();
-        else if (oldShooterState != ShooterState.Shooting)
+        else if (oldShooterState != ShooterState.Shooting) {
             RobotEvent.OnShootingEnd.trigger();
+            turretShouldIndexFlagCleared = false;
+        }
     }
 
     private static ClimberState climberState = ClimberState.Idle;

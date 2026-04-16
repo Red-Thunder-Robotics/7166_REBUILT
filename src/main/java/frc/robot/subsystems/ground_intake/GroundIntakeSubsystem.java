@@ -37,12 +37,22 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
     private boolean m_rollerForward = false;
     private boolean m_rollerReverse = false;
 
-    private static final double oscillateFrequencySeconds = 0.7d;
-    private static final double oscillateStartDelaySeconds = 1d; // 1
-    private static final int oscillateCountStopThreshold = 6;
-    private static final boolean oscillateStopAfterCounInTeleop = false;
-    private Timer m_oscillatorTimer = new Timer();
-    private int m_oscillateCount = 0;
+    // private static final double oscillateFrequencySeconds = 0.7d;
+    // private static final double oscillateStartDelaySeconds = 1d; // 1
+    // // private static final int oscillateCountStopThreshold = 6;
+    // private static final int oscillateCountStopThreshold = 1;
+    // private static final boolean oscillateStopAfterCounInTeleop = false;
+    // private Timer m_oscillatorTimer = new Timer();
+    // private int m_oscillateCount = 0;
+
+    private Timer m_pushTimer = new Timer();
+    private enum PushStep {
+        OutOne,
+        HalfwayTwo,
+        InThree
+    }
+    private PushStep m_pushStep = PushStep.OutOne;
+    private static final double pushFrequencySeconds = 0.5d;
 
     public GroundIntakeSubsystem(GroundIntakeIO io) {
         instance = this;
@@ -70,51 +80,85 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
             retract();
 
         if (m_rollerForward) {
-            final double speedsX = Drive.instance.getChassisSpeeds().vxMetersPerSecond;
-            AngularVelocity rollerOutput = rollerOutputVelocity;
+            if (rollerOutputUsesVelocityControl) {
+                AngularVelocity rollerOutput = rollerOutputVelocity;
 
-            /*
-             * goal is slow down rollers as you drive robot-relative forward.
-             * chassis speed multiplied by 60 -> meters per minute
-             * then divide by roller circumference -> rpm offset
-             * substract rollerOutput minus rpm offset with a certain floor
-             */
-            if (rollerOutputVelocityUsesChassisSpeeds && DriverStation.isTeleopEnabled()) {
-                if (speedsX > 0d) {
-                    final double rpmOffset = speedsX * 60d / rollerCircumference.in(Meters);
-                    double newRPM = rollerOutput.in(RPM) - rpmOffset;
-                    newRPM = Math.max(newRPM, rollerOutputVelocityMinimum.in(RPM));
-                    rollerOutput = RPM.of(newRPM);
-                }
+                /*
+                * goal is slow down rollers as you drive robot-relative forward.
+                * chassis speed multiplied by 60 -> meters per minute
+                * then divide by roller circumference -> rpm offset
+                * substract rollerOutput minus rpm offset with a certain floor
+                */
+                if (rollerOutputVelocityUsesChassisSpeeds && DriverStation.isTeleopEnabled()) {
+                    final double speedsX = Drive.instance.getChassisSpeeds().vxMetersPerSecond;
+                    if (speedsX > 0d) {
+                        final double rpmOffset = speedsX * 60d / rollerCircumference.in(Meters);
+                        double newRPM = rollerOutput.in(RPM) - rpmOffset;
+                        newRPM = Math.max(newRPM, rollerOutputVelocityMinimum.in(RPM));
+                        rollerOutput = RPM.of(newRPM);
+                    }
+                } else
+                    rollerOutput = rollerOutputVelocityAuto;
+
+                m_io.rollerVelocity(rollerOutput);
             } else
-                rollerOutput = rollerOutputVelocityAuto;
-
-            m_io.rollerVelocity(rollerOutput);
+                m_io.rollerCurrent(rollerOutputCurrent);
         } else if (m_rollerReverse)
-            m_io.rollerVelocity(rollerOutputVelocityReverse);
+            if (rollerOutputUsesVelocityControl)
+                m_io.rollerVelocity(rollerOutputVelocityReverse);
+            else
+                m_io.rollerCurrent(rollerOutputCurrentReverse);
 
         final boolean isTeleop = DriverStation.isTeleop();
         // final boolean shouldOscillate = StateMachine.wantsToShoot() && (isTeleop ? Controls.oscillateIntakeButton.getAsBoolean() : true);
-        final boolean shouldOscillate = StateMachine.wantsToShoot() && !isTeleop;
+        // final boolean shouldOscillate = StateMachine.wantsToShoot() && !isTeleop;
 
-        Logger.recordOutput("Intake/ShouldOscillate", shouldOscillate);
-        if (m_oscillatorTimer.isRunning()) {
-            if (shouldOscillate) {
-                final boolean waiting = isTeleop ? false : m_oscillateCount < 1 && (m_oscillatorTimer.get() < oscillateStartDelaySeconds);
-                if (!waiting && m_oscillatorTimer.advanceIfElapsed(oscillateFrequencySeconds)) {
-                    final boolean skipStop = oscillateStopAfterCounInTeleop ? false : isTeleop;
-                    if (skipStop || m_oscillateCount < oscillateCountStopThreshold) {
-                        StateMachine.setIntakeState(StateMachine.getIntakeState() == IntakeState.DeployedOff ? IntakeState.OscillateOff : IntakeState.DeployedOff);
-                        m_oscillateCount += 1;
-                    } else
+        // Logger.recordOutput("Intake/ShouldOscillate", shouldOscillate);
+        // if (m_oscillatorTimer.isRunning()) {
+        //     if (shouldOscillate) {
+        //         final boolean waiting = isTeleop ? false : m_oscillateCount < 1 && (m_oscillatorTimer.get() < oscillateStartDelaySeconds);
+        //         if (!waiting && m_oscillatorTimer.advanceIfElapsed(oscillateFrequencySeconds)) {
+        //             final boolean skipStop = oscillateStopAfterCounInTeleop ? false : isTeleop;
+        //             if (skipStop || m_oscillateCount < oscillateCountStopThreshold) {
+        //                 StateMachine.setIntakeState(StateMachine.getIntakeState() == IntakeState.DeployedOff ? IntakeState.OscillateOff : IntakeState.DeployedOff);
+        //                 m_oscillateCount += 1;
+        //             }
+        //             // else
+        //             //     StateMachine.setIntakeState(IntakeState.HomeOff);
+        //         }
+        //     } else
+        //         m_oscillatorTimer.stop();
+        // } else if (shouldOscillate) {
+        //     m_oscillatorTimer.reset();
+        //     m_oscillatorTimer.start();
+        //     m_oscillateCount = 0;
+        // }
+
+        final boolean shouldPush = StateMachine.isShooting();
+        if (m_pushTimer.isRunning()) {
+            if (shouldPush) {
+                final boolean advance = m_pushTimer.advanceIfElapsed(pushFrequencySeconds);
+                switch (m_pushStep) {
+                    case OutOne:
+                        StateMachine.setIntakeState(IntakeState.DeployedOff);
+                        if (advance)
+                            m_pushStep = PushStep.HalfwayTwo;
+                        break;
+                    case HalfwayTwo:
+                        StateMachine.setIntakeState(IntakeState.OscillateOff);
+                        if (advance)
+                            m_pushStep = PushStep.InThree;
+                        break;
+                    case InThree:
                         StateMachine.setIntakeState(IntakeState.HomeOff);
+                        break;
                 }
             } else
-                m_oscillatorTimer.stop();
-        } else if (shouldOscillate) {
-            m_oscillatorTimer.reset();
-            m_oscillatorTimer.start();
-            m_oscillateCount = 0;
+                m_pushTimer.stop();
+        } else if (shouldPush) {
+            m_pushTimer.reset();
+            m_pushTimer.start();
+            m_pushStep = PushStep.OutOne;
         }
     }
 

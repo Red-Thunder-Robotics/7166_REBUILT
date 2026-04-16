@@ -11,6 +11,7 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 
@@ -44,6 +45,7 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
     // private final DutyCycleOut m_rollerDutyCycleRequest = new DutyCycleOut(0d);
     private final MotionMagicVelocityVoltage m_rollerVelocityRequest = new MotionMagicVelocityVoltage(0d)
         .withEnableFOC(true);
+    private final TorqueCurrentFOC m_rollerCurrentRequest = new TorqueCurrentFOC(0d);
     private final DutyCycleOut m_actuatorDutyCycle = new DutyCycleOut(actuatorZeroDutyCycle);
 
     public GroundIntakeIOReal() {
@@ -54,7 +56,7 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
         rollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
         rollerConfig.CurrentLimits.SupplyCurrentLimit = rollerCurrentLimit;
 
-        // rollerConfig.Feedback.SensorToMechanismRatio = rollerMotorReduction;
+        rollerConfig.Feedback.SensorToMechanismRatio = rollerMotorReduction;
 
         rollerConfig.Slot0.kP = rollerPidP;
         rollerConfig.Slot0.kV = rollerPidV;
@@ -157,6 +159,10 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
         m_rightRollerMotor.setControl(m_rollerVelocityRequest.withVelocity(velocity));
     }
     @Override
+    public void rollerCurrent(Current current) {
+        m_rightRollerMotor.setControl(m_rollerCurrentRequest.withOutput(current));
+    }
+    @Override
     public void rollerStop() {
         m_rightRollerMotor.disable();
     }
@@ -176,7 +182,10 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
     }
 
     private void setRollerCurrentLimit(double limit) {
-        MotorAction.updateMotorConfig("Intake Roller", m_rightRollerMotor, (config) -> {
+        MotorAction.updateMotorConfig("Intake Right Roller", m_rightRollerMotor, (config) -> {
+            config.CurrentLimits.SupplyCurrentLimit = limit;
+        }).queue();
+        MotorAction.updateMotorConfig("Intake Left Roller", m_leftRollerMotor, (config) -> {
             config.CurrentLimits.SupplyCurrentLimit = limit;
         }).queue();
     }

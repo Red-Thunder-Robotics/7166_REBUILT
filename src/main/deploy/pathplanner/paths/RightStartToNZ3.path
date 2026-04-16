@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.433720663874379,
-        "y": 0.6914255362532076
+        "x": 6.700656610470276,
+        "y": 0.6186601597160597
       },
       "isLocked": false,
       "linkedName": "RightStartPos"
@@ -20,8 +20,8 @@
         "y": 3.3308074534161483
       },
       "prevControl": {
-        "x": 7.891748003549246,
-        "y": 1.3349245785270625
+        "x": 7.795,
+        "y": 1.3325810832402647
       },
       "nextControl": null,
       "isLocked": false,
@@ -29,12 +29,26 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.4899328859060404,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 2.25,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "IntakeDeployOn",
-      "waypointRelativePos": 0.33760972316003773,
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -53,7 +67,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 2.5,
+    "velocity": 2.25,
     "rotation": -90.0
   },
   "reversed": false,

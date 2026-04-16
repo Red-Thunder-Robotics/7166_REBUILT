@@ -3,6 +3,7 @@ package frc.robot.subsystems.ground_intake;
 import org.littletonrobotics.junction.AutoLog;
 
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
 
 public interface GroundIntakeIO {
     @AutoLog
@@ -36,6 +37,7 @@ public interface GroundIntakeIO {
     public default void actuatorStop() {}
 
     public default void rollerVelocity(AngularVelocity velocity) {}
+    public default void rollerCurrent(Current current) {}
     public default void rollerStop() {}
 
     public default void actuatorZeroingDrive() {}
