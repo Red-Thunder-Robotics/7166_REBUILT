@@ -466,9 +466,11 @@ public class Robot extends LoggedRobot {
         //             .andThen(Commands.waitSeconds(0.4d))
         //             .andThen(RobotCommands.setShooterIdle())
         //     ), "AfterShoot"));
-        Command waitForEmptyHopper = Commands.waitSeconds(3.75d); // 12; 5; 4
+        Command waitForEmptyHopper = Commands.waitSeconds(2.5d); // 12; 5; 4; 3.75
         NamedCommands.registerCommand("AfterShoot", cmdName(waitForEmptyHopper.andThen(RobotCommands.disengageShooter()), "AfterShoot"));
-        NamedCommands.registerCommand("AfterShootQuick", cmdName(Commands.waitSeconds(2.5d).andThen(RobotCommands.disengageShooter()), "AfterShootQuick"));
+        NamedCommands.registerCommand("AfterShootQuick", cmdName(
+            Commands.waitSeconds(3.5d) // 2.5
+                .andThen(RobotCommands.disengageShooter()), "AfterShootQuick"));
 
         // NamedCommands.registerCommand("ClimbRotate", Commands.defer(() -> {
         //     var robotPose = StateMachine.odometryAndVision.getEstimatedPose();
