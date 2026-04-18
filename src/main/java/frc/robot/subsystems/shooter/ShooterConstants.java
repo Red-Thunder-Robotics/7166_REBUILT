@@ -19,6 +19,7 @@ import edu.wpi.first.units.measure.Distance;
 public final class ShooterConstants {
     // public static final long spinUpDurationMilliseconds = 800L;
     public static final double shouldIndexFlywheelVelocityThresholdRPS = 1.5d; // 5.5
+    public static final double shouldIndexFlywheelVelocityAllianceFeedThresholdRPS = 4d; 
     public static final double shouldIndexKickerVelocityThresholdRPS = 1.5d;
     public static final double latencyCompensationSeconds = 0.150d;
     

@@ -7,6 +7,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.state_machine.LauncherTarget;
 import frc.robot.state_machine.RobotEvent;
 import frc.robot.state_machine.StateMachine;
 
@@ -82,12 +83,14 @@ public final class IndexerSubsystem extends SubsystemBase {
         return m_isFeeding;
     }
 
+    @AutoLogOutput(key="IndexerPastThreshold")
     public boolean getIsPastThreshold() {
         final double lowerKickerTarget = m_inputs.lowerKickerVelocityRPS;
         if (lowerKickerTarget == 0d)
             return false;
 
-        final boolean lowerKicker = Math.abs(lowerKickerTarget - m_inputs.lowerKickerTargetVelocityRPS) <= lowerKickerVelocityThresholdRPS;
+        final double lowerKickerVelocityThreshold = StateMachine.getLauncherTarget() == LauncherTarget.AllianceFeed ? lowerKickerVelocityAllianceFeedThresholdRPS : lowerKickerVelocityThresholdRPS;
+        final boolean lowerKicker = Math.abs(lowerKickerTarget - m_inputs.lowerKickerTargetVelocityRPS) <= lowerKickerVelocityThreshold;
 
         return lowerKicker;
     }

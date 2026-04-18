@@ -44,6 +44,7 @@ public final class IndexerConstants {
     public static final AngularVelocity lowerKickerVelocityReverse = lowerKickerVelocity.unaryMinus();
 
     public static final double lowerKickerVelocityThresholdRPS = 1.5d;
+    public static final double lowerKickerVelocityAllianceFeedThresholdRPS = 3d;
 
     //
     public static final double lowerKickerPidP = 0.1d;
