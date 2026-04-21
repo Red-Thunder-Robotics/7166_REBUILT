@@ -31,6 +31,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.VisionConstants;
@@ -109,8 +110,12 @@ public class OdometryAndVision {
     }
 
     public void addVisionObservation(VisionObservation observation) {
-        // if (estimatedPose.getX() > FieldConstants.FIELD_LENGTH.in(Meters) || estimatedPose.getY() > FieldConstants.FIELD_WIDTH.in(Meters))
-        //     estimatedPose = new Pose2d();
+        // if we are somehow outside of the field (I think this happens because we are trusting odometry too much and we have had wheel slip on the bump),
+        // accept the raw vision pose without question
+        if (estimatedPose.getX() > FieldConstants.FIELD_LENGTH.plus(DriveConstants.BUMPER_LARGEST_DIMENSION).in(Meters) || estimatedPose.getY() > FieldConstants.FIELD_WIDTH.plus(DriveConstants.BUMPER_LARGEST_DIMENSION).in(Meters)) {
+            estimatedPose = observation.visionPose;
+            return;
+        }
 
         // If the measurement is old enough to be outside the pose buffer's timespan, skip
         try {

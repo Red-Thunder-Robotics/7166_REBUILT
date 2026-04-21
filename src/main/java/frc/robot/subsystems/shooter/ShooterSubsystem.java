@@ -6,19 +6,7 @@ import static edu.wpi.first.units.Units.InchesPerSecond;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Seconds;
-import static frc.robot.subsystems.shooter.ShooterConstants.allianceFeedParamsFar;
-import static frc.robot.subsystems.shooter.ShooterConstants.allianceFeedParamsNeutralZone;
-import static frc.robot.subsystems.shooter.ShooterConstants.flywheelRadiusBig;
-import static frc.robot.subsystems.shooter.ShooterConstants.flywheelRadiusSmall;
-import static frc.robot.subsystems.shooter.ShooterConstants.hoodAutoStowSeconds;
-import static frc.robot.subsystems.shooter.ShooterConstants.hoodPositionHome;
-import static frc.robot.subsystems.shooter.ShooterConstants.hubCenterParams;
-import static frc.robot.subsystems.shooter.ShooterConstants.paramMap;
-import static frc.robot.subsystems.shooter.ShooterConstants.shouldIndexFlywheelVelocityThresholdRPS;
-import static frc.robot.subsystems.shooter.ShooterConstants.shouldIndexKickerVelocityThresholdRPS;
-import static frc.robot.subsystems.shooter.ShooterConstants.timeOfFlightMap;
-import static frc.robot.subsystems.shooter.ShooterConstants.upperKickerVelocity;
-import static frc.robot.subsystems.shooter.ShooterConstants.upperKickerVelocityReverse;
+import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -159,7 +147,8 @@ public final class ShooterSubsystem extends SubsystemBase {
         if (flywheelTarget == 0d || kickerTarget == 0d)
             return false;
 
-        final boolean flywheel = Math.abs(flywheelTarget - m_inputs.flywheelMotorTopLeftVelocityRPS) <= shouldIndexFlywheelVelocityThresholdRPS;
+        final double flywheelVelocityThreshold = StateMachine.getLauncherTarget() == LauncherTarget.AllianceFeed ? shouldIndexFlywheelVelocityAllianceFeedThresholdRPS : shouldIndexFlywheelVelocityThresholdRPS;
+        final boolean flywheel = Math.abs(flywheelTarget - m_inputs.flywheelMotorTopLeftVelocityRPS) <= flywheelVelocityThreshold;
         final boolean kicker = Math.abs(kickerTarget - m_inputs.upperKickerMotorVelocityRPS) <= shouldIndexKickerVelocityThresholdRPS;
 
         final boolean indexer = IndexerSubsystem.instance.getIsPastThreshold();

@@ -82,6 +82,7 @@ public final class IndexerSubsystem extends SubsystemBase {
         return m_isFeeding;
     }
 
+    @AutoLogOutput(key="IndexerPastThreshold")
     public boolean getIsPastThreshold() {
         final double lowerKickerTarget = m_inputs.lowerKickerVelocityRPS;
         if (lowerKickerTarget == 0d)

@@ -69,6 +69,7 @@ public final class Constants {
         // public static final Distance BUMPER_WIDTH = Inches.of(34.52d); // 31
         public static final Distance BUMPER_WIDTH = Millimeters.of(880d); // FIXME: should be 840
         public static final Distance BUMPER_LENGTH = BUMPER_WIDTH;
+        public static final Distance BUMPER_LARGEST_DIMENSION = BUMPER_WIDTH;
 
         // at meters min distance, degrees min threshold will be used, etc
         public static final double SHOULD_INDEX_THRESHOLD_METERS_MIN = 1d;
