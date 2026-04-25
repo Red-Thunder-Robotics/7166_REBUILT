@@ -25,7 +25,8 @@ public final class Controls {
     public static final Trigger hubButton = operatorController.rightTrigger();
     public static final Trigger allianceFeedButton = operatorController.x();
 
-    public static final Trigger visionFail1 = operatorController.b();
+    public static final Trigger visionFail1 = operatorController.paddleBottomLeft();
+    public static final Trigger forceTurretShouldIndex = operatorController.paddleTopLeft();
 
     public static final Trigger zeroMechanisms = operatorController.back().and(operatorController.start()).debounce(1d);
 
@@ -33,6 +34,6 @@ public final class Controls {
     public static final Trigger rotationTargetBumpRight = operatorController.rightBumper();
 
     // climber
-    public static final Trigger climbUp = operatorController.y();
-    public static final Trigger climbDown = operatorController.a();
+    // public static final Trigger climbUp = operatorController.y();
+    // public static final Trigger climbDown = operatorController.a();
 }

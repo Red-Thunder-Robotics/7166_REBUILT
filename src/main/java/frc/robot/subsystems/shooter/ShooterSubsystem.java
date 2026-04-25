@@ -113,7 +113,8 @@ public final class ShooterSubsystem extends SubsystemBase {
                 }
                 // if (shouldIndex())
                 //     m_io.upperKickerVelocity(upperKickerVelocity);
-                m_io.upperKickerVelocity(upperKickerVelocity);
+                if (IndexerSubsystem.instance.getReverseIsDone())
+                    m_io.upperKickerVelocity(upperKickerVelocity);
                 break;
             case Reversing:
                 // m_io.flywheelVelocity(flywheelVelocityReverse);

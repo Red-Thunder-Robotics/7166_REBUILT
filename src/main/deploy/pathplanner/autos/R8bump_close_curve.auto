@@ -45,12 +45,6 @@
           "data": {
             "name": "EngageShooterHub"
           }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AfterShootQuick"
-          }
         }
       ]
     }

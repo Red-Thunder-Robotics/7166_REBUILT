@@ -34,7 +34,7 @@ public final class IndexerConstants {
     public static final double topRollerPidV = 12d / (5800d / 60d);
     public static final double topRollerTargetAcceleration = 266d;
 
-    public static final double reverseTime = 0.1d;
+    public static final double reverseTime = 0.2d;
 
     public static final int lowerKickerMotorId = 16;
     public static final int lowerKickerCurrentLimit = 25; // 40; 20

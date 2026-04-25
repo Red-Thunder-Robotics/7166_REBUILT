@@ -56,7 +56,7 @@ public final class IndexerSubsystem extends SubsystemBase {
                     setIdle();
                     break;
                 case Shooting:
-                    if (m_reverseTimer.hasElapsed(reverseTime)) {
+                    if (getReverseIsDone()) {
                         if (StateMachine.shouldIndex()) {
                             isFeeding = true;
                             m_io.indexerVelocity(indexerOutputVelocity);
@@ -91,6 +91,11 @@ public final class IndexerSubsystem extends SubsystemBase {
         final boolean lowerKicker = Math.abs(lowerKickerTarget - m_inputs.lowerKickerTargetVelocityRPS) <= lowerKickerVelocityThresholdRPS;
 
         return lowerKicker;
+    }
+
+    @AutoLogOutput(key="ReverseDone")
+    public boolean getReverseIsDone() {
+        return m_reverseTimer.hasElapsed(reverseTime);
     }
 
     public void setIdle() {

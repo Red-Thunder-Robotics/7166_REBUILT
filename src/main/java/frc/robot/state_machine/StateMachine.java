@@ -160,9 +160,14 @@ public class StateMachine {
         return Constants.USE_TURRET ? TurretSubsystem.instance.shouldIndex() : Controls.lockWheelsButton.getAsBoolean() || (withinJoystickRotationErrorThreshold || allianceFeedGood);
     }
     public static boolean shouldIndex() {
-        if (turretShouldIndex())
+        boolean turretShouldIndex = turretShouldIndex();
+        if (turretShouldIndex)
             turretShouldIndexFlagCleared = true;
-        return turretShouldIndexFlagCleared &&
+
+        if (getLauncherTarget() != LauncherTarget.AllianceFeed)
+            turretShouldIndex = turretShouldIndexFlagCleared;
+
+        return (turretShouldIndex || Controls.forceTurretShouldIndex.getAsBoolean()) &&
             ShooterSubsystem.instance.shouldIndex();
     }
 
@@ -578,6 +583,7 @@ public class StateMachine {
 
         Logger.recordOutput("StateMachine/ShouldIndex", shouldIndex());
         Logger.recordOutput("StateMachine/TurretShouldIndex", turretShouldIndex());
+        Logger.recordOutput("StateMachine/TurretShouldIndexFlag", turretShouldIndexFlagCleared);
         Logger.recordOutput("StateMachine/WithinJoystickRotationErrorThreshold", withinJoystickRotationErrorThreshold);
         Logger.recordOutput("StateMachine/IsRobotOnAllianceLeft", isRobotOnAllianceLeft());
         Logger.recordOutput("StateMachine/IsRobotFar", isRobotFar());

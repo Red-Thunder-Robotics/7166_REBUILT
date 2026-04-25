@@ -409,10 +409,10 @@ public class Robot extends LoggedRobot {
                 .whileTrue(repeatingSimFuelCommand());
 
         // climber
-        Controls.climbUp.onTrue(RobotCommands.setIntakeState(IntakeState.OscillateOff)
-            .andThen(Commands.waitSeconds(0.5d))
-            .andThen(RobotCommands.climberDeployed()));
-        Controls.climbDown.onTrue(RobotCommands.climberHome());
+        // Controls.climbUp.onTrue(RobotCommands.setIntakeState(IntakeState.OscillateOff)
+        //     .andThen(Commands.waitSeconds(0.5d))
+        //     .andThen(RobotCommands.climberDeployed()));
+        // Controls.climbDown.onTrue(RobotCommands.climberHome());
 
         if (Constants.USE_TURRET) {
             Controls.manualTurretToggle.onTrue(m_turretSubsystem.toggleManualModeCommand());
