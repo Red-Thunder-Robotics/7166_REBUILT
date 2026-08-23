@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /** Utility class used to build auto routines */
-public class ModifiedAutoBuilder {    
+public class ModifiedAutoBuilder {
     private static Globals globals = new Globals();
 
     /**
@@ -49,22 +49,19 @@ public class ModifiedAutoBuilder {
      * @param driveRequirements the subsystem requirements for the robot's drive train
      */
     public static void configure(
-        Supplier<Pose2d> poseSupplier,
-        Consumer<Pose2d> resetPose,
-        Supplier<ChassisSpeeds> robotRelativeSpeedsSupplier,
-        BiConsumer<ChassisSpeeds, DriveFeedforwards> output,
-        PathFollowingController controller,
-        RobotConfig robotConfig,
-        BooleanSupplier shouldFlipPath,
-        Subsystem... driveRequirements) {
-    if (globals.configured) {
-        DriverStation.reportError(
-            "Auto builder has already been configured. This is likely in error.", true);
-    }
+            Supplier<Pose2d> poseSupplier,
+            Consumer<Pose2d> resetPose,
+            Supplier<ChassisSpeeds> robotRelativeSpeedsSupplier,
+            BiConsumer<ChassisSpeeds, DriveFeedforwards> output,
+            PathFollowingController controller,
+            RobotConfig robotConfig,
+            BooleanSupplier shouldFlipPath,
+            Subsystem... driveRequirements) {
+        if (globals.configured) {
+            DriverStation.reportError("Auto builder has already been configured. This is likely in error.", true);
+        }
 
-    globals.pathFollowingCommandBuilder =
-        (path) ->
-            new FollowPathCommand(
+        globals.pathFollowingCommandBuilder = (path) -> new FollowPathCommand(
                 path,
                 poseSupplier,
                 robotRelativeSpeedsSupplier,
@@ -73,15 +70,13 @@ public class ModifiedAutoBuilder {
                 robotConfig,
                 shouldFlipPath,
                 driveRequirements);
-    globals.poseSupplier = poseSupplier;
-    globals.resetPose = resetPose;
-    globals.configured = true;
-    globals.shouldFlipPath = shouldFlipPath;
-    globals.isHolonomic = robotConfig.isHolonomic;
+        globals.poseSupplier = poseSupplier;
+        globals.resetPose = resetPose;
+        globals.configured = true;
+        globals.shouldFlipPath = shouldFlipPath;
+        globals.isHolonomic = robotConfig.isHolonomic;
 
-    globals.pathfindToPoseCommandBuilder =
-        (pose, constraints, goalEndVel) ->
-            new PathfindingCommand(
+        globals.pathfindToPoseCommandBuilder = (pose, constraints, goalEndVel) -> new PathfindingCommand(
                 pose,
                 constraints,
                 goalEndVel,
@@ -91,9 +86,7 @@ public class ModifiedAutoBuilder {
                 controller,
                 robotConfig,
                 driveRequirements);
-    globals.pathfindThenFollowPathCommandBuilder =
-        (path, constraints) ->
-            new PathfindThenFollowPath(
+        globals.pathfindThenFollowPathCommandBuilder = (path, constraints) -> new PathfindThenFollowPath(
                 path,
                 constraints,
                 poseSupplier,
@@ -103,7 +96,7 @@ public class ModifiedAutoBuilder {
                 robotConfig,
                 shouldFlipPath,
                 driveRequirements);
-    globals.pathfindingConfigured = true;
+        globals.pathfindingConfigured = true;
     }
 
     /**
@@ -121,23 +114,23 @@ public class ModifiedAutoBuilder {
      * @param driveRequirements the subsystem requirements for the robot's drive train
      */
     public static void configure(
-        Supplier<Pose2d> poseSupplier,
-        Consumer<Pose2d> resetPose,
-        Supplier<ChassisSpeeds> robotRelativeSpeedsSupplier,
-        Consumer<ChassisSpeeds> output,
-        PathFollowingController controller,
-        RobotConfig robotConfig,
-        BooleanSupplier shouldFlipPath,
-        Subsystem... driveRequirements) {
-    configure(
-        poseSupplier,
-        resetPose,
-        robotRelativeSpeedsSupplier,
-        (speeds, feedforwards) -> output.accept(speeds),
-        controller,
-        robotConfig,
-        shouldFlipPath,
-        driveRequirements);
+            Supplier<Pose2d> poseSupplier,
+            Consumer<Pose2d> resetPose,
+            Supplier<ChassisSpeeds> robotRelativeSpeedsSupplier,
+            Consumer<ChassisSpeeds> output,
+            PathFollowingController controller,
+            RobotConfig robotConfig,
+            BooleanSupplier shouldFlipPath,
+            Subsystem... driveRequirements) {
+        configure(
+                poseSupplier,
+                resetPose,
+                robotRelativeSpeedsSupplier,
+                (speeds, feedforwards) -> output.accept(speeds),
+                controller,
+                robotConfig,
+                shouldFlipPath,
+                driveRequirements);
     }
 
     /**
@@ -147,18 +140,18 @@ public class ModifiedAutoBuilder {
      * ModifiedAutoBuilder.
      */
     private static class Globals {
-    boolean configured = false;
+        boolean configured = false;
 
-    Supplier<Pose2d> poseSupplier;
-    Function<PathPlannerPath, Command> pathFollowingCommandBuilder;
-    Consumer<Pose2d> resetPose;
-    BooleanSupplier shouldFlipPath;
-    boolean isHolonomic;
+        Supplier<Pose2d> poseSupplier;
+        Function<PathPlannerPath, Command> pathFollowingCommandBuilder;
+        Consumer<Pose2d> resetPose;
+        BooleanSupplier shouldFlipPath;
+        boolean isHolonomic;
 
-    // Pathfinding builders
-    boolean pathfindingConfigured = false;
-    TriFunction<Pose2d, PathConstraints, Double, Command> pathfindToPoseCommandBuilder;
-    BiFunction<PathPlannerPath, PathConstraints, Command> pathfindThenFollowPathCommandBuilder;
+        // Pathfinding builders
+        boolean pathfindingConfigured = false;
+        TriFunction<Pose2d, PathConstraints, Double, Command> pathfindToPoseCommandBuilder;
+        BiFunction<PathPlannerPath, PathConstraints, Command> pathfindThenFollowPathCommandBuilder;
     }
 
     /**
@@ -176,24 +169,23 @@ public class ModifiedAutoBuilder {
      * @param isHolonomic Does the robot have a holonomic drivetrain
      */
     public static void configureCustom(
-        Function<PathPlannerPath, Command> pathFollowingCommandBuilder,
-        Supplier<Pose2d> poseSupplier,
-        Consumer<Pose2d> resetPose,
-        BooleanSupplier shouldFlipPose,
-        boolean isHolonomic) {
-    if (globals.configured) {
-        DriverStation.reportError(
-            "Auto builder has already been configured. This is likely in error.", true);
-    }
+            Function<PathPlannerPath, Command> pathFollowingCommandBuilder,
+            Supplier<Pose2d> poseSupplier,
+            Consumer<Pose2d> resetPose,
+            BooleanSupplier shouldFlipPose,
+            boolean isHolonomic) {
+        if (globals.configured) {
+            DriverStation.reportError("Auto builder has already been configured. This is likely in error.", true);
+        }
 
-    globals.pathFollowingCommandBuilder = pathFollowingCommandBuilder;
-    globals.poseSupplier = poseSupplier;
-    globals.resetPose = resetPose;
-    globals.configured = true;
-    globals.shouldFlipPath = shouldFlipPose;
-    globals.isHolonomic = isHolonomic;
+        globals.pathFollowingCommandBuilder = pathFollowingCommandBuilder;
+        globals.poseSupplier = poseSupplier;
+        globals.resetPose = resetPose;
+        globals.configured = true;
+        globals.shouldFlipPath = shouldFlipPose;
+        globals.isHolonomic = isHolonomic;
 
-    globals.pathfindingConfigured = false;
+        globals.pathfindingConfigured = false;
     }
 
     /**
@@ -207,11 +199,11 @@ public class ModifiedAutoBuilder {
      * @param isHolonomic Does the robot have a holonomic drivetrain
      */
     public static void configureCustom(
-        Function<PathPlannerPath, Command> pathFollowingCommandBuilder,
-        Supplier<Pose2d> poseSupplier,
-        Consumer<Pose2d> resetPose,
-        boolean isHolonomic) {
-    configureCustom(pathFollowingCommandBuilder, poseSupplier, resetPose, () -> false, isHolonomic);
+            Function<PathPlannerPath, Command> pathFollowingCommandBuilder,
+            Supplier<Pose2d> poseSupplier,
+            Consumer<Pose2d> resetPose,
+            boolean isHolonomic) {
+        configureCustom(pathFollowingCommandBuilder, poseSupplier, resetPose, () -> false, isHolonomic);
     }
 
     /**
@@ -220,7 +212,7 @@ public class ModifiedAutoBuilder {
      * @return true if the ModifiedAutoBuilder has been configured, false otherwise
      */
     public static boolean isConfigured() {
-    return globals.configured;
+        return globals.configured;
     }
 
     /**
@@ -229,7 +221,7 @@ public class ModifiedAutoBuilder {
      * @return true if the ModifiedAutoBuilder has been configured for pathfinding, false otherwise
      */
     public static boolean isPathfindingConfigured() {
-    return globals.pathfindingConfigured;
+        return globals.pathfindingConfigured;
     }
 
     /**
@@ -238,7 +230,7 @@ public class ModifiedAutoBuilder {
      * <p>This method should not be called during a competition.
      */
     public static void resetForTesting() {
-    globals = new Globals();
+        globals = new Globals();
     }
 
     /**
@@ -247,7 +239,7 @@ public class ModifiedAutoBuilder {
      * @return Current robot pose
      */
     public static Pose2d getCurrentPose() {
-    return globals.poseSupplier.get();
+        return globals.poseSupplier.get();
     }
 
     /**
@@ -256,7 +248,7 @@ public class ModifiedAutoBuilder {
      * @return True if path/positions should be flipped
      */
     public static boolean shouldFlip() {
-    return globals.shouldFlipPath.getAsBoolean();
+        return globals.shouldFlipPath.getAsBoolean();
     }
 
     /**
@@ -268,31 +260,12 @@ public class ModifiedAutoBuilder {
      * @throws AutoBuilderException if the ModifiedAutoBuilder has not been configured
      */
     public static Command followPath(PathPlannerPath path) {
-    if (!isConfigured()) {
-        throw new AutoBuilderException(
-            "Auto builder was used to build a path following command before being configured");
-    }
+        if (!isConfigured()) {
+            throw new AutoBuilderException(
+                    "Auto builder was used to build a path following command before being configured");
+        }
 
-    return globals.pathFollowingCommandBuilder.apply(path);
-    }
-
-    /**
-     * Build a command to pathfind to a given pose. If not using a holonomic drivetrain, the pose
-     * rotation and rotation delay distance will have no effect.
-     *
-     * @param pose The pose to pathfind to
-     * @param constraints The constraints to use while pathfinding
-     * @param goalEndVelocity The goal end velocity of the robot when reaching the target pose
-     * @return A command to pathfind to a given pose
-     */
-    public static Command pathfindToPose(
-        Pose2d pose, PathConstraints constraints, double goalEndVelocity) {
-    if (!isPathfindingConfigured()) {
-        throw new AutoBuilderException(
-            "Auto builder was used to build a pathfinding command before being configured");
-    }
-
-    return globals.pathfindToPoseCommandBuilder.apply(pose, constraints, goalEndVelocity);
+        return globals.pathFollowingCommandBuilder.apply(path);
     }
 
     /**
@@ -304,9 +277,26 @@ public class ModifiedAutoBuilder {
      * @param goalEndVelocity The goal end velocity of the robot when reaching the target pose
      * @return A command to pathfind to a given pose
      */
-    public static Command pathfindToPose(
-        Pose2d pose, PathConstraints constraints, LinearVelocity goalEndVelocity) {
-    return pathfindToPose(pose, constraints, goalEndVelocity.in(MetersPerSecond));
+    public static Command pathfindToPose(Pose2d pose, PathConstraints constraints, double goalEndVelocity) {
+        if (!isPathfindingConfigured()) {
+            throw new AutoBuilderException(
+                    "Auto builder was used to build a pathfinding command before being configured");
+        }
+
+        return globals.pathfindToPoseCommandBuilder.apply(pose, constraints, goalEndVelocity);
+    }
+
+    /**
+     * Build a command to pathfind to a given pose. If not using a holonomic drivetrain, the pose
+     * rotation and rotation delay distance will have no effect.
+     *
+     * @param pose The pose to pathfind to
+     * @param constraints The constraints to use while pathfinding
+     * @param goalEndVelocity The goal end velocity of the robot when reaching the target pose
+     * @return A command to pathfind to a given pose
+     */
+    public static Command pathfindToPose(Pose2d pose, PathConstraints constraints, LinearVelocity goalEndVelocity) {
+        return pathfindToPose(pose, constraints, goalEndVelocity.in(MetersPerSecond));
     }
 
     /**
@@ -318,7 +308,25 @@ public class ModifiedAutoBuilder {
      * @return A command to pathfind to a given pose
      */
     public static Command pathfindToPose(Pose2d pose, PathConstraints constraints) {
-    return pathfindToPose(pose, constraints, 0);
+        return pathfindToPose(pose, constraints, 0);
+    }
+
+    /**
+     * Build a command to pathfind to a given pose that will be flipped based on the value of the path
+     * flipping supplier when this command is run. If not using a holonomic drivetrain, the pose
+     * rotation and rotation delay distance will have no effect.
+     *
+     * @param pose The pose to pathfind to. This will be flipped if the path flipping supplier returns
+     *     true
+     * @param constraints The constraints to use while pathfinding
+     * @param goalEndVelocity The goal end velocity of the robot when reaching the target pose
+     * @return A command to pathfind to a given pose
+     */
+    public static Command pathfindToPoseFlipped(Pose2d pose, PathConstraints constraints, double goalEndVelocity) {
+        return Commands.either(
+                pathfindToPose(FlippingUtil.flipFieldPose(pose), constraints, goalEndVelocity),
+                pathfindToPose(pose, constraints, goalEndVelocity),
+                globals.shouldFlipPath);
     }
 
     /**
@@ -333,27 +341,8 @@ public class ModifiedAutoBuilder {
      * @return A command to pathfind to a given pose
      */
     public static Command pathfindToPoseFlipped(
-        Pose2d pose, PathConstraints constraints, double goalEndVelocity) {
-    return Commands.either(
-        pathfindToPose(FlippingUtil.flipFieldPose(pose), constraints, goalEndVelocity),
-        pathfindToPose(pose, constraints, goalEndVelocity),
-        globals.shouldFlipPath);
-    }
-
-    /**
-     * Build a command to pathfind to a given pose that will be flipped based on the value of the path
-     * flipping supplier when this command is run. If not using a holonomic drivetrain, the pose
-     * rotation and rotation delay distance will have no effect.
-     *
-     * @param pose The pose to pathfind to. This will be flipped if the path flipping supplier returns
-     *     true
-     * @param constraints The constraints to use while pathfinding
-     * @param goalEndVelocity The goal end velocity of the robot when reaching the target pose
-     * @return A command to pathfind to a given pose
-     */
-    public static Command pathfindToPoseFlipped(
-        Pose2d pose, PathConstraints constraints, LinearVelocity goalEndVelocity) {
-    return pathfindToPoseFlipped(pose, constraints, goalEndVelocity.in(MetersPerSecond));
+            Pose2d pose, PathConstraints constraints, LinearVelocity goalEndVelocity) {
+        return pathfindToPoseFlipped(pose, constraints, goalEndVelocity.in(MetersPerSecond));
     }
 
     /**
@@ -367,7 +356,7 @@ public class ModifiedAutoBuilder {
      * @return A command to pathfind to a given pose
      */
     public static Command pathfindToPoseFlipped(Pose2d pose, PathConstraints constraints) {
-    return pathfindToPoseFlipped(pose, constraints, 0);
+        return pathfindToPoseFlipped(pose, constraints, 0);
     }
 
     /**
@@ -378,14 +367,13 @@ public class ModifiedAutoBuilder {
      * @param pathfindingConstraints The constraints to use while pathfinding
      * @return A command to pathfind to a given path, then follow the path
      */
-    public static Command pathfindThenFollowPath(
-        PathPlannerPath goalPath, PathConstraints pathfindingConstraints) {
-    if (!isPathfindingConfigured()) {
-        throw new AutoBuilderException(
-            "Auto builder was used to build a pathfinding command before being configured");
-    }
+    public static Command pathfindThenFollowPath(PathPlannerPath goalPath, PathConstraints pathfindingConstraints) {
+        if (!isPathfindingConfigured()) {
+            throw new AutoBuilderException(
+                    "Auto builder was used to build a pathfinding command before being configured");
+        }
 
-    return globals.pathfindThenFollowPathCommandBuilder.apply(goalPath, pathfindingConstraints);
+        return globals.pathfindThenFollowPathCommandBuilder.apply(goalPath, pathfindingConstraints);
     }
 
     /**
@@ -395,7 +383,7 @@ public class ModifiedAutoBuilder {
      * @return SendableChooser populated with all autos
      */
     public static SendableChooser<Command> buildAutoChooser() {
-    return buildAutoChooser("");
+        return buildAutoChooser("");
     }
 
     /**
@@ -407,7 +395,7 @@ public class ModifiedAutoBuilder {
      * @return SendableChooser populated with all autos
      */
     public static SendableChooser<Command> buildAutoChooser(String defaultAutoName) {
-    return buildAutoChooserWithOptionsModifier(defaultAutoName, (stream) -> stream);
+        return buildAutoChooserWithOptionsModifier(defaultAutoName, (stream) -> stream);
     }
 
     /**
@@ -419,8 +407,8 @@ public class ModifiedAutoBuilder {
      * @return SendableChooser populated with all autos
      */
     public static SendableChooser<Command> buildAutoChooserWithOptionsModifier(
-        Function<Stream<PathPlannerAuto>, Stream<PathPlannerAuto>> optionsModifier) {
-    return buildAutoChooserWithOptionsModifier("", optionsModifier);
+            Function<Stream<PathPlannerAuto>, Stream<PathPlannerAuto>> optionsModifier) {
+        return buildAutoChooserWithOptionsModifier("", optionsModifier);
     }
 
     /**
@@ -434,48 +422,45 @@ public class ModifiedAutoBuilder {
      * @return SendableChooser populated with all autos
      */
     public static SendableChooser<Command> buildAutoChooserWithOptionsModifier(
-        String defaultAutoName,
-        Function<Stream<PathPlannerAuto>, Stream<PathPlannerAuto>> optionsModifier) {
-    if (!ModifiedAutoBuilder.isConfigured()) {
-        throw new RuntimeException(
-            "ModifiedAutoBuilder was not configured before attempting to build an auto chooser");
-    }
+            String defaultAutoName, Function<Stream<PathPlannerAuto>, Stream<PathPlannerAuto>> optionsModifier) {
+        if (!ModifiedAutoBuilder.isConfigured()) {
+            throw new RuntimeException(
+                    "ModifiedAutoBuilder was not configured before attempting to build an auto chooser");
+        }
 
-    SendableChooser<Command> chooser = new SendableChooser<>();
-    List<String> autoNames = getAllAutoNames();
+        SendableChooser<Command> chooser = new SendableChooser<>();
+        List<String> autoNames = getAllAutoNames();
 
-    PathPlannerAuto defaultOption = null;
-    List<PathPlannerAuto> options = new ArrayList<>();
+        PathPlannerAuto defaultOption = null;
+        List<PathPlannerAuto> options = new ArrayList<>();
 
-    for (String autoName : autoNames) {
-        PathPlannerAuto auto = new PathPlannerAuto(autoName);
+        for (String autoName : autoNames) {
+            PathPlannerAuto auto = new PathPlannerAuto(autoName);
 
-        if (!defaultAutoName.isEmpty() && defaultAutoName.equals(autoName)) {
-            defaultOption = auto;
+            if (!defaultAutoName.isEmpty() && defaultAutoName.equals(autoName)) {
+                defaultOption = auto;
+            } else {
+                options.add(auto);
+            }
+
+            if (autoName.startsWith("R")) {
+                PathPlannerAuto autoMirrored = new PathPlannerAuto(autoName, true);
+                autoMirrored.setName("L" + autoName.substring(1));
+
+                options.add(autoMirrored);
+            }
+        }
+
+        if (defaultOption == null) {
+            chooser.setDefaultOption("None", Commands.none());
         } else {
-            options.add(auto);
+            chooser.setDefaultOption(defaultOption.getName(), defaultOption);
+            chooser.addOption("None", Commands.none());
         }
 
-        if (autoName.startsWith("R")) {
-            PathPlannerAuto autoMirrored = new PathPlannerAuto(autoName, true);
-            autoMirrored.setName("L" + autoName.substring(1));
+        optionsModifier.apply(options.stream()).forEach(auto -> chooser.addOption(auto.getName(), auto));
 
-            options.add(autoMirrored);
-        }
-    }
-
-    if (defaultOption == null) {
-        chooser.setDefaultOption("None", Commands.none());
-    } else {
-        chooser.setDefaultOption(defaultOption.getName(), defaultOption);
-        chooser.addOption("None", Commands.none());
-    }
-
-    optionsModifier
-        .apply(options.stream())
-        .forEach(auto -> chooser.addOption(auto.getName(), auto));
-
-    return chooser;
+        return chooser;
     }
 
     /**
@@ -484,18 +469,18 @@ public class ModifiedAutoBuilder {
      * @return List of all auto names
      */
     public static List<String> getAllAutoNames() {
-    File[] autoFiles = new File(Filesystem.getDeployDirectory(), "pathplanner/autos").listFiles();
+        File[] autoFiles = new File(Filesystem.getDeployDirectory(), "pathplanner/autos").listFiles();
 
-    if (autoFiles == null) {
-        return new ArrayList<>();
-    }
+        if (autoFiles == null) {
+            return new ArrayList<>();
+        }
 
-    return Stream.of(autoFiles)
-        .filter(file -> !file.isDirectory())
-        .map(File::getName)
-        .filter(name -> name.endsWith(".auto"))
-        .map(name -> name.substring(0, name.lastIndexOf(".")))
-        .collect(Collectors.toList());
+        return Stream.of(autoFiles)
+                .filter(file -> !file.isDirectory())
+                .map(File::getName)
+                .filter(name -> name.endsWith(".auto"))
+                .map(name -> name.substring(0, name.lastIndexOf('.')))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -504,11 +489,11 @@ public class ModifiedAutoBuilder {
      * @return True if holonomic
      */
     public static boolean isHolonomic() {
-    if (!ModifiedAutoBuilder.isConfigured()) {
-        throw new RuntimeException("ModifiedAutoBuilder was not configured before use");
-    }
+        if (!ModifiedAutoBuilder.isConfigured()) {
+            throw new RuntimeException("ModifiedAutoBuilder was not configured before use");
+        }
 
-    return globals.isHolonomic;
+        return globals.isHolonomic;
     }
 
     /**
@@ -518,7 +503,7 @@ public class ModifiedAutoBuilder {
      * @return an auto command for the given auto name
      */
     public static Command buildAuto(String autoName) {
-    return new PathPlannerAuto(autoName);
+        return new PathPlannerAuto(autoName);
     }
 
     /**
@@ -528,17 +513,16 @@ public class ModifiedAutoBuilder {
      * @return Command to reset the robot's odometry
      */
     public static Command resetOdom(Pose2d bluePose) {
-    if (!ModifiedAutoBuilder.isConfigured()) {
-        throw new RuntimeException("ModifiedAutoBuilder was not configured before use");
-    }
+        if (!ModifiedAutoBuilder.isConfigured()) {
+            throw new RuntimeException("ModifiedAutoBuilder was not configured before use");
+        }
 
-    return Commands.runOnce(
-        () -> {
+        return Commands.runOnce(() -> {
             boolean flip = globals.shouldFlipPath.getAsBoolean();
             if (flip) {
-            globals.resetPose.accept(FlippingUtil.flipFieldPose(bluePose));
+                globals.resetPose.accept(FlippingUtil.flipFieldPose(bluePose));
             } else {
-            globals.resetPose.accept(bluePose);
+                globals.resetPose.accept(bluePose);
             }
         });
     }
@@ -546,14 +530,14 @@ public class ModifiedAutoBuilder {
     /** Functional interface for a function that takes 3 inputs */
     @FunctionalInterface
     public interface TriFunction<In1, In2, In3, Out> {
-    /**
-     * Apply the inputs to this function
-     *
-     * @param in1 Input 1
-     * @param in2 Input 2
-     * @param in3 Input 3
-     * @return Output
-     */
-    Out apply(In1 in1, In2 in2, In3 in3);
+        /**
+         * Apply the inputs to this function
+         *
+         * @param in1 Input 1
+         * @param in2 Input 2
+         * @param in3 Input 3
+         * @return Output
+         */
+        Out apply(In1 in1, In2 in2, In3 in3);
     }
 }

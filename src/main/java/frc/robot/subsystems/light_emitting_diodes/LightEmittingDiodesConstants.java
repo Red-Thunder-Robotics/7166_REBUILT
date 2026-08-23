@@ -3,7 +3,6 @@ package frc.robot.subsystems.light_emitting_diodes;
 import static edu.wpi.first.units.Units.Hertz;
 
 import com.ctre.phoenix6.signals.RGBWColor;
-
 import edu.wpi.first.units.measure.Frequency;
 
 public final class LightEmittingDiodesConstants {
@@ -21,5 +20,4 @@ public final class LightEmittingDiodesConstants {
     public static final RGBWColor colorRed = new RGBWColor(primaryHue, secondaryHue, secondaryHue);
     public static final RGBWColor colorGreen = new RGBWColor(secondaryHue, primaryHue, secondaryHue);
     public static final RGBWColor colorBlue = new RGBWColor(primaryHue, primaryHue, secondaryHue);
-
 }

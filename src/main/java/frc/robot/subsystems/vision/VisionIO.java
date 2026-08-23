@@ -4,26 +4,29 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface VisionIO {
     @AutoLog
-    public static class VisionIOInputs {
+    class VisionIOInputs {
         boolean megaTagSuccess;
         boolean ntConnected;
     }
 
     @AutoLog
-    public static class AprilTagVisionIOInputs {
+    class AprilTagVisionIOInputs {
         double[] timestamps = new double[] {};
         double[][] frames = new double[][] {};
         long fps = 0;
     }
+
     @AutoLog
-    public static class ObjDetectVisionIOInputs {
+    class ObjDetectVisionIOInputs {
         double[] timestamps = new double[] {};
         double[][] frames = new double[][] {};
         long fps = 0;
     }
 
-    public default void updateInputs(VisionIOInputs inputs) {}
-    public default void updateInputs(VisionIOInputs inputs, AprilTagVisionIOInputs aprilTagInputs, ObjDetectVisionIOInputs objDetectInputs) {}
+    default void updateInputs(VisionIOInputs inputs) {}
 
-    public default void setRecording(boolean shouldRecord) {}
+    default void updateInputs(
+            VisionIOInputs inputs, AprilTagVisionIOInputs aprilTagInputs, ObjDetectVisionIOInputs objDetectInputs) {}
+
+    default void setRecording(boolean shouldRecord) {}
 }

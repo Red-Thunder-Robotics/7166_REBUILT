@@ -26,9 +26,7 @@ public final class ShooterIOSim implements ShooterIO {
     private final PIDController m_upperKickerVelocityPID = new PIDController(0.5d, 0d, 0d);
     private final PIDController m_hoodPID = new PIDController(0.5d, 0d, 0d);
 
-    public ShooterIOSim() {
-
-    }
+    public ShooterIOSim() {}
 
     @Override
     public void updateInputs(ShooterIOInputs inputs) {
@@ -53,7 +51,8 @@ public final class ShooterIOSim implements ShooterIO {
 
         final double hoodTargetPosition = m_hoodTargetPosition;
         inputs.hoodTargetPositionRotations = hoodTargetPosition;
-        inputs.hoodTargetPositionDegrees = mechanismPositionToAngle(hoodTargetPosition).in(Degrees);
+        inputs.hoodTargetPositionDegrees =
+                mechanismPositionToAngle(hoodTargetPosition).in(Degrees);
 
         final double hoodPosition = m_hoodPosition;
         inputs.hoodPositionRotations = hoodPosition;
@@ -73,6 +72,7 @@ public final class ShooterIOSim implements ShooterIO {
         m_flywheelTargetVelocityRPS = velocity.in(RotationsPerSecond);
         m_flywheelVelocityPID.setSetpoint(m_flywheelTargetVelocityRPS);
     }
+
     @Override
     public void flywheelStop() {
         m_flywheelStopped = true;
@@ -86,6 +86,7 @@ public final class ShooterIOSim implements ShooterIO {
         m_hoodTargetPosition = position;
         m_hoodPID.setSetpoint(m_hoodTargetPosition);
     }
+
     @Override
     public void hoodAngle(Angle angle) {
         hoodAngle(angleToMechanismPosition(angle));
@@ -96,6 +97,7 @@ public final class ShooterIOSim implements ShooterIO {
         m_upperKickerTargetVelocityRPS = velocity.in(RotationsPerSecond);
         m_upperKickerVelocityPID.setSetpoint(m_upperKickerTargetVelocityRPS);
     }
+
     @Override
     public void upperKickerStop() {
         m_upperKickerVelocityPID.setSetpoint(0d);

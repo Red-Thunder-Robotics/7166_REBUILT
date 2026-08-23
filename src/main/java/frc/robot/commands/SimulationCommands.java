@@ -1,26 +1,27 @@
 package frc.robot.commands;
 
-import java.util.ArrayList;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import java.util.ArrayList;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import org.littletonrobotics.junction.Logger;
 
 public final class SimulationCommands {
     public static class SimFuelCommand extends Command {
         private static ArrayList<Pair<Supplier<Pose3d>, Timer>> poseList = new ArrayList<>();
+
         public static void step() {
-            Logger.recordOutput("SimFuel/Poses", poseList
-                .stream()
-                .map(v -> v.getFirst().get())
-                .collect(Collectors.toList()).toArray(Pose3d[]::new));
+            Logger.recordOutput(
+                    "SimFuel/Poses",
+                    poseList.stream()
+                            .map(v -> v.getFirst().get())
+                            .collect(Collectors.toList())
+                            .toArray(Pose3d[]::new));
 
             poseList.removeIf(pair -> pair.getSecond().hasElapsed(5d));
         }
@@ -56,9 +57,7 @@ public final class SimulationCommands {
 
             final double xpos = m_initialPose.getX() + m_initialVelocity.getX() * t;
             final double ypos = m_initialPose.getY() + m_initialVelocity.getY() * t;
-            final double zpos = m_initialPose.getZ()
-                    + m_initialVelocity.getZ() * t
-                    - 4.905d * t * t;
+            final double zpos = m_initialPose.getZ() + m_initialVelocity.getZ() * t - 4.905d * t * t;
 
             m_pose = new Pose3d(new Translation3d(xpos, ypos, zpos), Rotation3d.kZero);
         }

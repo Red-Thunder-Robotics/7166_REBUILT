@@ -14,7 +14,6 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Millimeters;
 
 import com.ctre.phoenix6.CANBus;
-
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -25,7 +24,7 @@ public final class Constants {
     public static final Mode SIM_MODE = Mode.SIM;
     public static final Mode CURRENT_MODE = RobotBase.isReal() ? Mode.REAL : SIM_MODE;
 
-    public static enum Mode {
+    public enum Mode {
         REAL,
         SIM,
         REPLAY
@@ -33,7 +32,8 @@ public final class Constants {
 
     // NOTE: THERE ARE OVERLAPPING CONTROLS!!!!
     private static final boolean USE_TWO_CONTROLLERS_DESIRED = false;
-    public static final boolean USE_TWO_CONTROLLERS = USE_TWO_CONTROLLERS_DESIRED;// ? RobotBase.isSimulation() : false;
+    public static final boolean USE_TWO_CONTROLLERS =
+            USE_TWO_CONTROLLERS_DESIRED; // ? RobotBase.isSimulation() : false;
     public static final int DRIVER_CONTROLLER = 0;
     public static final int OPERATOR_CONTROLLER = USE_TWO_CONTROLLERS ? DRIVER_CONTROLLER : 1;
 
@@ -60,7 +60,7 @@ public final class Constants {
         public static final double ANGLE_KP = 0.5d;
         public static final double ANGLE_KI = 0d;
         public static final double ANGLE_KD = 0d;
-        
+
         // degrees
         public static final double IS_FACING_ALLIANCE_ZONE_THRESHOLD = 25; // 22
         // meters per second
@@ -84,11 +84,13 @@ public final class Constants {
         public static final boolean DRIVE_HIGHER_AUTO_LIMITS = false;
 
         public static final double DRIVE_STATOR_LOW = TunerConstants.kSlipCurrent.in(Amps);
-        public static final double DRIVE_STATOR_AUTO = DRIVE_HIGHER_AUTO_LIMITS ? Math.max(DRIVE_STATOR_LOW, 200) : DRIVE_STATOR_LOW;
+        public static final double DRIVE_STATOR_AUTO =
+                DRIVE_HIGHER_AUTO_LIMITS ? Math.max(DRIVE_STATOR_LOW, 200) : DRIVE_STATOR_LOW;
         public static final double DRIVE_STATOR_TURBO = Math.max(DRIVE_STATOR_LOW, 160);
 
         public static final double DRIVE_SUPPLY_LOW = 50;
-        public static final double DRIVE_SUPPLY_AUTO = DRIVE_HIGHER_AUTO_LIMITS ? Math.max(DRIVE_SUPPLY_LOW, 70) : DRIVE_SUPPLY_LOW;
+        public static final double DRIVE_SUPPLY_AUTO =
+                DRIVE_HIGHER_AUTO_LIMITS ? Math.max(DRIVE_SUPPLY_LOW, 70) : DRIVE_SUPPLY_LOW;
         public static final double DRIVE_SUPPLY_TURBO = Math.max(DRIVE_SUPPLY_LOW, 60);
     }
 }

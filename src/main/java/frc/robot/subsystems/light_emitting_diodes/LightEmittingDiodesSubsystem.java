@@ -17,9 +17,8 @@ public final class LightEmittingDiodesSubsystem extends SubsystemBase {
     }
 
     public void stateUpdate(GeneralRobotState generalRobotState) {
-        if (lastGeneralRobotState != null && generalRobotState == lastGeneralRobotState)
-            return;
-        
+        if (lastGeneralRobotState != null && generalRobotState == lastGeneralRobotState) return;
+
         lastGeneralRobotState = generalRobotState;
         switch (generalRobotState) {
             case Idle:

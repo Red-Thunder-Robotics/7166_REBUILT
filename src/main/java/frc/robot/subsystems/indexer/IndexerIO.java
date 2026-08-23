@@ -1,12 +1,11 @@
 package frc.robot.subsystems.indexer;
 
-import org.littletonrobotics.junction.AutoLog;
-
 import edu.wpi.first.units.measure.AngularVelocity;
+import org.littletonrobotics.junction.AutoLog;
 
 public interface IndexerIO {
     @AutoLog
-    public static class IndexerIOInputs {
+    class IndexerIOInputs {
         double indexerTargetVelocityRPS;
         double indexerVelocityRPS;
         double indexerCurrentAmps;
@@ -20,14 +19,17 @@ public interface IndexerIO {
         double lowerKickerCurrentAmps;
     }
 
-    public default void updateInputs(IndexerIOInputs inputs) {}
+    default void updateInputs(IndexerIOInputs inputs) {}
 
-    public default void indexerVelocity(AngularVelocity velocity) {}
-    public default void indexerStop() {}
+    default void indexerVelocity(AngularVelocity velocity) {}
 
-    public default void topRollerVelocity(AngularVelocity velocity) {}
-    public default void topRollerStop() {}
+    default void indexerStop() {}
 
-    public default void lowerKickerVelocity(AngularVelocity velocity) {}
-    public default void lowerKickerStop() {}
+    default void topRollerVelocity(AngularVelocity velocity) {}
+
+    default void topRollerStop() {}
+
+    default void lowerKickerVelocity(AngularVelocity velocity) {}
+
+    default void lowerKickerStop() {}
 }

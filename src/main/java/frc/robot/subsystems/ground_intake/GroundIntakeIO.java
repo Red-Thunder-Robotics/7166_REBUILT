@@ -1,13 +1,12 @@
 package frc.robot.subsystems.ground_intake;
 
-import org.littletonrobotics.junction.AutoLog;
-
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
+import org.littletonrobotics.junction.AutoLog;
 
 public interface GroundIntakeIO {
     @AutoLog
-    public static class GroundIntakeIOInputs {
+    class GroundIntakeIOInputs {
         boolean isDeployed;
 
         double targetActuatorPositionRotations;
@@ -29,18 +28,25 @@ public interface GroundIntakeIO {
         double leftRollerMotorCurrentAmps;
     }
 
-    public default void updateInputs(GroundIntakeIOInputs inputs) {}
+    default void updateInputs(GroundIntakeIOInputs inputs) {}
 
-    public default void idle() {}
-    
-    public default void setActuatorPosition(double position) {}
-    public default void actuatorStop() {}
+    default void idle() {}
 
-    public default void rollerVelocity(AngularVelocity velocity) {}
-    public default void rollerCurrent(Current current) {}
-    public default void rollerStop() {}
+    default void setActuatorPosition(double position) {}
 
-    public default void actuatorZeroingDrive() {}
-    public default void actuatorZero() {}
-    public default boolean actuatorCanZero() { return true; }
+    default void actuatorStop() {}
+
+    default void rollerVelocity(AngularVelocity velocity) {}
+
+    default void rollerCurrent(Current current) {}
+
+    default void rollerStop() {}
+
+    default void actuatorZeroingDrive() {}
+
+    default void actuatorZero() {}
+
+    default boolean actuatorCanZero() {
+        return true;
+    }
 }

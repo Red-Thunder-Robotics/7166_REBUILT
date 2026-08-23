@@ -4,7 +4,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface ClimberIO {
     @AutoLog
-    public static class ClimberIOInputs {
+    class ClimberIOInputs {
         double targetPositionRotations;
         double targetPositionInches;
 
@@ -15,8 +15,9 @@ public interface ClimberIO {
         double currentAmps;
     }
 
-    public default void updateInputs(ClimberIOInputs inputs) {}
+    default void updateInputs(ClimberIOInputs inputs) {}
 
-    public default void setPosition(double position) {}
-    public default void stop() {}
+    default void setPosition(double position) {}
+
+    default void stop() {}
 }

@@ -16,18 +16,17 @@ public final class GroundIntakeIOSim implements GroundIntakeIO {
 
     private final PIDController m_actuatorPositionPID = new PIDController(0.5d, 0d, 0d);
 
-    public GroundIntakeIOSim() {
-        
-    }
+    public GroundIntakeIOSim() {}
 
     @Override
     public void updateInputs(GroundIntakeIOInputs inputs) {
         m_actuatorPosition += m_actuatorPositionPID.calculate(m_actuatorPosition);
 
         final double targetActuatorPosition = m_targetActuatorPosition;
-        
+
         inputs.targetActuatorPositionRotations = targetActuatorPosition;
-        inputs.targetActuatorPositionDegrees = mechanismPositionToAngle(targetActuatorPosition).in(Degrees);
+        inputs.targetActuatorPositionDegrees =
+                mechanismPositionToAngle(targetActuatorPosition).in(Degrees);
 
         final double position = m_actuatorPosition;
         inputs.actuatorPositionRotations = position;
@@ -41,10 +40,12 @@ public final class GroundIntakeIOSim implements GroundIntakeIO {
         m_targetActuatorPosition = position;
         m_actuatorPositionPID.setSetpoint(position);
     }
+
     @Override
     public void rollerVelocity(AngularVelocity velocity) {
         m_rollerVelocityRPS = velocity.in(RotationsPerSecond);
     }
+
     @Override
     public void rollerStop() {
         m_rollerVelocityRPS = 0d;

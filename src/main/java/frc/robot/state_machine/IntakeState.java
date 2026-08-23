@@ -23,6 +23,7 @@ public enum IntakeState {
         }
         return false;
     }
+
     public boolean areRollersReversed() {
         switch (this) {
             case DeployedReverse:
@@ -33,6 +34,7 @@ public enum IntakeState {
                 return false;
         }
     }
+
     public boolean isDeployed() {
         switch (this) {
             case DeployedOff:
@@ -44,6 +46,7 @@ public enum IntakeState {
                 return false;
         }
     }
+
     public boolean isOscillate() {
         switch (this) {
             case OscillateOff:
@@ -54,6 +57,7 @@ public enum IntakeState {
                 return false;
         }
     }
+
     public boolean isOut() {
         switch (this) {
             case DeployedOff:
@@ -67,6 +71,7 @@ public enum IntakeState {
                 return false;
         }
     }
+
     public IntakeState off() {
         switch (this) {
             case DeployedOff:
@@ -81,6 +86,7 @@ public enum IntakeState {
                 return this;
         }
     }
+
     public IntakeState on() {
         switch (this) {
             case DeployedOff:
@@ -93,6 +99,7 @@ public enum IntakeState {
                 return this;
         }
     }
+
     public IntakeState reverse() {
         switch (this) {
             case DeployedOff:

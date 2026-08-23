@@ -1,10 +1,9 @@
 package frc.robot.util;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.state_machine.StateMachine;
+import org.littletonrobotics.junction.Logger;
 
 // https://github.com/CrossTheRoadElec/2026-Rebuilt-CTR-Example-Robot/blob/main/src/main/java/frc/robot/utils/HubActiveState.java
 
@@ -12,14 +11,17 @@ public class HubActiveState {
     private static class TimeSegment {
         public double start;
         public double end;
+
         public TimeSegment(double start, double end) {
             this.start = start;
             this.end = end;
         }
+
         public boolean isTimeWithin(double time) {
             return time >= start && time <= end;
         }
     }
+
     private static final TimeSegment[] TeleopHubActiveTimesForAutoWinner = new TimeSegment[] {
         new TimeSegment(0, 55), // Shift 4 combines with End game
         new TimeSegment((1 * 60) + 20, (1 * 60) + 45), // Shift 2
@@ -33,7 +35,7 @@ public class HubActiveState {
 
     private static boolean isOurHubActive = false;
     private static double timeUntilSwap = 0;
-    
+
     private static void updateStatesForTeleop() {
         if (!DriverStation.isTeleopEnabled()) return;
 
@@ -53,8 +55,7 @@ public class HubActiveState {
                 return;
             }
             double timeToStart = timeLeftInTeleop - seg.end;
-            if (timeToStart > 0 && timeToStart < newTimeUntilSwap)
-                newTimeUntilSwap = timeToStart;
+            if (timeToStart > 0 && timeToStart < newTimeUntilSwap) newTimeUntilSwap = timeToStart;
         }
         timeUntilSwap = newTimeUntilSwap;
         isOurHubActive = false;
@@ -70,10 +71,8 @@ public class HubActiveState {
                 /* If we're autonomous, the hub is always active */
                 isOurHubActive = true;
                 timeUntilSwap = DriverStation.getMatchTime();
-            } else if (DriverStation.isTeleop())
-                updateStatesForTeleop();
-            else
-                isOurHubActive = false;
+            } else if (DriverStation.isTeleop()) updateStatesForTeleop();
+            else isOurHubActive = false;
         }
     }
 

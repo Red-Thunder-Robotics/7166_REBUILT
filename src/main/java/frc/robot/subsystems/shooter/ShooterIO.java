@@ -1,13 +1,12 @@
 package frc.robot.subsystems.shooter;
 
-import org.littletonrobotics.junction.AutoLog;
-
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import org.littletonrobotics.junction.AutoLog;
 
 public interface ShooterIO {
     @AutoLog
-    public static class ShooterIOInputs {
+    class ShooterIOInputs {
         // flywheel
         double flywheelTargetVelocityRPS;
 
@@ -44,21 +43,29 @@ public interface ShooterIO {
         double upperKickerMotorCurrentAmps;
     }
 
-    public default void updateInputs(ShooterIOInputs inputs) {}
+    default void updateInputs(ShooterIOInputs inputs) {}
 
-    public default void idle() {}
+    default void idle() {}
 
-    public default void flywheelVelocity(AngularVelocity velocity) {}
-    public default void flywheelStop() {}
+    default void flywheelVelocity(AngularVelocity velocity) {}
 
-    public default void hoodAngle(double position) {}
-    public default void hoodAngle(Angle angle) {}
-    public default void hoodStop() {}
+    default void flywheelStop() {}
 
-    public default void hoodZeroingDrive() {}
-    public default void hoodZero() {}
-    public default boolean hoodCanZero() { return true; }
+    default void hoodAngle(double position) {}
 
-    public default void upperKickerVelocity(AngularVelocity velocity) {}
-    public default void upperKickerStop() {}
+    default void hoodAngle(Angle angle) {}
+
+    default void hoodStop() {}
+
+    default void hoodZeroingDrive() {}
+
+    default void hoodZero() {}
+
+    default boolean hoodCanZero() {
+        return true;
+    }
+
+    default void upperKickerVelocity(AngularVelocity velocity) {}
+
+    default void upperKickerStop() {}
 }

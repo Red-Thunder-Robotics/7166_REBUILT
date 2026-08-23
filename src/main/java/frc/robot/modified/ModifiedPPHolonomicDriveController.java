@@ -1,5 +1,7 @@
 package frc.robot.modified;
 
+import static edu.wpi.first.units.Units.Radians;
+
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PathFollowingController;
 import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
@@ -8,258 +10,245 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-
-import static edu.wpi.first.units.Units.Radians;
-
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.Logger;
 
 /** Path following controller for holonomic drive trains */
 public class ModifiedPPHolonomicDriveController implements PathFollowingController {
-  private final PIDController xController;
-  private final PIDController yController;
-  private final PIDController rotationController;
+    private final PIDController xController;
+    private final PIDController yController;
+    private final PIDController rotationController;
 
-  private Translation2d translationError = new Translation2d();
-  private boolean isEnabled = true;
+    private Translation2d translationError = new Translation2d();
+    private boolean isEnabled = true;
 
-  private static Supplier<Optional<Rotation2d>> rotationTargetOverride = null;
-  private static DoubleSupplier xFeedbackOverride = null;
-  private static DoubleSupplier yFeedbackOverride = null;
-  private static DoubleSupplier rotFeedbackOverride = null;
+    private static Supplier<Optional<Rotation2d>> rotationTargetOverride = null;
+    private static DoubleSupplier xFeedbackOverride = null;
+    private static DoubleSupplier yFeedbackOverride = null;
+    private static DoubleSupplier rotFeedbackOverride = null;
 
-  /**
-   * Constructs a HolonomicDriveController
-   *
-   * @param translationConstants PID constants for the translation PID controllers
-   * @param rotationConstants PID constants for the rotation controller
-   * @param period Period of the control loop in seconds
-   */
-  public ModifiedPPHolonomicDriveController(
-      PIDConstants translationConstants, PIDConstants rotationConstants, double period) {
-    this.xController =
-        new PIDController(
-            translationConstants.kP, translationConstants.kI, translationConstants.kD, period);
-    this.xController.setIntegratorRange(-translationConstants.iZone, translationConstants.iZone);
+    /**
+     * Constructs a HolonomicDriveController
+     *
+     * @param translationConstants PID constants for the translation PID controllers
+     * @param rotationConstants PID constants for the rotation controller
+     * @param period Period of the control loop in seconds
+     */
+    public ModifiedPPHolonomicDriveController(
+            PIDConstants translationConstants, PIDConstants rotationConstants, double period) {
+        this.xController =
+                new PIDController(translationConstants.kP, translationConstants.kI, translationConstants.kD, period);
+        this.xController.setIntegratorRange(-translationConstants.iZone, translationConstants.iZone);
 
-    this.yController =
-        new PIDController(
-            translationConstants.kP, translationConstants.kI, translationConstants.kD, period);
-    this.yController.setIntegratorRange(-translationConstants.iZone, translationConstants.iZone);
+        this.yController =
+                new PIDController(translationConstants.kP, translationConstants.kI, translationConstants.kD, period);
+        this.yController.setIntegratorRange(-translationConstants.iZone, translationConstants.iZone);
 
-    // Temp rate limit of 0, will be changed in calculate
-    this.rotationController =
-        new PIDController(rotationConstants.kP, rotationConstants.kI, rotationConstants.kD, period);
-    this.rotationController.setIntegratorRange(-rotationConstants.iZone, rotationConstants.iZone);
-    this.rotationController.enableContinuousInput(-Math.PI, Math.PI);
-  }
-
-  /**
-   * Constructs a HolonomicDriveController
-   *
-   * @param translationConstants PID constants for the translation PID controllers
-   * @param rotationConstants PID constants for the rotation controller
-   */
-  public ModifiedPPHolonomicDriveController(
-      PIDConstants translationConstants, PIDConstants rotationConstants) {
-    this(translationConstants, rotationConstants, 0.02);
-  }
-
-  /**
-   * Enables and disables the controller for troubleshooting. When calculate() is called on a
-   * disabled controller, only feedforward values are returned.
-   *
-   * @param enabled If the controller is enabled or not
-   */
-  public void setEnabled(boolean enabled) {
-    this.isEnabled = enabled;
-  }
-
-  /**
-   * Resets the controller based on the current state of the robot
-   *
-   * @param currentPose Current robot pose
-   * @param currentSpeeds Current robot relative chassis speeds
-   */
-  @Override
-  public void reset(Pose2d currentPose, ChassisSpeeds currentSpeeds) {
-    xController.reset();
-    yController.reset();
-    rotationController.reset();
-  }
-
-  /**
-   * Calculates the next output of the path following controller
-   *
-   * @param currentPose The current robot pose
-   * @param targetState The desired trajectory state
-   * @return The next robot relative output of the path following controller
-   */
-  @Override
-  public ChassisSpeeds calculateRobotRelativeSpeeds(
-      Pose2d currentPose, PathPlannerTrajectoryState targetState) {
-    double xFF = targetState.fieldSpeeds.vxMetersPerSecond;
-    double yFF = targetState.fieldSpeeds.vyMetersPerSecond;
-
-    this.translationError = currentPose.getTranslation().minus(targetState.pose.getTranslation());
-
-    if (!this.isEnabled) {
-      return ChassisSpeeds.fromFieldRelativeSpeeds(xFF, yFF, 0, currentPose.getRotation());
+        // Temp rate limit of 0, will be changed in calculate
+        this.rotationController =
+                new PIDController(rotationConstants.kP, rotationConstants.kI, rotationConstants.kD, period);
+        this.rotationController.setIntegratorRange(-rotationConstants.iZone, rotationConstants.iZone);
+        this.rotationController.enableContinuousInput(-Math.PI, Math.PI);
     }
 
-    final double currentX = currentPose.getX();
-    final double currentY = currentPose.getY();
-
-    final double targetX = targetState.pose.getX();
-    final double targetY = targetState.pose.getY();
-
-    double xFeedback = this.xController.calculate(currentX, targetX);
-    double yFeedback = this.yController.calculate(currentY, targetY);
-    
-    Logger.recordOutput("PathPlanner/CurrentX", currentX);
-    Logger.recordOutput("PathPlanner/CurrentY", currentY);
-    Logger.recordOutput("PathPlanner/TargetX", targetX);
-    Logger.recordOutput("PathPlanner/TargetY", targetY);
-
-
-    Rotation2d targetRotation = targetState.pose.getRotation();
-    if (rotationTargetOverride != null) {
-      targetRotation = rotationTargetOverride.get().orElse(targetRotation);
+    /**
+     * Constructs a HolonomicDriveController
+     *
+     * @param translationConstants PID constants for the translation PID controllers
+     * @param rotationConstants PID constants for the rotation controller
+     */
+    public ModifiedPPHolonomicDriveController(PIDConstants translationConstants, PIDConstants rotationConstants) {
+        this(translationConstants, rotationConstants, 0.02);
     }
 
-    final double currentRadians = currentPose.getRotation().getRadians();
-    final double targetRadians = targetRotation.getRadians();
-
-    double rotationFeedback =
-        rotationController.calculate(
-            currentRadians, targetRadians);
-    double rotationFF = targetState.fieldSpeeds.omegaRadiansPerSecond;
-
-    Logger.recordOutput("PathPlanner/CurrentRotation", Radians.of(currentRadians));
-    Logger.recordOutput("PathPlanner/TargetRotation", Radians.of(targetRadians));
-
-    if (xFeedbackOverride != null) {
-      xFeedback = xFeedbackOverride.getAsDouble();
-    }
-    if (yFeedbackOverride != null) {
-      yFeedback = yFeedbackOverride.getAsDouble();
-    }
-    if (rotFeedbackOverride != null) {
-      rotationFeedback = rotFeedbackOverride.getAsDouble();
+    /**
+     * Enables and disables the controller for troubleshooting. When calculate() is called on a
+     * disabled controller, only feedforward values are returned.
+     *
+     * @param enabled If the controller is enabled or not
+     */
+    public void setEnabled(boolean enabled) {
+        this.isEnabled = enabled;
     }
 
-    return ChassisSpeeds.fromFieldRelativeSpeeds(
-        xFF + xFeedback, yFF + yFeedback, rotationFF + rotationFeedback, currentPose.getRotation());
-  }
+    /**
+     * Resets the controller based on the current state of the robot
+     *
+     * @param currentPose Current robot pose
+     * @param currentSpeeds Current robot relative chassis speeds
+     */
+    @Override
+    public void reset(Pose2d currentPose, ChassisSpeeds currentSpeeds) {
+        xController.reset();
+        yController.reset();
+        rotationController.reset();
+    }
 
-  /**
-   * Is this controller for holonomic drivetrains? Used to handle some differences in functionality
-   * in the path following command.
-   *
-   * @return True if this controller is for a holonomic drive train
-   */
-  @Override
-  public boolean isHolonomic() {
-    return true;
-  }
+    /**
+     * Calculates the next output of the path following controller
+     *
+     * @param currentPose The current robot pose
+     * @param targetState The desired trajectory state
+     * @return The next robot relative output of the path following controller
+     */
+    @Override
+    public ChassisSpeeds calculateRobotRelativeSpeeds(Pose2d currentPose, PathPlannerTrajectoryState targetState) {
+        double xFF = targetState.fieldSpeeds.vxMetersPerSecond;
+        double yFF = targetState.fieldSpeeds.vyMetersPerSecond;
 
-  /**
-   * Set a supplier that will be used to override the rotation target when path following.
-   *
-   * <p>This function should return an empty optional to use the rotation targets in the path
-   *
-   * @param rotationTargetOverride Supplier to override rotation targets
-   * @deprecated Use overrideRotationFeedback instead, with the output of your own PID controller
-   */
-  @Deprecated
-  public static void setRotationTargetOverride(
-      Supplier<Optional<Rotation2d>> rotationTargetOverride) {
-    ModifiedPPHolonomicDriveController.rotationTargetOverride = rotationTargetOverride;
-  }
+        this.translationError = currentPose.getTranslation().minus(targetState.pose.getTranslation());
 
-  /**
-   * Begin overriding the X axis feedback.
-   *
-   * @param xFeedbackOverride Double supplier that returns the desired FIELD-RELATIVE X feedback in
-   *     meters/sec
-   */
-  public static void overrideXFeedback(DoubleSupplier xFeedbackOverride) {
-    ModifiedPPHolonomicDriveController.xFeedbackOverride = xFeedbackOverride;
-  }
+        if (!this.isEnabled) {
+            return ChassisSpeeds.fromFieldRelativeSpeeds(xFF, yFF, 0, currentPose.getRotation());
+        }
 
-  /**
-   * Stop overriding the X axis feedback, and return to calculating it based on path following
-   * error.
-   */
-  public static void clearXFeedbackOverride() {
-    ModifiedPPHolonomicDriveController.xFeedbackOverride = null;
-  }
+        final double currentX = currentPose.getX();
+        final double currentY = currentPose.getY();
 
-  /**
-   * Begin overriding the Y axis feedback.
-   *
-   * @param yFeedbackOverride Double supplier that returns the desired FIELD-RELATIVE Y feedback in
-   *     meters/sec
-   */
-  public static void overrideYFeedback(DoubleSupplier yFeedbackOverride) {
-    ModifiedPPHolonomicDriveController.yFeedbackOverride = yFeedbackOverride;
-  }
+        final double targetX = targetState.pose.getX();
+        final double targetY = targetState.pose.getY();
 
-  /**
-   * Stop overriding the Y axis feedback, and return to calculating it based on path following
-   * error.
-   */
-  public static void clearYFeedbackOverride() {
-    ModifiedPPHolonomicDriveController.yFeedbackOverride = null;
-  }
+        double xFeedback = this.xController.calculate(currentX, targetX);
+        double yFeedback = this.yController.calculate(currentY, targetY);
 
-  /**
-   * Begin overriding the X and Y axis feedback.
-   *
-   * @param xFeedbackOverride Double supplier that returns the desired FIELD-RELATIVE X feedback in
-   *     meters/sec
-   * @param yFeedbackOverride Double supplier that returns the desired FIELD-RELATIVE Y feedback in
-   *     meters/sec
-   */
-  public static void overrideXYFeedback(
-      DoubleSupplier xFeedbackOverride, DoubleSupplier yFeedbackOverride) {
-    overrideXFeedback(xFeedbackOverride);
-    overrideYFeedback(yFeedbackOverride);
-  }
+        Logger.recordOutput("PathPlanner/CurrentX", currentX);
+        Logger.recordOutput("PathPlanner/CurrentY", currentY);
+        Logger.recordOutput("PathPlanner/TargetX", targetX);
+        Logger.recordOutput("PathPlanner/TargetY", targetY);
 
-  /**
-   * Stop overriding the X and Y axis feedback, and return to calculating them based on path
-   * following error.
-   */
-  public static void clearXYFeedbackOverride() {
-    clearXFeedbackOverride();
-    clearYFeedbackOverride();
-  }
+        Rotation2d targetRotation = targetState.pose.getRotation();
+        if (rotationTargetOverride != null) {
+            targetRotation = rotationTargetOverride.get().orElse(targetRotation);
+        }
 
-  /**
-   * Begin overriding the rotation feedback.
-   *
-   * @param rotationFeedbackOverride Double supplier that returns the desired rotation feedback in
-   *     radians/sec
-   */
-  public static void overrideRotationFeedback(DoubleSupplier rotationFeedbackOverride) {
-    ModifiedPPHolonomicDriveController.rotFeedbackOverride = rotationFeedbackOverride;
-  }
+        final double currentRadians = currentPose.getRotation().getRadians();
+        final double targetRadians = targetRotation.getRadians();
 
-  /**
-   * Stop overriding the rotation feedback, and return to calculating it based on path following
-   * error.
-   */
-  public static void clearRotationFeedbackOverride() {
-    ModifiedPPHolonomicDriveController.rotFeedbackOverride = null;
-  }
+        double rotationFeedback = rotationController.calculate(currentRadians, targetRadians);
+        double rotationFF = targetState.fieldSpeeds.omegaRadiansPerSecond;
 
-  /** Clear all feedback overrides and return to purely using path following error for feedback */
-  public static void clearFeedbackOverrides() {
-    clearXYFeedbackOverride();
-    clearRotationFeedbackOverride();
-  }
+        Logger.recordOutput("PathPlanner/CurrentRotation", Radians.of(currentRadians));
+        Logger.recordOutput("PathPlanner/TargetRotation", Radians.of(targetRadians));
+
+        if (xFeedbackOverride != null) {
+            xFeedback = xFeedbackOverride.getAsDouble();
+        }
+        if (yFeedbackOverride != null) {
+            yFeedback = yFeedbackOverride.getAsDouble();
+        }
+        if (rotFeedbackOverride != null) {
+            rotationFeedback = rotFeedbackOverride.getAsDouble();
+        }
+
+        return ChassisSpeeds.fromFieldRelativeSpeeds(
+                xFF + xFeedback, yFF + yFeedback, rotationFF + rotationFeedback, currentPose.getRotation());
+    }
+
+    /**
+     * Is this controller for holonomic drivetrains? Used to handle some differences in functionality
+     * in the path following command.
+     *
+     * @return True if this controller is for a holonomic drive train
+     */
+    @Override
+    public boolean isHolonomic() {
+        return true;
+    }
+
+    /**
+     * Set a supplier that will be used to override the rotation target when path following.
+     *
+     * <p>This function should return an empty optional to use the rotation targets in the path
+     *
+     * @param rotationTargetOverride Supplier to override rotation targets
+     * @deprecated Use overrideRotationFeedback instead, with the output of your own PID controller
+     */
+    @Deprecated
+    public static void setRotationTargetOverride(Supplier<Optional<Rotation2d>> rotationTargetOverride) {
+        ModifiedPPHolonomicDriveController.rotationTargetOverride = rotationTargetOverride;
+    }
+
+    /**
+     * Begin overriding the X axis feedback.
+     *
+     * @param xFeedbackOverride Double supplier that returns the desired FIELD-RELATIVE X feedback in
+     *     meters/sec
+     */
+    public static void overrideXFeedback(DoubleSupplier xFeedbackOverride) {
+        ModifiedPPHolonomicDriveController.xFeedbackOverride = xFeedbackOverride;
+    }
+
+    /**
+     * Stop overriding the X axis feedback, and return to calculating it based on path following
+     * error.
+     */
+    public static void clearXFeedbackOverride() {
+        ModifiedPPHolonomicDriveController.xFeedbackOverride = null;
+    }
+
+    /**
+     * Begin overriding the Y axis feedback.
+     *
+     * @param yFeedbackOverride Double supplier that returns the desired FIELD-RELATIVE Y feedback in
+     *     meters/sec
+     */
+    public static void overrideYFeedback(DoubleSupplier yFeedbackOverride) {
+        ModifiedPPHolonomicDriveController.yFeedbackOverride = yFeedbackOverride;
+    }
+
+    /**
+     * Stop overriding the Y axis feedback, and return to calculating it based on path following
+     * error.
+     */
+    public static void clearYFeedbackOverride() {
+        ModifiedPPHolonomicDriveController.yFeedbackOverride = null;
+    }
+
+    /**
+     * Begin overriding the X and Y axis feedback.
+     *
+     * @param xFeedbackOverride Double supplier that returns the desired FIELD-RELATIVE X feedback in
+     *     meters/sec
+     * @param yFeedbackOverride Double supplier that returns the desired FIELD-RELATIVE Y feedback in
+     *     meters/sec
+     */
+    public static void overrideXYFeedback(DoubleSupplier xFeedbackOverride, DoubleSupplier yFeedbackOverride) {
+        overrideXFeedback(xFeedbackOverride);
+        overrideYFeedback(yFeedbackOverride);
+    }
+
+    /**
+     * Stop overriding the X and Y axis feedback, and return to calculating them based on path
+     * following error.
+     */
+    public static void clearXYFeedbackOverride() {
+        clearXFeedbackOverride();
+        clearYFeedbackOverride();
+    }
+
+    /**
+     * Begin overriding the rotation feedback.
+     *
+     * @param rotationFeedbackOverride Double supplier that returns the desired rotation feedback in
+     *     radians/sec
+     */
+    public static void overrideRotationFeedback(DoubleSupplier rotationFeedbackOverride) {
+        ModifiedPPHolonomicDriveController.rotFeedbackOverride = rotationFeedbackOverride;
+    }
+
+    /**
+     * Stop overriding the rotation feedback, and return to calculating it based on path following
+     * error.
+     */
+    public static void clearRotationFeedbackOverride() {
+        ModifiedPPHolonomicDriveController.rotFeedbackOverride = null;
+    }
+
+    /** Clear all feedback overrides and return to purely using path following error for feedback */
+    public static void clearFeedbackOverrides() {
+        clearXYFeedbackOverride();
+        clearRotationFeedbackOverride();
+    }
 }

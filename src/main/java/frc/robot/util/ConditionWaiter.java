@@ -13,6 +13,7 @@ public final class ConditionWaiter {
     public void activate() {
         m_active = true;
     }
+
     public void deactivate() {
         m_active = false;
     }

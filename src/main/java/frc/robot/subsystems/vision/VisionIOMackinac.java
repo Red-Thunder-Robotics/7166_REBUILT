@@ -1,7 +1,11 @@
 package frc.robot.subsystems.vision;
 
+import static edu.wpi.first.units.Units.Meters;
+import static frc.robot.subsystems.vision.VisionConstants.*;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.IntegerPublisher;
@@ -14,18 +18,12 @@ import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants.FieldConstants;
-import frc.robot.util.SystemTimeValidReader;
-
-import static edu.wpi.first.units.Units.Meters;
-import static frc.robot.subsystems.vision.VisionConstants.*;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class VisionIOMackinac implements VisionIO {
     private final AprilTagFieldLayout m_fieldLayout;
 
-    private static final NetworkTable cameraPublisherTable = NetworkTableInstance.getDefault().getTable("CameraPublisher");
+    private static final NetworkTable cameraPublisherTable =
+            NetworkTableInstance.getDefault().getTable("CameraPublisher");
 
     private final String m_deviceId;
     private final DoubleArraySubscriber m_observationSubscriber;
@@ -47,7 +45,7 @@ public class VisionIOMackinac implements VisionIO {
         var mackinacTable = NetworkTableInstance.getDefault().getTable(m_deviceId);
         var configTable = mackinacTable.getSubTable("config");
         var camera = cameras[index];
-        
+
         configTable.getStringTopic("camera_id").publish().set(camera.id());
         configTable.getIntegerTopic("camera_resolution_width").publish().set(camera.width());
         configTable.getIntegerTopic("camera_resolution_height").publish().set(camera.height());
@@ -65,24 +63,22 @@ public class VisionIOMackinac implements VisionIO {
         m_matchNumberPublisher = configTable.getIntegerTopic("match_number").publish();
 
         var outputTable = mackinacTable.getSubTable("output");
-        m_observationSubscriber =
-            outputTable
+        m_observationSubscriber = outputTable
                 .getDoubleArrayTopic("observations")
                 .subscribe(
-                    new double[] {},
-                    PubSubOption.keepDuplicates(true),
-                    PubSubOption.sendAll(true),
-                    PubSubOption.pollStorage(5),
-                    PubSubOption.periodic(0.01));
-        m_objDetectObservationSubscriber =
-            outputTable
+                        new double[] {},
+                        PubSubOption.keepDuplicates(true),
+                        PubSubOption.sendAll(true),
+                        PubSubOption.pollStorage(5),
+                        PubSubOption.periodic(0.01));
+        m_objDetectObservationSubscriber = outputTable
                 .getDoubleArrayTopic("objdetect_observations")
                 .subscribe(
-                    new double[] {},
-                    PubSubOption.keepDuplicates(true),
-                    PubSubOption.sendAll(true),
-                    PubSubOption.pollStorage(5),
-                    PubSubOption.periodic(0.01));
+                        new double[] {},
+                        PubSubOption.keepDuplicates(true),
+                        PubSubOption.sendAll(true),
+                        PubSubOption.pollStorage(5),
+                        PubSubOption.periodic(0.01));
         m_fpsAprilTagsSubscriber = outputTable.getIntegerTopic("fps_apriltags").subscribe(0);
         m_fpsObjDetectSubscriber = outputTable.getIntegerTopic("fps_objdetect").subscribe(0);
 
@@ -92,12 +88,12 @@ public class VisionIOMackinac implements VisionIO {
         {
             final String mode = "" + camera.width() + "x" + camera.height() + " MJPEG 60 fps";
             cameraTable.getStringTopic("mode").publish().set(mode);
-            cameraTable.getStringArrayTopic("modes").publish().set(new String[]{ mode });
+            cameraTable.getStringArrayTopic("modes").publish().set(new String[] {mode});
         }
         {
             final String source = "mjpg:http://10.71.66.14:580" + (index * 2 + 1) + "/stream.mjpg";
             cameraTable.getStringTopic("source").publish().set(source);
-            cameraTable.getStringArrayTopic("streams").publish().set(new String[]{ source });
+            cameraTable.getStringArrayTopic("streams").publish().set(new String[] {source});
         }
 
         m_slowPeriodicTimer.start();
@@ -106,18 +102,14 @@ public class VisionIOMackinac implements VisionIO {
         try {
             layoutString = new ObjectMapper().writeValueAsString(m_fieldLayout);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(
-                "Failed to serialize AprilTag layout JSON " + toString() + "for mackinac");
+            throw new RuntimeException("Failed to serialize AprilTag layout JSON " + toString() + "for mackinac");
         }
 
         m_tagLayoutPublisher.set(layoutString);
     }
 
     public void updateInputs(
-        VisionIOInputs inputs,
-        AprilTagVisionIOInputs aprilTagInputs,
-        ObjDetectVisionIOInputs objDetectInputs)
-    {
+            VisionIOInputs inputs, AprilTagVisionIOInputs aprilTagInputs, ObjDetectVisionIOInputs objDetectInputs) {
         boolean slowPeriodic = m_slowPeriodicTimer.advanceIfElapsed(1.0);
 
         // Update NT connection status
@@ -131,8 +123,7 @@ public class VisionIOMackinac implements VisionIO {
 
         // Publish timestamp
         // if (slowPeriodic && SystemTimeValidReader.isValid())
-        if (slowPeriodic)
-            m_timestampPublisher.set(WPIUtilJNI.getSystemTime() / 1000000);
+        if (slowPeriodic) m_timestampPublisher.set(WPIUtilJNI.getSystemTime() / 1000000);
 
         if (slowPeriodic) {
             m_eventNamePublisher.set(DriverStation.getEventName());

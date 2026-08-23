@@ -1,6 +1,7 @@
 package frc.robot;
 
 import static frc.robot.Constants.*;
+
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.modified.UltimateXboxController;
 
@@ -28,7 +29,8 @@ public final class Controls {
     public static final Trigger visionFail1 = operatorController.paddleBottomLeft();
     public static final Trigger forceTurretShouldIndex = operatorController.paddleTopLeft();
 
-    public static final Trigger zeroMechanisms = operatorController.back().and(operatorController.start()).debounce(1d);
+    public static final Trigger zeroMechanisms =
+            operatorController.back().and(operatorController.start()).debounce(1d);
 
     public static final Trigger rotationTargetBumpLeft = operatorController.leftBumper();
     public static final Trigger rotationTargetBumpRight = operatorController.rightBumper();

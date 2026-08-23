@@ -12,9 +12,7 @@ public final class ClimberIOSim implements ClimberIO {
 
     private final PIDController m_PID = new PIDController(0.5d, 0d, 0d);
 
-    public ClimberIOSim() {
-
-    }
+    public ClimberIOSim() {}
 
     @Override
     public void updateInputs(ClimberIOInputs inputs) {
@@ -24,11 +22,13 @@ public final class ClimberIOSim implements ClimberIO {
 
         final double targetPosition = m_targetPosition;
         inputs.positionRotations = targetPosition;
-        inputs.positionInches = mechanismPositionToDistance(targetPosition, pitchCircumference).in(Inches);
+        inputs.positionInches =
+                mechanismPositionToDistance(targetPosition, pitchCircumference).in(Inches);
 
         final double position = m_position;
         inputs.positionRotations = position;
-        inputs.positionInches = mechanismPositionToDistance(position, pitchCircumference).in(Inches);
+        inputs.positionInches =
+                mechanismPositionToDistance(position, pitchCircumference).in(Inches);
     }
 
     @Override

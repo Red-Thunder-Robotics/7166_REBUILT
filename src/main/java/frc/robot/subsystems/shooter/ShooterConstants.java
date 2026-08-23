@@ -5,10 +5,8 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.RPM;
 import static frc.robot.util.ConversionUtil.angleToMechanismPosition;
 
-
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
@@ -19,10 +17,10 @@ import edu.wpi.first.units.measure.Distance;
 public final class ShooterConstants {
     // public static final long spinUpDurationMilliseconds = 800L;
     public static final double shouldIndexFlywheelVelocityThresholdRPS = 1.5d; // 5.5
-    public static final double shouldIndexFlywheelVelocityAllianceFeedThresholdRPS = 5d; 
+    public static final double shouldIndexFlywheelVelocityAllianceFeedThresholdRPS = 5d;
     public static final double shouldIndexKickerVelocityThresholdRPS = 1.5d;
     public static final double latencyCompensationSeconds = 0.150d;
-    
+
     public static final int flywheelMotorIdTopLeft = 17;
     public static final int flywheelMotorIdBottomLeft = 18;
     public static final int flywheelMotorIdTopRight = 19;
@@ -59,7 +57,7 @@ public final class ShooterConstants {
 
     public static final double hoodZeroDutyCycle = -0.07d;
     public static final double hoodZeroVelocityThresholdRPS = 0.00002d;
-    
+
     // shoot -> spin up upper kicker, wait for speed, then spin lower and top roller same time
     public static final int upperKickerMotorId = 22;
     public static final int upperKickerCurrentLimit = 40; // 40; 35
@@ -73,31 +71,27 @@ public final class ShooterConstants {
     public static final double upperKickerTargetAcceleration = 266d;
 
     // https://blog.eeshwark.com/robotblog/shooting-on-the-fly-pt2
-    public static record InterpolationShooterParams(double rpm, double degrees) { };
+    public record InterpolationShooterParams(double rpm, double degrees) {}
+    ;
 
     public static final InterpolationShooterParams allianceFeedParamsNeutralZone =
-        new InterpolationShooterParams(3000d, 48d);
-    public static final InterpolationShooterParams allianceFeedParamsFar =
-        new InterpolationShooterParams(4000d, 48d);
+            new InterpolationShooterParams(3000d, 48d);
+    public static final InterpolationShooterParams allianceFeedParamsFar = new InterpolationShooterParams(4000d, 48d);
 
-    private static final InterpolationShooterParams trenchShooterParams =
-        new InterpolationShooterParams(2800d, 18.75d);
-    public static final InterpolationShooterParams hubCenterParams =
-        new InterpolationShooterParams(2150d, 7d);
+    private static final InterpolationShooterParams trenchShooterParams = new InterpolationShooterParams(2800d, 18.75d);
+    public static final InterpolationShooterParams hubCenterParams = new InterpolationShooterParams(2150d, 7d);
 
-    public static enum InterpolationParamMap {
+    public enum InterpolationParamMap {
         Normal;
         // Low;
 
         public final InterpolatingTreeMap<Double, InterpolationShooterParams> map =
-            new InterpolatingTreeMap<Double, InterpolationShooterParams>(
-                InverseInterpolator.forDouble(),
-                (InterpolationShooterParams start, InterpolationShooterParams end, double q) ->
-                    new InterpolationShooterParams(
-                        MathUtil.interpolate(start.rpm, end.rpm, q),
-                        MathUtil.interpolate(end.degrees, end.degrees, q)
-                    )
-            );
+                new InterpolatingTreeMap<Double, InterpolationShooterParams>(
+                        InverseInterpolator.forDouble(),
+                        (InterpolationShooterParams start, InterpolationShooterParams end, double q) ->
+                                new InterpolationShooterParams(
+                                        MathUtil.interpolate(start.rpm, end.rpm, q),
+                                        MathUtil.interpolate(end.degrees, end.degrees, q)));
 
         static {
             // Normal.map.put(1.78, hubCenterParams);
@@ -118,9 +112,11 @@ public final class ShooterConstants {
             Normal.map.put(5.00d, new InterpolationShooterParams(3200d, 21.5d));
         }
     }
+
     public static final InterpolationParamMap paramMap = InterpolationParamMap.Normal;
     // distance to seconds
     public static final InterpolatingDoubleTreeMap timeOfFlightMap = new InterpolatingDoubleTreeMap();
+
     static {
         timeOfFlightMap.put(1.65d, 0.9291666666666675d); // hub center
         timeOfFlightMap.put(3.63d, 1.12777777777d); // trench (MY BEST GUESS; PLEASE CHANGE)

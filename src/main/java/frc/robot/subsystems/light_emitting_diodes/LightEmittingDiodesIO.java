@@ -1,12 +1,15 @@
 package frc.robot.subsystems.light_emitting_diodes;
 
 public interface LightEmittingDiodesIO {
-    public default void solidWhite() {}
-    public default void solidRed() {}
+    default void solidWhite() {}
 
-    public default void solidGreen() {}
-    public default void flashingGreen() {}
-    
-    public default void solidBlue() {}
-    public default void flashingBlue() {}
+    default void solidRed() {}
+
+    default void solidGreen() {}
+
+    default void flashingGreen() {}
+
+    default void solidBlue() {}
+
+    default void flashingBlue() {}
 }

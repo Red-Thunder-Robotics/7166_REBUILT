@@ -1,11 +1,10 @@
 package frc.robot.util;
 
-import java.util.HashMap;
-
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.wpilibj.DriverStation;
+import java.util.HashMap;
 
 public final class ApriltagUtil {
     public static final HashMap<Integer, AprilTag> aprilTagMap = new HashMap<>();
@@ -17,8 +16,7 @@ public final class ApriltagUtil {
     static {
         try {
             fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
-            for (var tag : fieldLayout.getTags())
-                aprilTagMap.put(tag.ID, tag);
+            for (var tag : fieldLayout.getTags()) aprilTagMap.put(tag.ID, tag);
             aprilTagFieldLayoutSuccess = true;
 
             fieldLength = fieldLayout.getFieldLength();

@@ -3,23 +3,18 @@ package frc.robot.subsystems.vision;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import frc.robot.Constants;
+import java.util.function.Supplier;
 
 public final class VisionConstants {
     public static final String limelightFrontName = "limelight-front";
     public static final String limelightLeftName = "limelight-left";
     public static final String limelightRightName = "limelight-right";
-    public static final String[] limelightList = {
-        limelightFrontName,
-        limelightLeftName,
-        limelightRightName
-    };
+    public static final String[] limelightList = {limelightFrontName, limelightLeftName, limelightRightName};
     // public static final String[] limelightPoseEstimationList = {
     //     limelightFrontName,
     //     limelightLeftName
@@ -27,9 +22,10 @@ public final class VisionConstants {
     public static final String[] limelightPoseEstimationList = limelightList;
 
     private static final boolean forceEnableInstanceLogging = true;
+
     @SuppressWarnings("unused")
     public static final boolean enableInstanceLogging =
-        forceEnableInstanceLogging || Constants.CURRENT_MODE == Constants.Mode.REPLAY;
+            forceEnableInstanceLogging || Constants.CURRENT_MODE == Constants.Mode.REPLAY;
 
     public static final double ambiguityThreshold = 0.4d;
     public static final double targetLogTimeSecs = 0.1d;
@@ -49,15 +45,15 @@ public final class VisionConstants {
     private static final Angle frontCameraYaw = Degrees.of(20d);
 
     public record CameraConfig(
-        Supplier<Pose3d> pose,
-        String id,
-        int width,
-        int height,
-        int autoExposure,
-        int exposure,
-        double gain,
-        double denoise,
-        double stdDevFactor) {}
+            Supplier<Pose3d> pose,
+            String id,
+            int width,
+            int height,
+            int autoExposure,
+            int exposure,
+            double gain,
+            double denoise,
+            double stdDevFactor) {}
 
     public static CameraConfig[] cameras = new CameraConfig[] {
         // new CameraConfig( // logic 2
@@ -82,76 +78,60 @@ public final class VisionConstants {
         //     1d
         // )
         new CameraConfig( // thriftycam0
-            () -> new Pose3d(
-                frontCameraX,
-                frontCameraY.unaryMinus(),
-                frontCameraZ,
-                new Rotation3d(
-                    frontCameraRoll,
-                    frontCameraPitch,
-                    frontCameraYaw)),
-            "0x3220:0x5C8:0xA00",
-            1600,
-            1304,
-            0,
-            50,
-            10,
-            1d,
-            1d
-        ),
+                () -> new Pose3d(
+                        frontCameraX,
+                        frontCameraY.unaryMinus(),
+                        frontCameraZ,
+                        new Rotation3d(frontCameraRoll, frontCameraPitch, frontCameraYaw)),
+                "0x3220:0x5C8:0xA00",
+                1600,
+                1304,
+                0,
+                50,
+                10,
+                1d,
+                1d),
         new CameraConfig( // thriftycam1
-            () -> new Pose3d(
-                frontCameraX,
-                frontCameraY.unaryMinus(),
-                frontCameraZ,
-                new Rotation3d(
-                    frontCameraRoll,
-                    frontCameraPitch,
-                    frontCameraYaw)),
-            "0x3100:0x5C8:0xA00",
-            1600,
-            1304,
-            0,
-            50,
-            10,
-            1d,
-            1d
-        ),
+                () -> new Pose3d(
+                        frontCameraX,
+                        frontCameraY.unaryMinus(),
+                        frontCameraZ,
+                        new Rotation3d(frontCameraRoll, frontCameraPitch, frontCameraYaw)),
+                "0x3100:0x5C8:0xA00",
+                1600,
+                1304,
+                0,
+                50,
+                10,
+                1d,
+                1d),
         new CameraConfig( // thriftycam2
-            () -> new Pose3d(
-                frontCameraX,
-                frontCameraY.unaryMinus(),
-                frontCameraZ,
-                new Rotation3d(
-                    frontCameraRoll,
-                    frontCameraPitch,
-                    frontCameraYaw)),
-            "0x3220:0x5C8:0xA00",
-            1600,
-            1304,
-            0,
-            50,
-            10,
-            1d,
-            1d
-        ),
+                () -> new Pose3d(
+                        frontCameraX,
+                        frontCameraY.unaryMinus(),
+                        frontCameraZ,
+                        new Rotation3d(frontCameraRoll, frontCameraPitch, frontCameraYaw)),
+                "0x3220:0x5C8:0xA00",
+                1600,
+                1304,
+                0,
+                50,
+                10,
+                1d,
+                1d),
         new CameraConfig( // thriftycam3
-            () -> new Pose3d(
-                frontCameraX,
-                frontCameraY,
-                frontCameraZ,
-                new Rotation3d(
-                    frontCameraRoll,
-                    frontCameraPitch,
-                    frontCameraYaw.unaryMinus())),
-            "0x1000:0x5C8:0xA00",
-            1600,
-            1304,
-            0,
-            50,
-            10,
-            1d,
-            1d
-        ),
+                () -> new Pose3d(
+                        frontCameraX,
+                        frontCameraY,
+                        frontCameraZ,
+                        new Rotation3d(frontCameraRoll, frontCameraPitch, frontCameraYaw.unaryMinus())),
+                "0x1000:0x5C8:0xA00",
+                1600,
+                1304,
+                0,
+                50,
+                10,
+                1d,
+                1d),
     };
 }

@@ -8,9 +8,6 @@ import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Seconds;
 import static frc.robot.subsystems.shooter.ShooterConstants.*;
 
-import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -32,6 +29,8 @@ import frc.robot.state_machine.StateMachine;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.indexer.IndexerSubsystem;
 import frc.robot.subsystems.shooter.ShooterConstants.InterpolationShooterParams;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 public final class ShooterSubsystem extends SubsystemBase {
     public static ShooterSubsystem instance = null;
@@ -65,8 +64,7 @@ public final class ShooterSubsystem extends SubsystemBase {
         Logger.processInputs("Shooter", m_inputs);
         Logger.recordOutput("ShooterShouldIndex", shouldIndex());
 
-        if (ZeroingCommand.isSubsystemZeroing(this))
-            return;
+        if (ZeroingCommand.isSubsystemZeroing(this)) return;
 
         if (m_autoStowTimer.isRunning() && m_autoStowTimer.hasElapsed(hoodAutoStowSeconds)) {
             m_autoStowTimer.stop();
@@ -94,27 +92,24 @@ public final class ShooterSubsystem extends SubsystemBase {
                         var targetPose = StateMachine.getLauncherTargetPose();
                         InterpolationShooterParams params = null;
 
-                        if (Controls.visionFail1.getAsBoolean())
-                            params = paramMap.map.get(3.249d);
+                        if (Controls.visionFail1.getAsBoolean()) params = paramMap.map.get(3.249d);
                         // if (LiveConfig.getIsPit())
-                        else if (LiveConfig.getVisionFail())
-                            params = hubCenterParams;
+                        else if (LiveConfig.getVisionFail()) params = hubCenterParams;
                         else if (targetPose.isPresent()) {
                             // if (StateMachine.getLauncherTargetPoseIsHub())
-                            //     paramsOptional = LauncherLocationParam.getFromRobot(StateMachine.odometryAndVision.getEstimatedPose().getTranslation())
+                            //     paramsOptional =
+                            // LauncherLocationParam.getFromRobot(StateMachine.odometryAndVision.getEstimatedPose().getTranslation())
                             //         .map((value) -> value.m_params);
                             // else
 
                             params = calculateParams(targetPose.get());
                         }
-                        if (params != null)
-                            setParams(params);
+                        if (params != null) setParams(params);
                     }
                 }
                 // if (shouldIndex())
                 //     m_io.upperKickerVelocity(upperKickerVelocity);
-                if (IndexerSubsystem.instance.getReverseIsDone())
-                    m_io.upperKickerVelocity(upperKickerVelocity);
+                if (IndexerSubsystem.instance.getReverseIsDone()) m_io.upperKickerVelocity(upperKickerVelocity);
                 break;
             case Reversing:
                 // m_io.flywheelVelocity(flywheelVelocityReverse);
@@ -125,8 +120,8 @@ public final class ShooterSubsystem extends SubsystemBase {
 
     public Command zeroMechanisms(boolean skipDrive) {
         return skipDrive
-            ? Commands.runOnce(m_io::hoodZero, this)
-            : new ZeroingCommand(this, m_io::hoodZeroingDrive, m_io::hoodCanZero, m_io::hoodStop, m_io::hoodZero);
+                ? Commands.runOnce(m_io::hoodZero, this)
+                : new ZeroingCommand(this, m_io::hoodZeroingDrive, m_io::hoodCanZero, m_io::hoodStop, m_io::hoodZero);
     }
 
     public Angle getHoodAngle() {
@@ -137,20 +132,22 @@ public final class ShooterSubsystem extends SubsystemBase {
         m_io.hoodAngle(hoodPositionHome);
     }
 
-    @AutoLogOutput(key="Shooter/ShouldIndex")
+    @AutoLogOutput(key = "Shooter/ShouldIndex")
     public boolean shouldIndex() {
-        if (!m_isRobotShooting)
-            return false;
+        if (!m_isRobotShooting) return false;
 
         final double flywheelTarget = m_inputs.flywheelTargetVelocityRPS;
         final double kickerTarget = m_inputs.upperKickerTargetVelocityRPS;
 
-        if (flywheelTarget == 0d || kickerTarget == 0d)
-            return false;
+        if (flywheelTarget == 0d || kickerTarget == 0d) return false;
 
-        final double flywheelVelocityThreshold = StateMachine.getLauncherTarget() == LauncherTarget.AllianceFeed ? shouldIndexFlywheelVelocityAllianceFeedThresholdRPS : shouldIndexFlywheelVelocityThresholdRPS;
-        final boolean flywheel = Math.abs(flywheelTarget - m_inputs.flywheelMotorTopLeftVelocityRPS) <= flywheelVelocityThreshold;
-        final boolean kicker = Math.abs(kickerTarget - m_inputs.upperKickerMotorVelocityRPS) <= shouldIndexKickerVelocityThresholdRPS;
+        final double flywheelVelocityThreshold = StateMachine.getLauncherTarget() == LauncherTarget.AllianceFeed
+                ? shouldIndexFlywheelVelocityAllianceFeedThresholdRPS
+                : shouldIndexFlywheelVelocityThresholdRPS;
+        final boolean flywheel =
+                Math.abs(flywheelTarget - m_inputs.flywheelMotorTopLeftVelocityRPS) <= flywheelVelocityThreshold;
+        final boolean kicker =
+                Math.abs(kickerTarget - m_inputs.upperKickerMotorVelocityRPS) <= shouldIndexKickerVelocityThresholdRPS;
 
         final boolean indexer = IndexerSubsystem.instance.getIsPastThreshold();
 
@@ -174,7 +171,8 @@ public final class ShooterSubsystem extends SubsystemBase {
         // final double multiplier = 1.07d;
         final double multiplier = 0.6d;
 
-        // return InchesPerSecond.of(m_inputs.flywheelMotorLeftVelocityRPS * (2d * Math.PI) * flywheelRadius.in(Inches) / 2d);
+        // return InchesPerSecond.of(m_inputs.flywheelMotorLeftVelocityRPS * (2d * Math.PI) * flywheelRadius.in(Inches)
+        // / 2d);
         final double vb = m_inputs.flywheelMotorTopLeftVelocityRPS * (2d * Math.PI) * flywheelRadiusBig.in(Inches);
         final double vs = m_inputs.flywheelMotorTopLeftVelocityRPS * (2d * Math.PI) * flywheelRadiusSmall.in(Inches);
         return InchesPerSecond.of(multiplier * (vb + vs) / 2d);
@@ -196,7 +194,9 @@ public final class ShooterSubsystem extends SubsystemBase {
 
     // https://github.com/hammerheads5000/2026Rebuilt/blob/6ecae474f5ed81970d8727d2fe6b17e945a1f08f/src/main/java/frc/robot/subsystems/turret/TurretCalculator.java#L100C1-L127C1
     // see 5000-License.md
-    public static record PhysicsShotData(LinearVelocity velocity, Angle angle, Translation3d target) {};
+    public record PhysicsShotData(LinearVelocity velocity, Angle angle, Translation3d target) {}
+    ;
+
     public static Distance getDistanceToTarget(Pose2d robot, Translation3d target) {
         return Meters.of(robot.getTranslation().getDistance(target.toTranslation2d()));
     }
@@ -211,7 +211,7 @@ public final class ShooterSubsystem extends SubsystemBase {
     public InterpolationShooterParams calculateParams(Translation3d target) {
         final var robotPose = StateMachine.odometryAndVision.getEstimatedPose();
         final var fieldSpeeds = Drive.instance.getChassisSpeeds();
-        
+
         // https://github.com/hammerheads5000/2026Rebuilt/blob/9a94e647443d8a5651b044449cc5ebb8195efc52/src/main/java/frc/robot/subsystems/turret/TurretCalculator.java#L129
         // see 5000-License.md
         final int iterations = 3;

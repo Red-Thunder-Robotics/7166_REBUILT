@@ -8,8 +8,8 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 public final class LiveConfig {
-    private static final NetworkTable networkTable = NetworkTableInstance.getDefault()
-        .getTable("Config");
+    private static final NetworkTable networkTable =
+            NetworkTableInstance.getDefault().getTable("Config");
 
     private static final BooleanTopic isPitTopic = networkTable.getBooleanTopic("IsPit");
     private static final BooleanSubscriber isPitSubscriber = isPitTopic.subscribe(false);

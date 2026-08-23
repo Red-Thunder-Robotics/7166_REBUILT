@@ -2,13 +2,12 @@ package frc.robot.subsystems.indexer;
 
 import static frc.robot.subsystems.indexer.IndexerConstants.*;
 
-import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.state_machine.RobotEvent;
 import frc.robot.state_machine.StateMachine;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 public final class IndexerSubsystem extends SubsystemBase {
     public static IndexerSubsystem instance = null;
@@ -61,8 +60,7 @@ public final class IndexerSubsystem extends SubsystemBase {
                             isFeeding = true;
                             m_io.indexerVelocity(indexerOutputVelocity);
                             m_io.topRollerVelocity(topRollerVelocity);
-                        } else
-                            setIdle();
+                        } else setIdle();
                         m_io.lowerKickerVelocity(lowerKickerVelocity);
                     }
                     break;
@@ -77,23 +75,23 @@ public final class IndexerSubsystem extends SubsystemBase {
         m_isFeeding = isFeeding;
     }
 
-    @AutoLogOutput(key="IndexerIsFeeding")
+    @AutoLogOutput(key = "IndexerIsFeeding")
     public boolean getIsFeeding() {
         return m_isFeeding;
     }
 
-    @AutoLogOutput(key="IndexerPastThreshold")
+    @AutoLogOutput(key = "IndexerPastThreshold")
     public boolean getIsPastThreshold() {
         final double lowerKickerTarget = m_inputs.lowerKickerVelocityRPS;
-        if (lowerKickerTarget == 0d)
-            return false;
+        if (lowerKickerTarget == 0d) return false;
 
-        final boolean lowerKicker = Math.abs(lowerKickerTarget - m_inputs.lowerKickerTargetVelocityRPS) <= lowerKickerVelocityThresholdRPS;
+        final boolean lowerKicker =
+                Math.abs(lowerKickerTarget - m_inputs.lowerKickerTargetVelocityRPS) <= lowerKickerVelocityThresholdRPS;
 
         return lowerKicker;
     }
 
-    @AutoLogOutput(key="ReverseDone")
+    @AutoLogOutput(key = "ReverseDone")
     public boolean getReverseIsDone() {
         return m_reverseTimer.hasElapsed(reverseTime);
     }

@@ -16,7 +16,6 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
-
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -31,20 +30,25 @@ public final class ShooterIOReal implements ShooterIO {
     private final TalonFX m_flywheelMotorBottomRight = new TalonFX(flywheelMotorIdBottomRight, Constants.CANBUS);
     private final TalonFX m_hoodMotor = new TalonFX(hoodMotorId, Constants.CANBUS);
     private final TalonFX m_upperKickerMotor = new TalonFX(upperKickerMotorId, Constants.CANBUS);
-    
+
     private double m_hoodTargetPosition = hoodPositionHome;
 
     private final StatusSignal<AngularVelocity> m_flywheelTopLeftVelocitySignal = m_flywheelMotorTopLeft.getVelocity();
     private final StatusSignal<Current> m_flywheelTopLeftCurrentSignal = m_flywheelMotorTopLeft.getSupplyCurrent();
 
-    private final StatusSignal<AngularVelocity> m_flywheelBottomLeftVelocitySignal = m_flywheelMotorBottomLeft.getVelocity();
-    private final StatusSignal<Current> m_flywheelBottomLeftCurrentSignal = m_flywheelMotorBottomLeft.getSupplyCurrent();
+    private final StatusSignal<AngularVelocity> m_flywheelBottomLeftVelocitySignal =
+            m_flywheelMotorBottomLeft.getVelocity();
+    private final StatusSignal<Current> m_flywheelBottomLeftCurrentSignal =
+            m_flywheelMotorBottomLeft.getSupplyCurrent();
 
-    private final StatusSignal<AngularVelocity> m_flywheelTopRightVelocitySignal = m_flywheelMotorTopRight.getVelocity();
+    private final StatusSignal<AngularVelocity> m_flywheelTopRightVelocitySignal =
+            m_flywheelMotorTopRight.getVelocity();
     private final StatusSignal<Current> m_flywheelTopRightCurrentSignal = m_flywheelMotorTopRight.getSupplyCurrent();
 
-    private final StatusSignal<AngularVelocity> m_flywheelBottomRightVelocitySignal = m_flywheelMotorBottomRight.getVelocity();
-    private final StatusSignal<Current> m_flywheelBottomRightCurrentSignal = m_flywheelMotorBottomRight.getSupplyCurrent();
+    private final StatusSignal<AngularVelocity> m_flywheelBottomRightVelocitySignal =
+            m_flywheelMotorBottomRight.getVelocity();
+    private final StatusSignal<Current> m_flywheelBottomRightCurrentSignal =
+            m_flywheelMotorBottomRight.getSupplyCurrent();
 
     private final StatusSignal<Angle> m_hoodPositionSignal = m_hoodMotor.getPosition();
     private final StatusSignal<AngularVelocity> m_hoodVelocitySignal = m_hoodMotor.getVelocity();
@@ -53,11 +57,11 @@ public final class ShooterIOReal implements ShooterIO {
     private final StatusSignal<AngularVelocity> m_upperKickerVelocitySignal = m_upperKickerMotor.getVelocity();
     private final StatusSignal<Current> m_upperKickerCurrentSignal = m_upperKickerMotor.getSupplyCurrent();
 
-    private final MotionMagicVelocityVoltage m_flywheelVelocityRequest = new MotionMagicVelocityVoltage(0d)
-        .withEnableFOC(true);
+    private final MotionMagicVelocityVoltage m_flywheelVelocityRequest =
+            new MotionMagicVelocityVoltage(0d).withEnableFOC(true);
     private final MotionMagicVoltage m_hoodPositionRequest = new MotionMagicVoltage(m_hoodTargetPosition);
-        private final MotionMagicVelocityVoltage m_kickerVelocityRequest = new MotionMagicVelocityVoltage(0d)
-        .withEnableFOC(true);
+    private final MotionMagicVelocityVoltage m_kickerVelocityRequest =
+            new MotionMagicVelocityVoltage(0d).withEnableFOC(true);
     private final DutyCycleOut m_hoodDutyCycle = new DutyCycleOut(hoodZeroDutyCycle);
 
     public ShooterIOReal() {
@@ -100,11 +104,12 @@ public final class ShooterIOReal implements ShooterIO {
         upperKickerConfig.Slot0.kP = upperKickerPidP;
         upperKickerConfig.Slot0.kV = upperKickerPidV;
         upperKickerConfig.MotionMagic.MotionMagicAcceleration = upperKickerTargetAcceleration;
-        
+
         // PhoenixUtil.tryUntilOk(5, () -> m_upperKickerMotor.getConfigurator().apply(upperKickerConfig));
         // PhoenixUtil.tryUntilOk(5, () -> m_flywheelMotorTopLeft.getConfigurator().apply(flywheelConfig.clone()
         //     .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedTopLeft))));
-        // // FIXME: I think withInverted on all these is redundant because they're followers but I don't want to break anything and we're short on time
+        // // FIXME: I think withInverted on all these is redundant because they're followers but I don't want to break
+        // anything and we're short on time
         // PhoenixUtil.tryUntilOk(5, () -> m_flywheelMotorBottomLeft.getConfigurator().apply(flywheelConfig.clone()
         //     .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedBottomLeft))));
         // PhoenixUtil.tryUntilOk(5, () -> m_flywheelMotorTopRight.getConfigurator().apply(flywheelConfig.clone()
@@ -112,57 +117,92 @@ public final class ShooterIOReal implements ShooterIO {
         // PhoenixUtil.tryUntilOk(5, () -> m_flywheelMotorBottomRight.getConfigurator().apply(flywheelConfig.clone()
         //     .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedBottomRight))));
         // PhoenixUtil.tryUntilOk(5, () -> m_hoodMotor.getConfigurator().apply(hoodConfig));
-        MotorAction.configureMotor("Shooter Upper Kicker", m_upperKickerMotor, upperKickerConfig).run();
-        MotorAction.configureMotor("Shooter Top Left", m_flywheelMotorTopLeft, flywheelConfig.clone()
-            .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedTopLeft))).run();
-        // FIXME: I think withInverted on all these is redundant because they're followers but I don't want to break anything and we're short on time
-        MotorAction.configureMotor("Shooter Bottom Left", m_flywheelMotorBottomLeft, flywheelConfig.clone()
-            .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedBottomLeft))).run();
-        MotorAction.configureMotor("Shooter Top Right", m_flywheelMotorTopRight, flywheelConfig.clone()
-            .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedTopRight))).run();
-        MotorAction.configureMotor("Shooter Bottom Right", m_flywheelMotorBottomRight, flywheelConfig.clone()
-            .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedBottomRight))).run();
+        MotorAction.configureMotor("Shooter Upper Kicker", m_upperKickerMotor, upperKickerConfig)
+                .run();
+        MotorAction.configureMotor(
+                        "Shooter Top Left",
+                        m_flywheelMotorTopLeft,
+                        flywheelConfig
+                                .clone()
+                                .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedTopLeft)))
+                .run();
+        // FIXME: I think withInverted on all these is redundant because they're followers but I don't want to break
+        // anything and we're short on time
+        MotorAction.configureMotor(
+                        "Shooter Bottom Left",
+                        m_flywheelMotorBottomLeft,
+                        flywheelConfig
+                                .clone()
+                                .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedBottomLeft)))
+                .run();
+        MotorAction.configureMotor(
+                        "Shooter Top Right",
+                        m_flywheelMotorTopRight,
+                        flywheelConfig
+                                .clone()
+                                .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedTopRight)))
+                .run();
+        MotorAction.configureMotor(
+                        "Shooter Bottom Right",
+                        m_flywheelMotorBottomRight,
+                        flywheelConfig
+                                .clone()
+                                .withMotorOutput(new MotorOutputConfigs().withInverted(flywheelInvertedBottomRight)))
+                .run();
         MotorAction.configureMotor("Shooter Hood", m_hoodMotor, hoodConfig).run();
 
-        BaseStatusSignal.setUpdateFrequencyForAll(50d,
-            m_flywheelTopLeftVelocitySignal,
-            m_flywheelTopLeftCurrentSignal,
-            m_flywheelBottomLeftVelocitySignal,
-            m_flywheelBottomLeftCurrentSignal,
-            m_flywheelTopRightVelocitySignal,
-            m_flywheelTopRightCurrentSignal,
-            m_flywheelBottomRightVelocitySignal,
-            m_flywheelBottomRightCurrentSignal,
-            m_hoodPositionSignal,
-            m_hoodVelocitySignal,
-            m_hoodCurrentSignal,
-            m_upperKickerVelocitySignal,
-            m_upperKickerCurrentSignal);
+        BaseStatusSignal.setUpdateFrequencyForAll(
+                50d,
+                m_flywheelTopLeftVelocitySignal,
+                m_flywheelTopLeftCurrentSignal,
+                m_flywheelBottomLeftVelocitySignal,
+                m_flywheelBottomLeftCurrentSignal,
+                m_flywheelTopRightVelocitySignal,
+                m_flywheelTopRightCurrentSignal,
+                m_flywheelBottomRightVelocitySignal,
+                m_flywheelBottomRightCurrentSignal,
+                m_hoodPositionSignal,
+                m_hoodVelocitySignal,
+                m_hoodCurrentSignal,
+                m_upperKickerVelocitySignal,
+                m_upperKickerCurrentSignal);
 
         hoodZero();
 
-        m_flywheelMotorBottomLeft.setControl(new Follower(flywheelMotorIdTopLeft, flywheelInvertedBottomLeft == flywheelInvertedTopLeft ? MotorAlignmentValue.Aligned : MotorAlignmentValue.Opposed));
-        m_flywheelMotorTopRight.setControl(new Follower(flywheelMotorIdTopLeft, flywheelInvertedTopRight == flywheelInvertedTopLeft ? MotorAlignmentValue.Aligned : MotorAlignmentValue.Opposed));
-        m_flywheelMotorBottomRight.setControl(new Follower(flywheelMotorIdTopLeft, flywheelInvertedBottomRight == flywheelInvertedTopLeft ? MotorAlignmentValue.Aligned : MotorAlignmentValue.Opposed));
+        m_flywheelMotorBottomLeft.setControl(new Follower(
+                flywheelMotorIdTopLeft,
+                flywheelInvertedBottomLeft == flywheelInvertedTopLeft
+                        ? MotorAlignmentValue.Aligned
+                        : MotorAlignmentValue.Opposed));
+        m_flywheelMotorTopRight.setControl(new Follower(
+                flywheelMotorIdTopLeft,
+                flywheelInvertedTopRight == flywheelInvertedTopLeft
+                        ? MotorAlignmentValue.Aligned
+                        : MotorAlignmentValue.Opposed));
+        m_flywheelMotorBottomRight.setControl(new Follower(
+                flywheelMotorIdTopLeft,
+                flywheelInvertedBottomRight == flywheelInvertedTopLeft
+                        ? MotorAlignmentValue.Aligned
+                        : MotorAlignmentValue.Opposed));
     }
 
     @Override
     public void updateInputs(ShooterIOInputs inputs) {
         BaseStatusSignal.refreshAll(
-            m_flywheelTopLeftVelocitySignal,
-            m_flywheelTopLeftCurrentSignal,
-            m_flywheelBottomLeftVelocitySignal,
-            m_flywheelBottomLeftCurrentSignal,
-            m_flywheelTopRightVelocitySignal,
-            m_flywheelTopRightCurrentSignal,
-            m_flywheelBottomRightVelocitySignal,
-            m_flywheelBottomRightCurrentSignal,
-            m_hoodPositionSignal,
-            m_hoodVelocitySignal,
-            m_hoodCurrentSignal,
-            m_upperKickerVelocitySignal,
-            m_upperKickerCurrentSignal);
-        
+                m_flywheelTopLeftVelocitySignal,
+                m_flywheelTopLeftCurrentSignal,
+                m_flywheelBottomLeftVelocitySignal,
+                m_flywheelBottomLeftCurrentSignal,
+                m_flywheelTopRightVelocitySignal,
+                m_flywheelTopRightCurrentSignal,
+                m_flywheelBottomRightVelocitySignal,
+                m_flywheelBottomRightCurrentSignal,
+                m_hoodPositionSignal,
+                m_hoodVelocitySignal,
+                m_hoodCurrentSignal,
+                m_upperKickerVelocitySignal,
+                m_upperKickerCurrentSignal);
+
         inputs.flywheelTargetVelocityRPS = PhoenixUtil.getRequestVelocity(m_flywheelMotorTopLeft.getAppliedControl());
 
         final double topLeftCurrent = m_flywheelTopLeftCurrentSignal.getValueAsDouble();
@@ -185,11 +225,13 @@ public final class ShooterIOReal implements ShooterIO {
 
         final double hoodTargetPosition = m_hoodTargetPosition;
         inputs.hoodTargetPositionRotations = hoodTargetPosition;
-        inputs.hoodTargetPositionDegrees = mechanismPositionToAngle(hoodTargetPosition).in(Degrees);
+        inputs.hoodTargetPositionDegrees =
+                mechanismPositionToAngle(hoodTargetPosition).in(Degrees);
         //
         final double hoodPositionRotations = m_hoodPositionSignal.getValueAsDouble();
         inputs.hoodPositionRotations = hoodPositionRotations;
-        inputs.hoodPositionDegrees = mechanismPositionToAngle(hoodPositionRotations).in(Degrees);
+        inputs.hoodPositionDegrees =
+                mechanismPositionToAngle(hoodPositionRotations).in(Degrees);
         //
         inputs.hoodMotorDutyCycle = PhoenixUtil.getRequestDutyCycle(m_hoodMotor.getAppliedControl());
         inputs.hoodMotorVelocityRPS = m_hoodVelocitySignal.getValueAsDouble();
@@ -212,6 +254,7 @@ public final class ShooterIOReal implements ShooterIO {
     public void flywheelVelocity(AngularVelocity velocity) {
         m_flywheelMotorTopLeft.setControl(m_flywheelVelocityRequest.withVelocity(velocity));
     }
+
     @Override
     public void flywheelStop() {
         m_flywheelMotorTopLeft.disable();
@@ -222,10 +265,12 @@ public final class ShooterIOReal implements ShooterIO {
         m_hoodTargetPosition = position;
         m_hoodMotor.setControl(m_hoodPositionRequest.withPosition(m_hoodTargetPosition));
     }
+
     @Override
     public void hoodAngle(Angle angle) {
         hoodAngle(angleToMechanismPosition(angle));
     }
+
     @Override
     public void hoodStop() {
         m_hoodMotor.disable();
@@ -235,11 +280,14 @@ public final class ShooterIOReal implements ShooterIO {
     public void hoodZeroingDrive() {
         m_hoodMotor.setControl(m_hoodDutyCycle);
     }
+
     @Override
     public void hoodZero() {
         // PhoenixUtil.tryUntilOk(5, () -> m_hoodMotor.setPosition(hoodPositionHome));
-        MotorAction.setMotorPosition("Shooter Hood", m_hoodMotor, hoodPositionHome).run();
+        MotorAction.setMotorPosition("Shooter Hood", m_hoodMotor, hoodPositionHome)
+                .run();
     }
+
     @Override
     public boolean hoodCanZero() {
         return Math.abs(m_hoodVelocitySignal.getValueAsDouble()) <= hoodZeroVelocityThresholdRPS;
@@ -249,6 +297,7 @@ public final class ShooterIOReal implements ShooterIO {
     public void upperKickerVelocity(AngularVelocity velocity) {
         m_upperKickerMotor.setControl(m_kickerVelocityRequest.withVelocity(velocity));
     }
+
     @Override
     public void upperKickerStop() {
         m_upperKickerMotor.disable();

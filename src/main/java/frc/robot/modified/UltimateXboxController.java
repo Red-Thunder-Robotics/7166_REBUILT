@@ -11,12 +11,15 @@ public class UltimateXboxController extends CommandXboxController {
     public Trigger paddleTopLeft() {
         return povDown().or(povDownLeft()).or(povDownRight());
     }
+
     public Trigger paddleBottomLeft() {
         return povLeft().or(povUpLeft()).or(povDownLeft());
     }
+
     public Trigger paddleTopRight() {
         return povRight().or(povUpRight()).or(povDownRight());
     }
+
     public Trigger paddleBottomRight() {
         return povUp().or(povUpLeft()).or(povUpRight());
     }

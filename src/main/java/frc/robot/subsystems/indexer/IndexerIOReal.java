@@ -7,7 +7,6 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import frc.robot.Constants;
@@ -28,13 +27,13 @@ public final class IndexerIOReal implements IndexerIO {
     private final StatusSignal<AngularVelocity> m_lowerKickerVelocitySignal = m_lowerKickerMotor.getVelocity();
     private final StatusSignal<Current> m_lowerKickerCurrentSignal = m_lowerKickerMotor.getSupplyCurrent();
 
-    private final MotionMagicVelocityVoltage m_indexerVelocityRequest = new MotionMagicVelocityVoltage(0d)
-        .withEnableFOC(true);
-        // .withEnableFOC(false);
-    private final MotionMagicVelocityVoltage m_topRollerVelocityRequest = new MotionMagicVelocityVoltage(0d)
-        .withEnableFOC(true);
-    private final MotionMagicVelocityVoltage m_lowerKickerVelocityRequest = new MotionMagicVelocityVoltage(0d)
-        .withEnableFOC(true);
+    private final MotionMagicVelocityVoltage m_indexerVelocityRequest =
+            new MotionMagicVelocityVoltage(0d).withEnableFOC(true);
+    // .withEnableFOC(false);
+    private final MotionMagicVelocityVoltage m_topRollerVelocityRequest =
+            new MotionMagicVelocityVoltage(0d).withEnableFOC(true);
+    private final MotionMagicVelocityVoltage m_lowerKickerVelocityRequest =
+            new MotionMagicVelocityVoltage(0d).withEnableFOC(true);
 
     public IndexerIOReal() {
         var indexerConfig = new TalonFXConfiguration();
@@ -77,30 +76,32 @@ public final class IndexerIOReal implements IndexerIO {
         // PhoenixUtil.tryUntilOk(5, () -> m_indexerMotor.getConfigurator().apply(indexerConfig));
         // PhoenixUtil.tryUntilOk(5, () -> m_topRollerMotor.getConfigurator().apply(topRollerConfig));
         // PhoenixUtil.tryUntilOk(5, () -> m_lowerKickerMotor.getConfigurator().apply(lowerKickerConfig));
-        MotorAction.configureMotor("Indexer Roller", m_indexerMotor, indexerConfig).run();
-        MotorAction.configureMotor("Indexer Top Roller", m_topRollerMotor, topRollerConfig).run();
-        MotorAction.configureMotor("Lower Kicker", m_lowerKickerMotor, lowerKickerConfig).run();
+        MotorAction.configureMotor("Indexer Roller", m_indexerMotor, indexerConfig)
+                .run();
+        MotorAction.configureMotor("Indexer Top Roller", m_topRollerMotor, topRollerConfig)
+                .run();
+        MotorAction.configureMotor("Lower Kicker", m_lowerKickerMotor, lowerKickerConfig)
+                .run();
 
-        BaseStatusSignal.setUpdateFrequencyForAll(50d,
-            m_indexerVelocitySignal,
-            m_indexerCurrentSignal,
-            m_topRollerVelocitySignal,
-            m_topRollerCurrentSignal,
-            m_lowerKickerVelocitySignal,
-            m_lowerKickerCurrentSignal
-        );
+        BaseStatusSignal.setUpdateFrequencyForAll(
+                50d,
+                m_indexerVelocitySignal,
+                m_indexerCurrentSignal,
+                m_topRollerVelocitySignal,
+                m_topRollerCurrentSignal,
+                m_lowerKickerVelocitySignal,
+                m_lowerKickerCurrentSignal);
     }
 
     @Override
     public void updateInputs(IndexerIOInputs inputs) {
         BaseStatusSignal.refreshAll(
-            m_indexerVelocitySignal,
-            m_indexerCurrentSignal,
-            m_topRollerVelocitySignal,
-            m_topRollerCurrentSignal,
-            m_lowerKickerVelocitySignal,
-            m_lowerKickerCurrentSignal
-        );
+                m_indexerVelocitySignal,
+                m_indexerCurrentSignal,
+                m_topRollerVelocitySignal,
+                m_topRollerCurrentSignal,
+                m_lowerKickerVelocitySignal,
+                m_lowerKickerCurrentSignal);
 
         inputs.indexerTargetVelocityRPS = PhoenixUtil.getRequestVelocity(m_indexerMotor.getAppliedControl());
         inputs.indexerVelocityRPS = m_indexerVelocitySignal.getValueAsDouble();
@@ -119,6 +120,7 @@ public final class IndexerIOReal implements IndexerIO {
     public void indexerVelocity(AngularVelocity velocity) {
         m_indexerMotor.setControl(m_indexerVelocityRequest.withVelocity(velocity));
     }
+
     @Override
     public void indexerStop() {
         m_indexerMotor.disable();
@@ -128,6 +130,7 @@ public final class IndexerIOReal implements IndexerIO {
     public void topRollerVelocity(AngularVelocity velocity) {
         m_topRollerMotor.setControl(m_topRollerVelocityRequest.withVelocity(velocity));
     }
+
     @Override
     public void topRollerStop() {
         m_topRollerMotor.disable();
@@ -137,6 +140,7 @@ public final class IndexerIOReal implements IndexerIO {
     public void lowerKickerVelocity(AngularVelocity velocity) {
         m_lowerKickerMotor.setControl(m_lowerKickerVelocityRequest.withVelocity(velocity));
     }
+
     @Override
     public void lowerKickerStop() {
         m_lowerKickerMotor.disable();

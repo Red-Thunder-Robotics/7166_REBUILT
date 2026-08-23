@@ -12,9 +12,7 @@ public final class TurretIOSim implements TurretIO {
 
     private final PIDController m_pid = new PIDController(0.5d, 0d, 0d);
 
-    public TurretIOSim() {
-        
-    }
+    public TurretIOSim() {}
 
     @Override
     public void updateInputs(TurretIOInputs inputs) {
@@ -22,7 +20,7 @@ public final class TurretIOSim implements TurretIO {
         m_position += output;
 
         final double targetPosition = m_targetPosition;
-        
+
         inputs.targetPositionRotations = targetPosition;
         inputs.targetPositionDegrees = mechanismPositionToAngle(targetPosition).in(Degrees);
 
@@ -35,10 +33,8 @@ public final class TurretIOSim implements TurretIO {
 
     @Override
     public void setPosition(double position) {
-        if (position < positionMin)
-            position = positionMin;
-        else if (position > positionMax)
-            position = positionMax;
+        if (position < positionMin) position = positionMin;
+        else if (position > positionMax) position = positionMax;
 
         m_targetPosition = position;
         m_pid.setSetpoint(position);

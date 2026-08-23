@@ -4,7 +4,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface TurretIO {
     @AutoLog
-    public static class TurretIOInputs {
+    class TurretIOInputs {
         double targetPositionRotations;
         double targetPositionDegrees;
 
@@ -16,9 +16,9 @@ public interface TurretIO {
         double currentAmps;
     }
 
-    public default void updateInputs(TurretIOInputs inputs) {}
+    default void updateInputs(TurretIOInputs inputs) {}
 
-    public default void idle() {}
+    default void idle() {}
 
-    public default void setPosition(double position) {}
+    default void setPosition(double position) {}
 }

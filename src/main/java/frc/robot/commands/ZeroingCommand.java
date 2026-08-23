@@ -1,16 +1,16 @@
 package frc.robot.commands;
 
-import java.util.function.BooleanSupplier;
-
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import java.util.function.BooleanSupplier;
 
 public final class ZeroingCommand extends Command {
     public static boolean isSubsystemZeroing(Subsystem subsystem) {
         var currentCommand = subsystem.getCurrentCommand();
         return currentCommand != null && currentCommand instanceof ZeroingCommand;
     }
+
     private Timer m_initialTimer = new Timer();
     private Timer m_zeroTimer = new Timer();
     private boolean m_finished;
@@ -40,25 +40,20 @@ public final class ZeroingCommand extends Command {
     public void execute() {
         m_drive.run();
 
-        if (!m_initialTimer.hasElapsed(0.5d))
-            return;
+        if (!m_initialTimer.hasElapsed(0.5d)) return;
 
         final boolean timerWasRunning = m_zeroTimer.isRunning();
 
         if (m_canZero.getAsBoolean()) {
-            if (!timerWasRunning) 
-                m_zeroTimer.restart();
-            else if (m_zeroTimer.hasElapsed(0.25d))
-                m_finished = true;
-        } else if (timerWasRunning)
-            m_zeroTimer.stop();
+            if (!timerWasRunning) m_zeroTimer.restart();
+            else if (m_zeroTimer.hasElapsed(0.25d)) m_finished = true;
+        } else if (timerWasRunning) m_zeroTimer.stop();
     }
 
     @Override
     public void end(boolean interrupted) {
         m_stop.run();
-        if (!interrupted)
-            m_zero.run();
+        if (!interrupted) m_zero.run();
     }
 
     @Override

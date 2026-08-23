@@ -10,31 +10,29 @@ package frc.robot.util;
 import edu.wpi.first.wpilibj.RobotController;
 
 public class SystemTimeValidReader {
-  private static Thread thread = null;
-  private static boolean ready = false;
+    private static Thread thread = null;
+    private static boolean ready = false;
 
-  public static void start() {
-    if (thread != null) return;
-    thread =
-        new Thread(
-            () -> {
-              while (true) {
+    public static void start() {
+        if (thread != null) return;
+        thread = new Thread(() -> {
+            while (true) {
                 boolean readyNew = RobotController.isSystemTimeValid();
                 synchronized (SystemTimeValidReader.class) {
-                  ready = readyNew;
+                    ready = readyNew;
                 }
                 try {
-                  Thread.sleep(3000);
+                    Thread.sleep(3000);
                 } catch (InterruptedException e) {
-                  e.printStackTrace();
+                    e.printStackTrace();
                 }
-              }
-            });
-    thread.setName("SystemTimeValidReader");
-    thread.start();
-  }
+            }
+        });
+        thread.setName("SystemTimeValidReader");
+        thread.start();
+    }
 
-  public static synchronized boolean isValid() {
-    return ready;
-  }
+    public static synchronized boolean isValid() {
+        return ready;
+    }
 }

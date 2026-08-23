@@ -10,7 +10,6 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
-
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -58,7 +57,7 @@ public final class TurretIOReal implements TurretIO {
     @Override
     public void updateInputs(TurretIOInputs inputs) {
         BaseStatusSignal.refreshAll(m_positionSignal, m_velocitySignal, m_currentSignal);
-        
+
         final double targetPosition = m_targetPosition;
 
         inputs.targetPositionRotations = targetPosition;

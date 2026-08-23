@@ -19,9 +19,7 @@ public final class IndexerIOSim implements IndexerIO {
     private final PIDController m_topRollerPID = new PIDController(0.5d, 0d, 0d);
     private final PIDController m_lowerKickerPID = new PIDController(0.5d, 0d, 0d);
 
-    public IndexerIOSim() {
-
-    }
+    public IndexerIOSim() {}
 
     @Override
     public void updateInputs(IndexerIOInputs inputs) {
@@ -43,6 +41,7 @@ public final class IndexerIOSim implements IndexerIO {
         m_indexerTargetVelocity = velocity.in(RotationsPerSecond);
         m_indexerPID.setSetpoint(m_indexerTargetVelocity);
     }
+
     @Override
     public void indexerStop() {
         indexerVelocity(RotationsPerSecond.of(0d));
@@ -53,6 +52,7 @@ public final class IndexerIOSim implements IndexerIO {
         m_topRollerTargetVelocity = velocity.in(RotationsPerSecond);
         m_topRollerPID.setSetpoint(m_topRollerTargetVelocity);
     }
+
     @Override
     public void topRollerStop() {
         topRollerVelocity(RotationsPerSecond.of(0d));
@@ -63,6 +63,7 @@ public final class IndexerIOSim implements IndexerIO {
         m_lowerKickerTargetVelocity = velocity.in(RotationsPerSecond);
         m_lowerKickerPID.setSetpoint(m_lowerKickerTargetVelocity);
     }
+
     @Override
     public void lowerKickerStop() {
         lowerKickerVelocity(RotationsPerSecond.of(0d));

@@ -19,7 +19,6 @@ import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-
 import java.util.ArrayDeque;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -30,14 +29,12 @@ public class PhoenixUtil {
 
         public static void process() {
             final var action = queue.peekFirst();
-            if (action == null)
-                return;
+            if (action == null) return;
 
-            if (action.tryRun())
-                queue.poll();
+            if (action.tryRun()) queue.poll();
         }
 
-        public static enum ActionType {
+        public enum ActionType {
             Config,
             SetPosition,
             ConfigRefresh
@@ -58,17 +55,17 @@ public class PhoenixUtil {
         public boolean tryRun() {
             for (int i = 0; i < 5; i++) {
                 final var status = action.get();
-                if (status.isOK())
-                    return true;
+                if (status.isOK()) return true;
             }
 
             return false;
         }
+
         public void run() {
             System.out.println("Running MotorAction: " + this.description);
-            if (!tryRun())
-                throw new RuntimeException("FATAL: Failed to " + this.description);
+            if (!tryRun()) throw new RuntimeException("FATAL: Failed to " + this.description);
         }
+
         public void queue() {
             // remove redundant actions
             MotorAction.queue.removeIf(action -> action.motor == this.motor && action.type == this.type);
@@ -77,39 +74,35 @@ public class PhoenixUtil {
 
         public static MotorAction configureMotor(String name, TalonFX motor, TalonFXConfiguration configuration) {
             return new MotorAction(
-                "Configure motor '" + name + '\'',
-                motor,
-                ActionType.Config,
-                () -> motor.getConfigurator().apply(configuration, 0.25d));
+                    "Configure motor '" + name + '\'', motor, ActionType.Config, () -> motor.getConfigurator()
+                            .apply(configuration, 0.25d));
         }
+
         public static MotorAction setMotorPosition(String name, TalonFX motor, double position) {
             return new MotorAction(
-                "Set motor '" + name + "' position",
-                motor,
-                ActionType.SetPosition,
-                () -> motor.setPosition(position, 0.25d));
+                    "Set motor '" + name + "' position",
+                    motor,
+                    ActionType.SetPosition,
+                    () -> motor.setPosition(position, 0.25d));
         }
+
         public static MotorAction refreshMotorConfig(String name, TalonFX motor, TalonFXConfiguration configuration) {
             return new MotorAction(
-                "Refresh config from motor '" + name + '\'',
-                motor,
-                ActionType.ConfigRefresh,
-                () -> motor.getConfigurator().refresh(configuration, 0.25d)
-            );
+                    "Refresh config from motor '" + name + '\'',
+                    motor,
+                    ActionType.ConfigRefresh,
+                    () -> motor.getConfigurator().refresh(configuration, 0.25d));
         }
-        public static MotorAction updateMotorConfig(String name, TalonFX motor, Consumer<TalonFXConfiguration> callback) {
-            return new MotorAction(
-                "Update config on motor '" + name + '\'',
-                motor,
-                ActionType.Config,
-                () -> {
-                    var config = new TalonFXConfiguration();
-                    refreshMotorConfig(name, motor, config).run();
-                    configureMotor(name, motor, config).run();
 
-                    return StatusCode.OK;
-                }
-            );
+        public static MotorAction updateMotorConfig(
+                String name, TalonFX motor, Consumer<TalonFXConfiguration> callback) {
+            return new MotorAction("Update config on motor '" + name + '\'', motor, ActionType.Config, () -> {
+                var config = new TalonFXConfiguration();
+                refreshMotorConfig(name, motor, config).run();
+                configureMotor(name, motor, config).run();
+
+                return StatusCode.OK;
+            });
         }
     }
 
@@ -123,14 +116,13 @@ public class PhoenixUtil {
     }
 
     public static double getRequestDutyCycle(ControlRequest request) {
-        if (request instanceof DutyCycleOut)
-            return ((DutyCycleOut) request).Output;
+        if (request instanceof DutyCycleOut) return ((DutyCycleOut) request).Output;
 
         return 0d;
     }
+
     public static double getRequestVelocity(ControlRequest request) {
-        if (request instanceof MotionMagicVelocityVoltage)
-            return ((MotionMagicVelocityVoltage) request).Velocity;
+        if (request instanceof MotionMagicVelocityVoltage) return ((MotionMagicVelocityVoltage) request).Velocity;
 
         return 0d;
     }
