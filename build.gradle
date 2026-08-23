@@ -173,6 +173,9 @@ task(eventDeploy) {
 }
 createVersionFile.dependsOn(eventDeploy)
 
+// Format the code as part of every build
+project.compileJava.dependsOn(spotlessApply)
+
 // Copied from FRC 1678 Citrus Circuits, C2026-Public.
 spotless {
     enforceCheck false
