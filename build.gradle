@@ -2,6 +2,7 @@ plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2026.2.1"
     id "com.peterabeles.gversion" version "1.10"
+    id "com.diffplug.spotless" version "8.1.0"
 }
 
 java {
@@ -171,3 +172,22 @@ task(eventDeploy) {
     }
 }
 createVersionFile.dependsOn(eventDeploy)
+
+// Copied from FRC 1678 Citrus Circuits, C2026-Public.
+spotless {
+    enforceCheck false
+    format 'misc', {
+        target '*.gradle', '.gitattributes', '.gitignore'
+        trimTrailingWhitespace()
+    }
+    java {
+        target 'src/main/java/frc/**/*.java', 'src/test/java/frc/**/*.java'
+        targetExclude 'src/main/java/frc/robot/BuildConstants.java',
+                      'src/main/java/frc/robot/generated/**/*.java'
+        importOrder('java|javax', 'com.ctre', 'frc.robot', 'edu.wpi', '', '\\#')
+        toggleOffOn()
+        removeUnusedImports()
+        cleanthat()
+        palantirJavaFormat('2.39.0')
+    }
+}
