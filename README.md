@@ -1,5 +1,8 @@
 # 7166 Rebuilt robot v2
 
+[![Build](https://github.com/Red-Thunder-Robotics/7166_REBUILT/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/Red-Thunder-Robotics/7166_REBUILT/actions/workflows/build.yml)
+[![Formatter](https://github.com/Red-Thunder-Robotics/7166_REBUILT/actions/workflows/formatter.yml/badge.svg?branch=main)](https://github.com/Red-Thunder-Robotics/7166_REBUILT/actions/workflows/formatter.yml)
+
 This is the repository for Red Thunder Robotics' Rebuilt competition robot **v2** AKA Grapefruit.
 
 This was written by one senior on the team (plus an 8th grader, finally a protégé!). I have yet to fully grasp AdvantageKit, so simulation and such is lacking.
