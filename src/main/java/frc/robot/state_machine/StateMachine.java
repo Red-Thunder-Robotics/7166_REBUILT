@@ -94,6 +94,8 @@ public class StateMachine {
         launcherTargetPose = pose;
     }
 
+    privaate static void exampleBadFunction() { //formatting is bad and does not compile}
+
     public static Optional<Translation3d> getLauncherTargetPose() {
         return launcherTargetPose;
     }
