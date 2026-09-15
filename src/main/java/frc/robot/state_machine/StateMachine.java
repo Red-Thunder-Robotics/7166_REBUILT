@@ -39,6 +39,7 @@ import frc.robot.subsystems.ground_intake.GroundIntakeSubsystem;
 import frc.robot.subsystems.indexer.IndexerSubsystem;
 import frc.robot.subsystems.light_emitting_diodes.LightEmittingDiodesSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
+import frc.robot.subsystems.shooter.ShooterConstants.DemoMode;
 import frc.robot.subsystems.turret.TurretSubsystem;
 import frc.robot.util.HubActiveState;
 
@@ -84,6 +85,12 @@ public class StateMachine {
     
     public static GeneralRobotState getGeneralRobotState() {
         return generalRobotState;
+    }
+
+    private static DemoMode demoMode = DemoMode.Chill;
+
+    public static DemoMode getDemoMode() {
+        return demoMode;
     }
 
     private static Optional<Translation3d> launcherTargetPose = Optional.empty();
@@ -154,7 +161,7 @@ public class StateMachine {
 
     private static boolean turretShouldIndexFlagCleared = false;
     public static boolean turretShouldIndex() {
-        if (LiveConfig.getIsPit())
+        if (LiveConfig.getIsPit() || getLauncherTarget() == LauncherTarget.DemoMode)
             return true;
         final boolean allianceFeedGood = getLauncherTarget() == LauncherTarget.AllianceFeed ? isFacingAllianceZone() : false;
         return Constants.USE_TURRET ? TurretSubsystem.instance.shouldIndex() : Controls.lockWheelsButton.getAsBoolean() || (withinJoystickRotationErrorThreshold || allianceFeedGood);
@@ -283,6 +290,9 @@ public class StateMachine {
         public static Command setLauncherTargetAllianceFeed() {
             return cmdName(setLauncherTarget(LauncherTarget.AllianceFeed), "LauncherTargetAllianceFeed");
         }
+        public static Command setLauncherTargetDemoMode() {
+            return cmdName(setLauncherTarget(LauncherTarget.DemoMode), "LauncherTargetDemoMode");
+        }
 
         // shooter
         public static Command setShooterState(ShooterState shooterState) {
@@ -319,6 +329,12 @@ public class StateMachine {
         public static Command disengageShooter() {
             return cmdName(setLauncherTargetIdle()
                 .alongWith(setShooterIdle()), "DisengageShooter");
+        }
+
+        public static Command engageShooterDemo(DemoMode mode) {
+            return cmdName(Commands.runOnce(() -> demoMode = mode)
+                .andThen(setLauncherTargetDemoMode())
+                .andThen(setShooterShooting()), "EngageShooterDemoMode");
         }
 
         // climber
@@ -565,6 +581,9 @@ public class StateMachine {
                     break;
                 case AllianceFeed:
                     generalRobotState = isFiring ? GeneralRobotState.AllianceFeedFiring : GeneralRobotState.AllianceFeed;
+                    break;
+                case DemoMode:
+                    generalRobotState = isFiring ? GeneralRobotState.DemoModeFiring : GeneralRobotState.DemoMode;
                     break;
                 default:
                     generalRobotState = GeneralRobotState.Idle;

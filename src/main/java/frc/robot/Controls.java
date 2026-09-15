@@ -7,6 +7,7 @@ import frc.robot.modified.UltimateXboxController;
 public final class Controls {
     public static final UltimateXboxController driveController = new UltimateXboxController(DRIVER_CONTROLLER);
     public static final UltimateXboxController operatorController = new UltimateXboxController(OPERATOR_CONTROLLER);
+    public static final UltimateXboxController demoController = new UltimateXboxController(DEMO_CONTROLLER);
 
     public static final Trigger manualTurretToggle = operatorController.rightStick();
 
@@ -36,4 +37,8 @@ public final class Controls {
     // climber
     // public static final Trigger climbUp = operatorController.y();
     // public static final Trigger climbDown = operatorController.a();
+
+    public static final Trigger demoParamsUpwards = demoController.y();
+    public static final Trigger demoParamsFar = demoController.x();
+    public static final Trigger demoParamsChill = demoController.rightTrigger();
 }

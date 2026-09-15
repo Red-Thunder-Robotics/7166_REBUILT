@@ -90,6 +90,8 @@ public final class ShooterSubsystem extends SubsystemBase {
                 if (!launcherTuning) {
                     if (StateMachine.getLauncherTarget() == LauncherTarget.AllianceFeed) {
                         setParams(StateMachine.isRobotFar() ? allianceFeedParamsFar : allianceFeedParamsNeutralZone);
+                    } else if (StateMachine.getLauncherTarget() == LauncherTarget.DemoMode) {
+                        setParams(StateMachine.getDemoMode().m_params);
                     } else {
                         var targetPose = StateMachine.getLauncherTargetPose();
                         InterpolationShooterParams params = null;
@@ -148,7 +150,8 @@ public final class ShooterSubsystem extends SubsystemBase {
         if (flywheelTarget == 0d || kickerTarget == 0d)
             return false;
 
-        final double flywheelVelocityThreshold = StateMachine.getLauncherTarget() == LauncherTarget.AllianceFeed ? shouldIndexFlywheelVelocityAllianceFeedThresholdRPS : shouldIndexFlywheelVelocityThresholdRPS;
+        final var launcherTarget = StateMachine.getLauncherTarget();
+        final double flywheelVelocityThreshold = (launcherTarget == LauncherTarget.AllianceFeed || launcherTarget == LauncherTarget.DemoMode) ? shouldIndexFlywheelVelocityAllianceFeedThresholdRPS : shouldIndexFlywheelVelocityThresholdRPS;
         final boolean flywheel = Math.abs(flywheelTarget - m_inputs.flywheelMotorTopLeftVelocityRPS) <= flywheelVelocityThreshold;
         final boolean kicker = Math.abs(kickerTarget - m_inputs.upperKickerMotorVelocityRPS) <= shouldIndexKickerVelocityThresholdRPS;
 

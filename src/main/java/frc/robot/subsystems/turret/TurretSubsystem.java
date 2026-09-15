@@ -110,8 +110,8 @@ public final class TurretSubsystem extends SubsystemBase {
                 m_io.idle();
                 break;
             case HubTracking:
-                break;
             case AllianceFeed:
+            case DemoMode:
                 break;
         }
     }

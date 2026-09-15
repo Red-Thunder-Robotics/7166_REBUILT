@@ -85,6 +85,18 @@ public final class ShooterConstants {
     public static final InterpolationShooterParams hubCenterParams =
         new InterpolationShooterParams(2150d, 7d);
 
+    public static enum DemoMode {
+        Upwards(new InterpolationShooterParams(4000d, 0d)),
+        Far(new InterpolationShooterParams(4000d, 55d)),
+        Chill(trenchShooterParams);
+
+        public final InterpolationShooterParams m_params;
+
+        DemoMode(InterpolationShooterParams params) {
+            m_params = params;
+        }
+    }
+
     public static enum InterpolationParamMap {
         Normal;
         // Low;

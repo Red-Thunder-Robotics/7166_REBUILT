@@ -72,6 +72,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.modified.ModifiedAutoBuilder;
 import frc.robot.state_machine.ClimberState;
 import frc.robot.state_machine.IntakeState;
+import frc.robot.state_machine.LauncherTarget;
 import frc.robot.state_machine.LiveConfig;
 import frc.robot.state_machine.RobotEvent;
 import frc.robot.state_machine.StateMachine;
@@ -100,6 +101,7 @@ import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOReal;
 import frc.robot.subsystems.shooter.ShooterIOSim;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
+import frc.robot.subsystems.shooter.ShooterConstants.DemoMode;
 import frc.robot.subsystems.turret.TurretIO;
 import frc.robot.subsystems.turret.TurretIOReal;
 import frc.robot.subsystems.turret.TurretIOSim;
@@ -436,6 +438,15 @@ public class Robot extends LoggedRobot {
         //     m_driveSubsystem.stop();
         //     limiter.reset(0d);
         // }));
+
+        Controls.demoParamsUpwards.onTrue(RobotCommands.engageShooterDemo(DemoMode.Upwards));
+        Controls.demoParamsUpwards.onFalse(RobotCommands.disengageShooter());
+
+        Controls.demoParamsFar.onTrue(RobotCommands.engageShooterDemo(DemoMode.Far));
+        Controls.demoParamsFar.onFalse(RobotCommands.disengageShooter());
+
+        Controls.demoParamsChill.onTrue(RobotCommands.engageShooterDemo(DemoMode.Chill));
+        Controls.demoParamsChill.onFalse(RobotCommands.disengageShooter());
     }
 
     private boolean m_hasLoweredDriveStator = false;
@@ -650,7 +661,7 @@ public class Robot extends LoggedRobot {
     
     private Supplier<Optional<Rotation2d>> getShooterRotationalGoalSupplier() {
         return Constants.USE_TURRET ? () -> Optional.empty() : () -> {
-            if (LiveConfig.getIsPit())
+            if (LiveConfig.getIsPit() || StateMachine.getLauncherTarget() == LauncherTarget.DemoMode)
                 return Optional.empty();
 
             var targetPose = StateMachine.getLauncherTargetPose();

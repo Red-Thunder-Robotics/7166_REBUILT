@@ -36,6 +36,7 @@ public final class Constants {
     public static final boolean USE_TWO_CONTROLLERS = USE_TWO_CONTROLLERS_DESIRED;// ? RobotBase.isSimulation() : false;
     public static final int DRIVER_CONTROLLER = 0;
     public static final int OPERATOR_CONTROLLER = USE_TWO_CONTROLLERS ? DRIVER_CONTROLLER : 1;
+    public static final int DEMO_CONTROLLER = 2;
 
     public static final CANBus CANBUS = new CANBus("7166CANivore");
 
