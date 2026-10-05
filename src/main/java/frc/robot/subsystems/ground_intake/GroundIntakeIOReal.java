@@ -2,7 +2,6 @@ package frc.robot.subsystems.ground_intake;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inch;
-import static edu.wpi.first.units.Units.Inches;
 import static frc.robot.subsystems.ground_intake.GroundIntakeConstants.*;
 import static frc.robot.util.ConversionUtil.*;
 
@@ -119,13 +118,14 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
 
         inputs.isDeployed = actuatorTargetPosition == actuatorPositionDeployed;
 
-        // inputs.targetActuatorPositionRotations = m_actuatorTargetPosition;
-        // inputs.targetActuatorPositionDegrees = mechanismPositionToAngle(m_actuatorTargetPosition).in(Degrees);
+        final double targetActuatorPositionRotations = distanceToMechanismPosition(actuatorTargetPosition, actuatorMotorPitchCircumference);
+        inputs.targetActuatorPositionRotations = targetActuatorPositionRotations;
+        inputs.targetActuatorPositionDegrees = mechanismPositionToAngle(targetActuatorPositionRotations).in(Degrees);
+        inputs.targetActuatorPositionInches = actuatorTargetPosition.in(Inch);
 
         final double actuatorPositionRotations = m_actuatorPositionSignal.getValueAsDouble();
-        
+
         inputs.actuatorPositionInches = mechanismPositionToDistance(actuatorPositionRotations, actuatorMotorPitchCircumference).in(Inch);
-        inputs.targetActuatorPositionInches = distanceToMechanismPosition(actuatorTargetPosition, actuatorMotorPitchCircumference);
 
         inputs.actuatorPositionRotations = actuatorPositionRotations;
         inputs.actuatorPositionDegrees = mechanismPositionToAngle(actuatorPositionRotations).in(Degrees);
@@ -154,7 +154,7 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
     @Override
     public void setActuatorPosition(Distance position) {
         m_actuatorTargetPosition = position;
-        m_actuatorMotor.setControl(m_actuatorPositionRequest.withPosition(position.in(Inches)));
+        m_actuatorMotor.setControl(m_actuatorPositionRequest.withPosition(distanceToMechanismPosition(position, actuatorMotorPitchCircumference)));
     }
     @Override
     public void actuatorStop() {
