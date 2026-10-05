@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static frc.robot.subsystems.ground_intake.GroundIntakeConstants.*;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
@@ -23,7 +24,10 @@ public final class GroundIntakeIOSim implements GroundIntakeIO {
 
     @Override
     public void updateInputs(GroundIntakeIOInputs inputs) {
-        m_actuatorPosition = m_actuatorPosition.plus(Inches.of(m_actuatorPositionPID.calculate(m_actuatorPosition.in(Inches))));
+
+        double step = m_actuatorPositionPID.calculate(m_actuatorPosition.in(Inches));
+        double maxStep = actuatorMaxVelocity * actuatorMotorPitchCircumference.in(Inches) * 0.02;
+        m_actuatorPosition = m_actuatorPosition.plus(Inches.of(MathUtil.clamp(step, -maxStep, maxStep)));
 
         final Distance targetActuatorPosition = m_targetActuatorPosition;
         

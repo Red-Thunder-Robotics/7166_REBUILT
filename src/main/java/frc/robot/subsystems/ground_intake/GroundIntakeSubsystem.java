@@ -169,7 +169,7 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
     }
 
     public boolean isAtDeployedPosition() {
-        return m_inputs.isDeployed && Math.abs(m_inputs.actuatorPositionDegrees - m_inputs.targetActuatorPositionDegrees) < 10d;
+        return m_inputs.isDeployed && Math.abs(m_inputs.actuatorPositionInches - m_inputs.targetActuatorPositionInches) < 0.5d;
     }
     public boolean areRollersStopped() {
         return Math.abs(m_inputs.rightRollerMotorVelocityRPS) < 10d;
