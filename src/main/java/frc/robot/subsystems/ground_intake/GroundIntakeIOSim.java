@@ -23,7 +23,7 @@ public final class GroundIntakeIOSim implements GroundIntakeIO {
 
     @Override
     public void updateInputs(GroundIntakeIOInputs inputs) {
-        m_actuatorPosition.plus(Inches.of(m_actuatorPositionPID.calculate(m_actuatorPosition.in(Inches))));
+        m_actuatorPosition = m_actuatorPosition.plus(Inches.of(m_actuatorPositionPID.calculate(m_actuatorPosition.in(Inches))));
 
         final Distance targetActuatorPosition = m_targetActuatorPosition;
         

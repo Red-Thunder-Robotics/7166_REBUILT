@@ -50,8 +50,8 @@ public final class GroundIntakeConstants {
     public static final NeutralModeValue actuatorNeutralMode = NeutralModeValue.Brake;
     public static final InvertedValue actuatorInverted = InvertedValue.CounterClockwise_Positive;
     public static final Distance actuatorPositionHome = Inches.of(0); //Second number is how much it moves in in a straight line for one turn of the output shaft (the pinion or pulley that drives it, after the gearbox). For a rack and pinion it's pi * the pinion's pitch diameter   -101
-    public static final Distance actuatorPositionDeployed = Inches.of(0);//First number is position
-    public static final Distance actuatorPositionOscillate = actuatorPositionHome.div(2);
+    public static final Distance actuatorPositionDeployed = Inches.of(5);//First number is position
+    public static final Distance actuatorPositionOscillate = actuatorPositionHome.plus(actuatorPositionDeployed).div(2);
 
     public static final double actuatorPidP = 20d; // 40 200d
     // public static final double actuatorTargetAcceleration = 50d;

@@ -123,8 +123,10 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
         // inputs.targetActuatorPositionDegrees = mechanismPositionToAngle(m_actuatorTargetPosition).in(Degrees);
 
         final double actuatorPositionRotations = m_actuatorPositionSignal.getValueAsDouble();
+        
         inputs.actuatorPositionInches = mechanismPositionToDistance(actuatorPositionRotations, actuatorMotorPitchCircumference).in(Inch);
         inputs.targetActuatorPositionInches = distanceToMechanismPosition(actuatorTargetPosition, actuatorMotorPitchCircumference);
+
         inputs.actuatorPositionRotations = actuatorPositionRotations;
         inputs.actuatorPositionDegrees = mechanismPositionToAngle(actuatorPositionRotations).in(Degrees);
         inputs.actuatorMotorCurrentAmps = m_actuatorCurrentSignal.getValueAsDouble();
