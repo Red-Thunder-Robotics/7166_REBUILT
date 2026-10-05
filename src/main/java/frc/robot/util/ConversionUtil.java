@@ -11,17 +11,17 @@ import edu.wpi.first.units.measure.Distance;
 
 public final class ConversionUtil {
     public static double angleToMechanismPosition(Angle angle) {
-        return angle.in(Degrees) / 360d;
+        return angle.in(Degrees) / 360d;//rotations
     }
     public static Angle mechanismPositionToAngle(double position) {
-        return Degrees.of(position * 360d);
+        return Degrees.of(position * 360d);//rotation
     }
 
     public static double distanceToMechanismPosition(Distance distance, Distance pitchCircumference) {
-        return distance.in(Meters) / pitchCircumference.in(Meters);
+        return distance.in(Meters) / pitchCircumference.in(Meters);//meters
     }
     public static Distance mechanismPositionToDistance(double position, Distance pitchCircumference) {
-        return Meters.of(position * pitchCircumference.in(Meters));
+        return Meters.of(position * pitchCircumference.in(Meters));//meters
     }
 
     public static Translation2d chassisSpeedsToTranslation2d(ChassisSpeeds speeds) {

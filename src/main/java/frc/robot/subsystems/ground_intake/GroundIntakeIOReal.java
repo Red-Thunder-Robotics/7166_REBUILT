@@ -1,6 +1,7 @@
 package frc.robot.subsystems.ground_intake;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inch;
 import static frc.robot.subsystems.ground_intake.GroundIntakeConstants.*;
 import static frc.robot.util.ConversionUtil.*;
 
@@ -100,7 +101,7 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
         RobotEvent.OnTeleopEnabled.addListener(() -> setRollerCurrentLimit(rollerCurrentLimit));
         RobotEvent.OnAutoEnabled.addListener(() -> setRollerCurrentLimit(rollerCurrentLimitAuto));
     }
-    
+
     @Override
     public void updateInputs(GroundIntakeIOInputs inputs) {
         BaseStatusSignal.refreshAll(
@@ -120,6 +121,7 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
         inputs.targetActuatorPositionDegrees = mechanismPositionToAngle(m_actuatorTargetPosition).in(Degrees);
 
         final double actuatorPositionRotations = m_actuatorPositionSignal.getValueAsDouble();
+        inputs.actuatorPositionInches = mechanismPositionToDistance(actuatorPositionRotations, actuatorMotorPitchCircumference).in(Inch);
         inputs.actuatorPositionRotations = actuatorPositionRotations;
         inputs.actuatorPositionDegrees = mechanismPositionToAngle(actuatorPositionRotations).in(Degrees);
         inputs.actuatorMotorCurrentAmps = m_actuatorCurrentSignal.getValueAsDouble();

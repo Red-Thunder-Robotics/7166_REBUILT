@@ -2,6 +2,8 @@ package frc.robot.subsystems.ground_intake;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inch;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RPM;
 import static frc.robot.util.ConversionUtil.*;
@@ -44,10 +46,11 @@ public final class GroundIntakeConstants {
     public static final int actuatorMotorId = 13;
     public static final int actuatorCurrentLimit = 30;
     public static final double actuatorMotorReduction = (50d / 10d) * (60d / 14d) * (54d / 22d);
+    public static final Distance actuatorMotorPitchCircumference = Inches.of(0);
     public static final NeutralModeValue actuatorNeutralMode = NeutralModeValue.Brake;
     public static final InvertedValue actuatorInverted = InvertedValue.CounterClockwise_Positive;
-    public static final double actuatorPositionHome = angleToMechanismPosition(Degrees.of(-92d)); // -101
-    public static final double actuatorPositionDeployed = angleToMechanismPosition(Degrees.of(0d));
+    public static final double actuatorPositionHome = distanceToMechanismPosition(Inches.of(0), actuatorMotorPitchCircumference); //Second number is how much it moves in in a straight line for one turn of the output shaft (the pinion or pulley that drives it, after the gearbox). For a rack and pinion it's pi * the pinion's pitch diameter   -101
+    public static final double actuatorPositionDeployed = distanceToMechanismPosition(Inches.of(0), actuatorMotorPitchCircumference);//First number is position
     public static final double actuatorPositionOscillate = actuatorPositionHome / 2d;
 
     public static final double actuatorPidP = 200d; // 40
