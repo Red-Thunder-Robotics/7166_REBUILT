@@ -4,6 +4,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Distance;
 
 public interface GroundIntakeIO {
     @AutoLog
@@ -12,6 +13,7 @@ public interface GroundIntakeIO {
 
         double targetActuatorPositionRotations;
         double targetActuatorPositionDegrees;
+        double targetActuatorPositionInches;
 
         double actuatorPositionRotations;
         double actuatorPositionDegrees;
@@ -34,7 +36,7 @@ public interface GroundIntakeIO {
 
     public default void idle() {}
     
-    public default void setActuatorPosition(double position) {}
+    public default void setActuatorPosition(Distance position) {}
     public default void actuatorStop() {}
 
     public default void rollerVelocity(AngularVelocity velocity) {}
