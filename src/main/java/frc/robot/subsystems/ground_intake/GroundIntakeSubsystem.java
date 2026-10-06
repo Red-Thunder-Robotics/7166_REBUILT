@@ -186,11 +186,12 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
                 // stopRoller();
                 if (oldIntakeState.isOut()) {
                     startRoller();
-                    
-                    retract(); }
-                else
                     m_retractWaiter.activate();
-                    stopRoller();
+                    // retract();
+                 }
+                else {
+                    m_retractWaiter.activate();
+                    stopRoller(); }
                     // retract();
                 break;
             case HomeReverse:
