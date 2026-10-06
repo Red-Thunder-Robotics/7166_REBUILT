@@ -77,7 +77,7 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
         if (m_deployWaiter.process())
             deploy();
         if (m_retractWaiter.process())
-            retract();
+            stopRoller();
 
         if (m_rollerForward) {
             if (rollerOutputUsesVelocityControl) {
@@ -183,16 +183,13 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
     public void stateUpdate(IntakeState intakeState, IntakeState oldIntakeState) {
         switch (intakeState) {
             case HomeOff:
-                // stopRoller();
+                retract();
                 if (oldIntakeState.isOut()) {
                     startRoller();
                     m_retractWaiter.activate();
-                    // retract();
                  }
                 else {
-                    m_retractWaiter.activate();
                     stopRoller(); }
-                    // retract();
                 break;
             case HomeReverse:
                 retract();

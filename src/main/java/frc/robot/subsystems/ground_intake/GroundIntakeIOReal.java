@@ -63,6 +63,7 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
 
         rollerConfig.Slot0.kP = rollerPidP;
         rollerConfig.Slot0.kV = rollerPidV;
+        rollerConfig.Slot0.kS = rollerPidS;
         rollerConfig.MotionMagic.MotionMagicAcceleration = rollerTargetAcceleration;
 
         var actuatorConfig = new TalonFXConfiguration();
@@ -125,7 +126,7 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
         final double actuatorPositionRotations = m_actuatorPositionSignal.getValueAsDouble();
         
         inputs.actuatorPositionInches = mechanismPositionToDistance(actuatorPositionRotations, actuatorMotorPitchCircumference).in(Inch);
-        inputs.targetActuatorPositionInches = distanceToMechanismPosition(actuatorTargetPosition, actuatorMotorPitchCircumference);
+        inputs.targetActuatorPositionInches = actuatorTargetPosition.in(Inches);
 
         inputs.actuatorPositionRotations = actuatorPositionRotations;
         inputs.actuatorPositionDegrees = mechanismPositionToAngle(actuatorPositionRotations).in(Degrees);
