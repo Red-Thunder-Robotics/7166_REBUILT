@@ -22,7 +22,7 @@ public final class GroundIntakeConstants {
     public static final int rollerCurrentLimitAuto = 40; // 30
     public static final double rollerMotorReduction = (18d / 12d);
     public static final NeutralModeValue rollerNeutralMode = NeutralModeValue.Coast;
-    public static final InvertedValue rightRollerInverted = InvertedValue.CounterClockwise_Positive;
+    public static final InvertedValue rightRollerInverted = InvertedValue.Clockwise_Positive;
 
     public static final int leftRollerMotorId = 12;
     public static final MotorAlignmentValue leftRollerMotorAlignment = MotorAlignmentValue.Opposed;
@@ -44,16 +44,16 @@ public final class GroundIntakeConstants {
     public static final double rollerTargetAcceleration = 266d;
 
     public static final int actuatorMotorId = 13;
-    public static final int actuatorCurrentLimit = 30;//30
+    public static final int actuatorCurrentLimit = 5;//30
     public static final double actuatorMotorReduction = 42d/12d;//(50d / 10d) * (60d / 14d) * (54d / 22d);
     public static final Distance actuatorMotorPitchCircumference = Inches.of(1 * Math.PI);
     public static final NeutralModeValue actuatorNeutralMode = NeutralModeValue.Brake;
-    public static final InvertedValue actuatorInverted = InvertedValue.CounterClockwise_Positive;
+    public static final InvertedValue actuatorInverted = InvertedValue.Clockwise_Positive;
     public static final Distance actuatorPositionHome = Inches.of(0); //Second number is how much it moves in in a straight line for one turn of the output shaft (the pinion or pulley that drives it, after the gearbox). For a rack and pinion it's pi * the pinion's pitch diameter   -101
-    public static final Distance actuatorPositionDeployed = Inches.of(12.1);//First number is position
+    public static final Distance actuatorPositionDeployed = Inches.of(12); //0.25 meters 12 12.1 <- Should use //First number is position
     public static final Distance actuatorPositionOscillate = actuatorPositionHome.plus(actuatorPositionDeployed).div(2);
 
-    public static final double actuatorPidP = 20d; // 40 200d
+    public static final double actuatorPidP = 20d; // 20d 40 200d
     // public static final double actuatorTargetAcceleration = 50d;
     public static final double actuatorTargetAcceleration = 20d;
     public static final double actuatorMaxVelocity = 1d; //0.5d 5 Rotations per second on the output shaft 3.14 inches at a time
