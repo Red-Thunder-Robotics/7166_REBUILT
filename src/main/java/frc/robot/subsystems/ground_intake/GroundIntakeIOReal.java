@@ -154,7 +154,7 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
     @Override
     public void setActuatorPosition(Distance position) {
         m_actuatorTargetPosition = position;
-        m_actuatorMotor.setControl(m_actuatorPositionRequest.withPosition(position.in(Inches)));
+        m_actuatorMotor.setControl(m_actuatorPositionRequest.withPosition(distanceToMechanismPosition(position, actuatorMotorPitchCircumference)));
     }
     @Override
     public void actuatorStop() {

@@ -32,7 +32,7 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
     private ConditionWaiter m_startRollerWaiter = new ConditionWaiter(this::isAtDeployedPosition);
     private ConditionWaiter m_reverseRollerWaiter = new ConditionWaiter(this::isAtDeployedPosition);
     private ConditionWaiter m_deployWaiter = new ConditionWaiter(this::areRollersStopped);
-    private ConditionWaiter m_retractWaiter = new ConditionWaiter(this::areRollersStopped);
+    private ConditionWaiter m_retractWaiter = new ConditionWaiter(this::isIntakeHome);
 
     private boolean m_rollerForward = false;
     private boolean m_rollerReverse = false;
@@ -171,6 +171,11 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
     public boolean isAtDeployedPosition() {
         return m_inputs.isDeployed && Math.abs(m_inputs.actuatorPositionInches - m_inputs.targetActuatorPositionInches) < 0.5d;
     }
+
+    public boolean  isIntakeHome() {
+        return !m_inputs.isDeployed && Math.abs(m_inputs.actuatorPositionInches - m_inputs.targetActuatorPositionInches) < 0.5d;
+    }
+
     public boolean areRollersStopped() {
         return Math.abs(m_inputs.rightRollerMotorVelocityRPS) < 10d;
     }
@@ -178,11 +183,15 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
     public void stateUpdate(IntakeState intakeState, IntakeState oldIntakeState) {
         switch (intakeState) {
             case HomeOff:
-                stopRoller();
-                if (oldIntakeState.isOut())
-                    m_retractWaiter.activate();
+                // stopRoller();
+                if (oldIntakeState.isOut()) {
+                    startRoller();
+                    
+                    retract(); }
                 else
-                    retract();
+                    m_retractWaiter.activate();
+                    stopRoller();
+                    // retract();
                 break;
             case HomeReverse:
                 retract();
