@@ -89,16 +89,16 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
                 * then divide by roller circumference -> rpm offset
                 * substract rollerOutput minus rpm offset with a certain floor
                 */
-                if (rollerOutputVelocityUsesChassisSpeeds && DriverStation.isTeleopEnabled()) {
-                    final double speedsX = Drive.instance.getChassisSpeeds().vxMetersPerSecond;
-                    if (speedsX > 0d) {
-                        final double rpmOffset = speedsX * 60d / rollerCircumference.in(Meters);
-                        double newRPM = rollerOutput.in(RPM) - rpmOffset;
-                        newRPM = Math.max(newRPM, rollerOutputVelocityMinimum.in(RPM));
-                        rollerOutput = RPM.of(newRPM);
-                    }
-                } else
-                    rollerOutput = rollerOutputVelocityAuto;
+                // if (rollerOutputVelocityUsesChassisSpeeds && DriverStation.isTeleopEnabled()) {
+                //     final double speedsX = Drive.instance.getChassisSpeeds().vxMetersPerSecond;
+                //     if (speedsX > 0d) {
+                //         final double rpmOffset = speedsX * 60d / rollerCircumference.in(Meters);
+                //         double newRPM = rollerOutput.in(RPM) - rpmOffset;
+                //         newRPM = Math.max(newRPM, rollerOutputVelocityMinimum.in(RPM));
+                //         rollerOutput = RPM.of(newRPM);
+                //     }
+                // } else
+                //     rollerOutput = rollerOutputVelocityAuto;
 
                 m_io.rollerVelocity(rollerOutput);
             } else
@@ -189,6 +189,7 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
                     m_retractWaiter.activate();
                  }
                 else {
+                    m_retractWaiter.activate();
                     stopRoller(); }
                 break;
             case HomeReverse:

@@ -58,6 +58,7 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
 
         rollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
         rollerConfig.CurrentLimits.SupplyCurrentLimit = rollerCurrentLimit;
+        rollerConfig.CurrentLimits.StatorCurrentLimit = rollerStatorCurrentLimit;
 
         rollerConfig.Feedback.SensorToMechanismRatio = rollerMotorReduction;
 
@@ -69,7 +70,7 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
         var actuatorConfig = new TalonFXConfiguration();
         actuatorConfig.MotorOutput.NeutralMode = actuatorNeutralMode;
         actuatorConfig.MotorOutput.Inverted = actuatorInverted;
-
+        
         actuatorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
         actuatorConfig.CurrentLimits.SupplyCurrentLimit = actuatorCurrentLimit;
 

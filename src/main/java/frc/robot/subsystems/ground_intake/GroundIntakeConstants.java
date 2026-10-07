@@ -32,7 +32,7 @@ public final class GroundIntakeConstants {
     public static final boolean rollerOutputUsesVelocityControl = true;
 
     public static final AngularVelocity rollerOutputVelocityMinimum = RPM.of(2000d);
-    public static final AngularVelocity rollerOutputVelocity = RPM.of(3850d); // 3500; 5800   3850d current
+    public static final AngularVelocity rollerOutputVelocity = RPM.of(5000d); // 3500; 5800   3850d current
     public static final AngularVelocity rollerOutputVelocityAuto = RPM.of(3850d); // 4500; 5000; 5500; 5000; 5800
     public static final AngularVelocity rollerOutputVelocityReverse = rollerOutputVelocity.unaryMinus();
     public static final AngularVelocity rollerOutputVelocityHalfway = RPM.of(500d);
@@ -41,11 +41,12 @@ public final class GroundIntakeConstants {
 
     public static final double rollerPidP = 0.15d;//0.75
     public static final double rollerPidV = 12d / (5800d / 60d / rollerMotorReduction);//12d / (5800d / 60d)
-    public static final double rollerPidS = 0.6;
+    public static final double rollerPidS = 0.7;
     public static final double rollerTargetAcceleration = 266d;
 
     public static final int actuatorMotorId = 13;
     public static final int actuatorCurrentLimit = 25;//30
+    public static final int rollerStatorCurrentLimit = 30;
     public static final double actuatorMotorReduction = 42d/12d;//(50d / 10d) * (60d / 14d) * (54d / 22d);
     public static final Distance actuatorMotorPitchCircumference = Inches.of(1 * Math.PI);
     public static final NeutralModeValue actuatorNeutralMode = NeutralModeValue.Brake;
@@ -56,8 +57,8 @@ public final class GroundIntakeConstants {
 
     public static final double actuatorPidP = 20d; // 20d 40 200d
     // public static final double actuatorTargetAcceleration = 50d;
-    public static final double actuatorTargetAcceleration = 50d;
-    public static final double actuatorMaxVelocity = 7.5d; //0.5d 5 Rotations per second on the output shaft 3.14 inches at a time
+    public static final double actuatorTargetAcceleration = 60d;
+    public static final double actuatorMaxVelocity = 12; //0.5d 5 Rotations per second on the output shaft 3.14 inches at a time
 
     public static final double actuatorZeroDutyCycle = -0.065d;
     public static final double actuatorZeroVelocityThresholdRPS = 0.00002d;
