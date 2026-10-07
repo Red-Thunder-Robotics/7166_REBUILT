@@ -20,7 +20,7 @@ public final class GroundIntakeConstants {
     public static final int rightRollerMotorId = 23;
     public static final int rollerCurrentLimit = 25; // 45
     public static final int rollerCurrentLimitAuto = 40; // 30
-    public static final double rollerMotorReduction = (12d / 30d);//18/12d
+    public static final double rollerMotorReduction = (30d / 12d);//18/12d    12/30
     public static final NeutralModeValue rollerNeutralMode = NeutralModeValue.Coast;
     public static final InvertedValue rightRollerInverted = InvertedValue.Clockwise_Positive;
 
