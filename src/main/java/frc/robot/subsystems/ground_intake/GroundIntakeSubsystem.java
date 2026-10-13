@@ -48,7 +48,7 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
     private Timer m_pushTimer = new Timer();
     private enum PushStep {
         OutOne,
-        HalfwayTwo,
+        // HalfwayTwo,
         InThree
     }
     private PushStep m_pushStep = PushStep.OutOne;
@@ -142,13 +142,13 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
                     case OutOne:
                         StateMachine.setIntakeState(IntakeState.DeployedOff);
                         if (advance)
-                            m_pushStep = PushStep.HalfwayTwo;
+                            m_pushStep = PushStep.InThree; //HalfwayTwo
                         break;
-                    case HalfwayTwo:
-                        StateMachine.setIntakeState(IntakeState.OscillateOff);
-                        if (advance)
-                            m_pushStep = PushStep.InThree;
-                        break;
+                    // case HalfwayTwo:
+                    //     StateMachine.setIntakeState(IntakeState.OscillateOff);
+                    //     if (advance)
+                    //         m_pushStep = PushStep.InThree;  kngjhgkjgkjg
+                    //     break;
                     case InThree:
                         StateMachine.setIntakeState(IntakeState.HomeOff);
                         break;
