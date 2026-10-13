@@ -18,7 +18,7 @@ import edu.wpi.first.units.measure.Distance;
 
 public final class GroundIntakeConstants {
     public static final int rightRollerMotorId = 23;
-    public static final int rollerCurrentLimit = 25; // 45
+    public static final int rollerCurrentLimit = 35; // 25 45
     public static final int rollerCurrentLimitAuto = 40; // 30
     public static final double rollerMotorReduction = (30d / 12d);//18/12d    12/30
     public static final NeutralModeValue rollerNeutralMode = NeutralModeValue.Coast;
@@ -33,7 +33,7 @@ public final class GroundIntakeConstants {
 
     public static final AngularVelocity rollerOutputVelocityMinimum = RPM.of(2000d);
     public static final AngularVelocity rollerOutputVelocity = RPM.of(5000d); // 3500; 5800   3850d current
-    public static final AngularVelocity rollerOutputVelocityAuto = RPM.of(3850d); // 4500; 5000; 5500; 5000; 5800
+    public static final AngularVelocity rollerOutputVelocityAuto = RPM.of(5000d); // 3850 4500; 5000; 5500; 5000; 5800
     public static final AngularVelocity rollerOutputVelocityReverse = rollerOutputVelocity.unaryMinus();
     public static final AngularVelocity rollerOutputVelocityHalfway = RPM.of(500d);
     public static final Current rollerOutputCurrent = Amps.of(25d);
@@ -46,12 +46,13 @@ public final class GroundIntakeConstants {
 
     public static final int actuatorMotorId = 13;
     public static final int actuatorCurrentLimit = 25;//30
-    public static final int rollerStatorCurrentLimit = 30;
+    public static final int rollerStatorCurrentLimit = 80;//60 30
     public static final double actuatorMotorReduction = 42d/12d;//(50d / 10d) * (60d / 14d) * (54d / 22d);
     public static final Distance actuatorMotorPitchCircumference = Inches.of(1 * Math.PI);
     public static final NeutralModeValue actuatorNeutralMode = NeutralModeValue.Brake;
     public static final InvertedValue actuatorInverted = InvertedValue.Clockwise_Positive;
-    public static final Distance actuatorPositionHome = Inches.of(0); //Second number is how much it moves in in a straight line for one turn of the output shaft (the pinion or pulley that drives it, after the gearbox). For a rack and pinion it's pi * the pinion's pitch diameter   -101
+    public static final Distance actuatorPositionTrueHome = Inches.of(0);
+    public static final Distance actuatorPositionHome = Inches.of(3);//0 //Second number is how much it moves in in a straight line for one turn of the output shaft (the pinion or pulley that drives it, after the gearbox). For a rack and pinion it's pi * the pinion's pitch diameter   -101
     public static final Distance actuatorPositionDeployed = Inches.of(14.2); //0.25 meters 12 12.1 <- Should use //First number is position    12.1
     public static final Distance actuatorPositionOscillate = actuatorPositionHome.plus(actuatorPositionDeployed).div(2);
 

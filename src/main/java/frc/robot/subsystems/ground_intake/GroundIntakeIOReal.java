@@ -183,7 +183,7 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
     @Override
     public void actuatorZero() {
         // PhoenixUtil.tryUntilOk(5, () -> m_actuatorMotor.setPosition(actuatorPositionHome));
-        MotorAction.setMotorPosition("Shooter actuator", m_actuatorMotor, distanceToMechanismPosition(actuatorPositionHome, actuatorMotorPitchCircumference)).run();
+        MotorAction.setMotorPosition("Shooter actuator", m_actuatorMotor, distanceToMechanismPosition(actuatorPositionTrueHome, actuatorMotorPitchCircumference)).run();
     }
     @Override
     public boolean actuatorCanZero() {
