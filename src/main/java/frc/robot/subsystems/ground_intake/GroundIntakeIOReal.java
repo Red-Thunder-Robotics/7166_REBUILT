@@ -147,7 +147,7 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
         inputs.leftRollerMotorCurrentAmps = leftRollerCurrentAmps;
 
         inputs.rollerMotorsVelocityRPS = (inputs.leftRollerMotorVelocityRPS + inputs.rightRollerMotorVelocityRPS) / 2;
-        inputs.rollerMotorTargetAtShaft = inputs.rollerMotorsVelocityRPS * rollerMotorReduction;
+        inputs.rollerMotorTargetAtShaft = inputs.rollerMotorsVelocityRPS / rollerMotorReduction;
         
     }
 
