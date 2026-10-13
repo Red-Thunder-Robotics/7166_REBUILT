@@ -49,7 +49,7 @@ public final class GroundIntakeConstants {
     public static final int rollerStatorCurrentLimit = 80;//60 30
     public static final double actuatorMotorReduction = 42d/12d;//(50d / 10d) * (60d / 14d) * (54d / 22d);
     public static final Distance actuatorMotorPitchCircumference = Inches.of(1 * Math.PI);
-    public static final NeutralModeValue actuatorNeutralMode = NeutralModeValue.Brake;
+    public static final NeutralModeValue actuatorNeutralMode = NeutralModeValue.Coast;//brake
     public static final InvertedValue actuatorInverted = InvertedValue.Clockwise_Positive;
     public static final Distance actuatorPositionTrueHome = Inches.of(0);
     public static final Distance actuatorPositionHome = Inches.of(3);//0 //Second number is how much it moves in in a straight line for one turn of the output shaft (the pinion or pulley that drives it, after the gearbox). For a rack and pinion it's pi * the pinion's pitch diameter   -101

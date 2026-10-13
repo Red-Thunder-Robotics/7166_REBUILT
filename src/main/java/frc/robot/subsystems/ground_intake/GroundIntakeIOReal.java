@@ -31,7 +31,7 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
     private final TalonFX m_leftRollerMotor = new TalonFX(leftRollerMotorId, Constants.CANBUS);
     private final TalonFX m_actuatorMotor = new TalonFX(actuatorMotorId, Constants.CANBUS);
 
-    private Distance m_actuatorTargetPosition = actuatorPositionHome;
+    private Distance m_actuatorTargetPosition = actuatorPositionTrueHome;
 
     private final StatusSignal<AngularVelocity> m_rightRollerVelocitySignal = m_rightRollerMotor.getVelocity();
     private final StatusSignal<Current> m_rightRollerCurrentSignal = m_rightRollerMotor.getSupplyCurrent();
@@ -145,6 +145,10 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
         inputs.leftRollerMotorDutyCycle = PhoenixUtil.getRequestDutyCycle(m_leftRollerMotor.getAppliedControl());
         inputs.leftRollerMotorVelocityRPS = m_leftRollerVelocitySignal.getValueAsDouble();
         inputs.leftRollerMotorCurrentAmps = leftRollerCurrentAmps;
+
+        inputs.rollerMotorsVelocityRPS = (inputs.leftRollerMotorVelocityRPS + inputs.rightRollerMotorVelocityRPS) / 2;
+        inputs.rollerMotorTargetAtShaft = inputs.rollerMotorsVelocityRPS * rollerMotorReduction;
+        
     }
 
     @Override

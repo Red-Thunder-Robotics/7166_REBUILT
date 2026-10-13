@@ -41,6 +41,9 @@ public final class GroundIntakeIOSim implements GroundIntakeIO {
         inputs.targetActuatorPositionInches = targetActuatorPosition.in(Inches);
 
         inputs.rightRollerMotorVelocityRPS = m_rollerVelocityRPS;
+        inputs.leftRollerMotorVelocityRPS = m_rollerVelocityRPS;
+        inputs.rollerMotorsVelocityRPS = (inputs.leftRollerMotorVelocityRPS + inputs.rightRollerMotorVelocityRPS) / 2;
+        inputs.rollerMotorTargetAtShaft = inputs.rollerMotorsVelocityRPS * rollerMotorReduction;
 
 
 
