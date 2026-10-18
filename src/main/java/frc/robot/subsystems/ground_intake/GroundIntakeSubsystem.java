@@ -140,14 +140,14 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
                 final boolean advance = m_pushTimer.advanceIfElapsed(pushFrequencySeconds);
                 switch (m_pushStep) {
                     case OutOne:
-                        StateMachine.setIntakeState(IntakeState.DeployedOff);
+                        StateMachine.setIntakeState(IntakeState.DeployedOn);//off
                         if (advance)
                             m_pushStep = PushStep.InThree; //HalfwayTwo
                         break;
                     // case HalfwayTwo:
                     //     StateMachine.setIntakeState(IntakeState.OscillateOff);
                     //     if (advance)
-                    //         m_pushStep = PushStep.InThree;  kngjhgkjgkjg
+                    //         m_pushStep = PushStep.InThree;  
                     //     break;
                     case InThree:
                         StateMachine.setIntakeState(IntakeState.HomeOff);
@@ -220,13 +220,13 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
                     m_reverseRollerWaiter.activate();
                 break;
             case OscillateOff:
+                startRoller();
                 deployOscillate();
                 // stopRoller();
-                startRoller();
                 break;
             case OscillateOn:
+                startRoller();
                 deployOscillate();
-                startRoller();//stopRoller();
                 m_io.rollerVelocity(rollerOutputVelocityHalfway);
                 break;
         }
