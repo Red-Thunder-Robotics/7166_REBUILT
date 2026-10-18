@@ -221,7 +221,8 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
                 break;
             case OscillateOff:
                 deployOscillate();
-                stopRoller();
+                // stopRoller();
+                startRoller();
                 break;
             case OscillateOn:
                 deployOscillate();
