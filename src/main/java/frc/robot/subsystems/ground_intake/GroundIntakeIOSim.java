@@ -8,6 +8,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
+import frc.robot.sim.SimFuelClump;
 
 public final class GroundIntakeIOSim implements GroundIntakeIO {
     // private double m_targetActuatorPositionAngle = distanceToMechanismPosition(actuatorPositionHome, actuatorMotorPitchCircumference);
@@ -15,6 +16,8 @@ public final class GroundIntakeIOSim implements GroundIntakeIO {
     private Distance m_actuatorPosition = m_targetActuatorPosition;
 
     private double m_rollerVelocityRPS = 0d;
+    // Kraken X60 FOC free speed (5800 RPM) at the roller
+    private static final double rollerFreeVelocityRPS = 5800d / 60d / rollerMotorReduction;
 
     private final PIDController m_actuatorPositionPID = new PIDController(0.5d, 0d, 0d);
 
@@ -40,8 +43,11 @@ public final class GroundIntakeIOSim implements GroundIntakeIO {
         inputs.actuatorPositionInches = position;
         inputs.targetActuatorPositionInches = targetActuatorPosition.in(Inches);
 
-        inputs.rightRollerMotorVelocityRPS = m_rollerVelocityRPS;
-        inputs.leftRollerMotorVelocityRPS = m_rollerVelocityRPS;
+        SimFuelClump.setIntakeCommand(position, m_rollerVelocityRPS, rollerFreeVelocityRPS);
+        final double rollerVelocityRPS = m_rollerVelocityRPS * SimFuelClump.getRollerSpeedFactor();
+        inputs.rollerTargetVelocityRPS = m_rollerVelocityRPS;
+        inputs.rightRollerMotorVelocityRPS = rollerVelocityRPS;
+        inputs.leftRollerMotorVelocityRPS = rollerVelocityRPS;
         inputs.rollerMotorsVelocityRPS = (inputs.leftRollerMotorVelocityRPS + inputs.rightRollerMotorVelocityRPS) / 2;
         inputs.rollerMotorTargetAtShaft = inputs.rollerMotorsVelocityRPS * rollerMotorReduction;
 

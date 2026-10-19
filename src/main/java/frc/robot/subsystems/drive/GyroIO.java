@@ -22,6 +22,9 @@ public interface GyroIO {
     public boolean connected = false;
     public Rotation2d yawPosition = new Rotation2d();
     public double yawVelocityRadPerSec = 0.0;
+    // Raw Pigeon 2 roll and pitch, used by BeachedUtil the same way 6328 uses them
+    public double rollRad = 0.0;
+    public double pitchRad = 0.0;
     public double[] odometryYawTimestamps = new double[] {};
     public Rotation2d[] odometryYawPositions = new Rotation2d[] {};
   }

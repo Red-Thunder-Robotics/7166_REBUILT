@@ -70,6 +70,9 @@ import frc.robot.commands.SimulationCommands;
 import frc.robot.commands.SimulationCommands.SimFuelCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.modified.ModifiedAutoBuilder;
+import frc.robot.sim.SimAutoRunner;
+import frc.robot.sim.SimFuelClump;
+import frc.robot.sim.SimTiltGyroIO;
 import frc.robot.state_machine.ClimberState;
 import frc.robot.state_machine.IntakeState;
 import frc.robot.state_machine.LauncherTarget;
@@ -200,9 +203,11 @@ public class Robot extends LoggedRobot {
             case SIM: {
                 // Running a physics simulator, log to NT
                 Logger.addDataReceiver(new NT4Publisher());
+                if (SimAutoRunner.isActive())
+                    Logger.addDataReceiver(new WPILOGWriter(SimAutoRunner.getLogDir()));
 
                 m_driveSubsystem = new Drive(
-                        new GyroIO() {},
+                        new SimTiltGyroIO(),
                         new ModuleIOSim(TunerConstants.FrontLeft),
                         new ModuleIOSim(TunerConstants.FrontRight),
                         new ModuleIOSim(TunerConstants.BackLeft),
@@ -561,7 +566,9 @@ public class Robot extends LoggedRobot {
         if (m_autonomousRotationSupplier == null)
             m_autonomousRotationSupplier = getShooterRotationalGoalSupplier();
 
-        m_autoCommand = m_autoChooser.get();
+        m_autoCommand = SimAutoRunner.isActive()
+            ? new PathPlannerAuto(SimAutoRunner.getAutoName())
+            : m_autoChooser.get();
 
         if (m_autoCommand != null)
             m_commandScheduler.schedule(m_autoCommand);
@@ -656,6 +663,8 @@ public class Robot extends LoggedRobot {
     @Override
     public void simulationPeriodic() {
         SimFuelCommand.step();
+        SimFuelClump.step(0.02d);
+        SimAutoRunner.periodic();
     }
 
     

@@ -13,6 +13,8 @@
 
 package frc.robot.subsystems.drive;
 
+import frc.robot.sim.SimFuelClump;
+
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
@@ -52,6 +54,7 @@ public class ModuleIOSim implements ModuleIO {
   private double driveFFVolts = 0.0;
   private double driveAppliedVolts = 0.0;
   private double turnAppliedVolts = 0.0;
+  private double groundPositionRad = 0.0;
 
   public ModuleIOSim(
       SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
@@ -95,8 +98,11 @@ public class ModuleIOSim implements ModuleIO {
 
     // Update drive inputs
     inputs.driveConnected = true;
-    inputs.drivePositionRad = driveSim.getAngularPositionRad();
-    inputs.driveVelocityRadPerSec = driveSim.getAngularVelocityRadPerSec();
+    // Wheel motion only moves the robot as far as the sim fuel clump allows
+    final double traction = SimFuelClump.getTraction();
+    groundPositionRad += driveSim.getAngularVelocityRadPerSec() * traction * 0.02;
+    inputs.drivePositionRad = groundPositionRad;
+    inputs.driveVelocityRadPerSec = driveSim.getAngularVelocityRadPerSec() * traction;
     inputs.driveAppliedVolts = driveAppliedVolts;
     inputs.driveStatorCurrentAmps = Math.abs(driveSim.getCurrentDrawAmps());
 
