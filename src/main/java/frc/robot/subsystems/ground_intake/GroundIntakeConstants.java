@@ -32,7 +32,7 @@ public final class GroundIntakeConstants {
     public static final boolean rollerOutputUsesVelocityControl = true;
 
     public static final AngularVelocity rollerOutputVelocityMinimum = RPM.of(2000d);
-    public static final AngularVelocity rollerOutputVelocity = RPM.of(5000d); // 3500; 5800   3850d current
+    public static final AngularVelocity rollerOutputVelocity = RPM.of(2400d); // 3500; 5800   3850d current
     public static final AngularVelocity rollerOutputVelocityAuto = RPM.of(5000d); // 3850 4500; 5000; 5500; 5000; 5800
     public static final AngularVelocity rollerOutputVelocityReverse = rollerOutputVelocity.unaryMinus();
     public static final AngularVelocity rollerOutputVelocityHalfway = RPM.of(500d);
@@ -46,7 +46,7 @@ public final class GroundIntakeConstants {
 
     public static final int actuatorMotorId = 13;
     public static final int actuatorCurrentLimit = 7;//5 25  30
-    public static final int rollerStatorCurrentLimit = 80;//60 30
+    public static final int rollerStatorCurrentLimit = 200;//60 30   *80*
     public static final double actuatorMotorReduction = 42d/12d;//(50d / 10d) * (60d / 14d) * (54d / 22d);
     public static final Distance actuatorMotorPitchCircumference = Inches.of(1 * Math.PI);
     public static final NeutralModeValue actuatorNeutralMode = NeutralModeValue.Coast;//brake
