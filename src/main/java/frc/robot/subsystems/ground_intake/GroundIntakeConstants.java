@@ -45,7 +45,7 @@ public final class GroundIntakeConstants {
     public static final double rollerTargetAcceleration = 266d;
 
     public static final int actuatorMotorId = 13;
-    public static final int actuatorCurrentLimit = 7;//5 25  30
+    public static final int actuatorCurrentLimit = 10;//5 25  30
     public static final int rollerStatorCurrentLimit = 200;//60 30   *80*
     public static final double actuatorMotorReduction = 42d/12d;//(50d / 10d) * (60d / 14d) * (54d / 22d);
     public static final Distance actuatorMotorPitchCircumference = Inches.of(1 * Math.PI);
@@ -53,7 +53,7 @@ public final class GroundIntakeConstants {
     public static final InvertedValue actuatorInverted = InvertedValue.Clockwise_Positive;
     public static final Distance actuatorPositionTrueHome = Inches.of(0);
     public static final Distance actuatorPositionHome = Inches.of(5);//0 //Second number is how much it moves in in a straight line for one turn of the output shaft (the pinion or pulley that drives it, after the gearbox). For a rack and pinion it's pi * the pinion's pitch diameter   -101
-    public static final Distance actuatorPositionDeployed = Inches.of(14.2); //0.25 meters 12 12.1 <- Should use //First number is position    12.1
+    public static final Distance actuatorPositionDeployed = Inches.of(13.1); //0.25 meters 12 12.1 <- Should use //First number is position    12.1
     public static final Distance actuatorPositionOscillate = actuatorPositionHome.plus(actuatorPositionDeployed).div(2);
 
     public static final double actuatorPidP = 20d; // 20d 40 200d

@@ -140,9 +140,9 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
                 final boolean advance = m_pushTimer.advanceIfElapsed(pushFrequencySeconds);
                 switch (m_pushStep) {
                     case OutOne:
-                    if (isAtDeployedPosition()) {
-                        StateMachine.setIntakeState(IntakeState.DeployedOn);
-                    }
+                        if (isAtDeployedPosition()) {
+                            StateMachine.setIntakeState(IntakeState.DeployedOn);
+                        }
                         if (advance)
                             m_pushStep = PushStep.InThree; //HalfwayTwo
                         break;
