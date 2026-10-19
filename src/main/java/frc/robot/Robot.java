@@ -347,7 +347,7 @@ public class Robot extends LoggedRobot {
         // Controls.halfwayIntakeButton.onTrue(cmdName(RobotCommands.oscillateIntakeOn(), "HalfwayIntakeOn"));
         // Controls.halfwayIntakeButton.onFalse(cmdName(RobotCommands.intakeOscillateToOffConditional(), "HalfwayIntakeOff"));
 
-        Controls.halfwayIntakeButton.onTrue(cmdName(RobotCommands.oscillateIntakeOff(), "HalfwayIntakeOff"));
+        Controls.halfwayIntakeButton.onTrue(cmdName(RobotCommands.oscillateIntakeOn(), "HalfwayIntakeOn"));
 
         Controls.retractIntakeButton.onTrue(RobotCommands.retractIntakeOff());
 

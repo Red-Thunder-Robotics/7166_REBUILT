@@ -173,6 +173,7 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
     public boolean isAtDeployedPosition() {
         return m_inputs.isDeployed && Math.abs(m_inputs.actuatorPositionInches - m_inputs.targetActuatorPositionInches) < 0.5d;
     }
+    
 
     public boolean  isIntakeHome() {
         return !m_inputs.isDeployed && Math.abs(m_inputs.actuatorPositionInches - m_inputs.targetActuatorPositionInches) < 0.5d;
@@ -222,14 +223,13 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
                     m_reverseRollerWaiter.activate();
                 break;
             case OscillateOff:
-                startRoller();
+                stopRoller();
                 deployOscillate();
                 // stopRoller();
                 break;
             case OscillateOn:
-                startRoller();
+                if (isAtDeployedPosition()) {startRoller();}
                 deployOscillate();
-                m_io.rollerVelocity(rollerOutputVelocityHalfway);
                 break;
         }
     }
