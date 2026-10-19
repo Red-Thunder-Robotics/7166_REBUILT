@@ -18,7 +18,7 @@ public final class Controls {
     public static final Trigger deployIntakeButton = driveController.rightBumper();
     public static final Trigger retractIntakeButton = driveController.leftBumper();
     // public static final Trigger oscillateIntakeButton = driveController.rightTrigger();
-    public static final Trigger halfwayIntakeButton = driveController.rightTrigger();
+    // public static final Trigger halfwayIntakeButton = driveController.rightTrigger();
 
     // public static final Trigger debugFullForwardButton = driveController.paddleBottomLeft();
 
