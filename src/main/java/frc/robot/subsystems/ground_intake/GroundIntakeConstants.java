@@ -44,6 +44,10 @@ public final class GroundIntakeConstants {
     public static final double rollerPidS = 0.7;
     public static final double rollerTargetAcceleration = 266d;
 
+    // while shooting, how long the intake stays out before going in to push fuel
+    public static final double pushFrequencySeconds = 0.5d;
+    public static final double pushFrequencySecondsAuto = 0.3d; // shorter in auto so fuel is pushed in sooner
+
     public static final int actuatorMotorId = 13;
     public static final int actuatorCurrentLimit = 10;//5 25  30
     public static final int rollerStatorCurrentLimit = 200;//60 30   *80*
