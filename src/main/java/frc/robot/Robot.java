@@ -142,6 +142,8 @@ public class Robot extends LoggedRobot {
 
     private final LoggedDashboardChooser<Command> m_autoChooser;
 
+    // private final LoggedDashboardChooser<> m_BatteryChooser;
+
     @AutoLogOutput(key="RotationTargetOffset")
     private double m_rotationTargetMeterOffset = 0d;
 
@@ -276,6 +278,7 @@ public class Robot extends LoggedRobot {
         m_driveSubsystem.configurePathPlanner();
         
         m_autoChooser = new LoggedDashboardChooser<>("Auto Choices", ModifiedAutoBuilder.buildAutoChooser());
+        // m_BatteryChooser = new LoggedDashboardChooser;
 
         m_autoChooser.addOption(
             "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(m_driveSubsystem));
@@ -283,6 +286,8 @@ public class Robot extends LoggedRobot {
             "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(m_driveSubsystem));
 
         SmartDashboardItem.newButtonDisabled("NTGyro", () -> resetPoseFromPathPlanner(m_autoChooser.get()));
+        
+
         
         SmartDashboardItem.newTogglePeriodic("ZeroMechanisms", (boolean value) -> {
             if (m_dashboardZeroMechanismsCommand != null) {
@@ -294,7 +299,7 @@ public class Robot extends LoggedRobot {
                 m_commandScheduler.schedule(m_dashboardZeroMechanismsCommand);
             }
         });
-
+        
         resetGyro(Rotation2d.kZero);
         configureButtons();
         m_commandScheduler.onCommandInterrupt((Command command, Optional<Command> interruptor) -> {

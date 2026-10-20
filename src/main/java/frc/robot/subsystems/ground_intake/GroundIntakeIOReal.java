@@ -78,6 +78,7 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
 
         actuatorConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
         actuatorConfig.Slot0.kP = actuatorPidP;
+        actuatorConfig.Slot0.kS = actuatorPidS;
 
         actuatorConfig.MotionMagic.MotionMagicAcceleration = actuatorTargetAcceleration;
         actuatorConfig.MotionMagic.MotionMagicCruiseVelocity = actuatorMaxVelocity;
