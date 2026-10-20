@@ -37,13 +37,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RightMiddleGroundToShootBumpCloseNoCross"
+            "pathName": "RightMiddleGroundToShootBumpCloseNoCross_Pair7769"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "EngageShooterHub"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AfterShoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RightShootBumpCloseToNZ_Pair7769"
           }
         }
       ]
