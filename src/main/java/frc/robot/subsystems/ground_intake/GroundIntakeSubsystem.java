@@ -52,7 +52,6 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
         InThree
     }
     private PushStep m_pushStep = PushStep.OutOne;
-    private static final double pushFrequencySeconds = 0.5d;
 
     public GroundIntakeSubsystem(GroundIntakeIO io) {
         instance = this;
@@ -137,7 +136,7 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
         final boolean shouldPush = StateMachine.isShooting();
         if (m_pushTimer.isRunning()) {
             if (shouldPush) {
-                final boolean advance = m_pushTimer.advanceIfElapsed(pushFrequencySeconds);
+                final boolean advance = m_pushTimer.advanceIfElapsed(isTeleop ? pushFrequencySeconds : pushFrequencySecondsAuto);
                 switch (m_pushStep) {
                     case OutOne:
                         if (isAtDeployedPosition()) {
