@@ -1,0 +1,80 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.434,
+        "y": 0.658
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.700656610470276,
+        "y": 0.6186601597160597
+      },
+      "isLocked": false,
+      "linkedName": "RightStartPos"
+    },
+    {
+      "anchor": {
+        "x": 7.79,
+        "y": 2.9
+      },
+      "prevControl": {
+        "x": 7.795,
+        "y": 1.3325810832402647
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "RightNZ3Pair7769"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.4899328859060404,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 2.3,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "IntakeDeployOn",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "IntakeDeployOn"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 2.3,
+    "rotation": -90.0
+  },
+  "reversed": false,
+  "folder": "Right",
+  "idealStartingState": {
+    "velocity": 0.0,
+    "rotation": 180.0
+  },
+  "useDefaultConstraints": true
+}
