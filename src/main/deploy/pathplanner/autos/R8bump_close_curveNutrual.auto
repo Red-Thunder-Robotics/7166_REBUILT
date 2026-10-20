@@ -47,6 +47,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "AfterShoot"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "RightBumpTo NZ"
