@@ -19,6 +19,7 @@ import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.wpilibj.DriverStation;
 
 import java.util.ArrayDeque;
 import java.util.function.Consumer;
@@ -27,14 +28,24 @@ import java.util.function.Supplier;
 public class PhoenixUtil {
     public static final class MotorAction {
         private static final ArrayDeque<MotorAction> queue = new ArrayDeque<>();
+        private static boolean startupComplete = false;
+
+        /**
+         * Call at the end of the Robot constructor. After this, a failed action reports an error
+         * instead of throwing, so a motor dropping off CAN mid-match does not crash the robot code.
+         */
+        public static void startupComplete() {
+            startupComplete = true;
+        }
 
         public static void process() {
-            final var action = queue.peekFirst();
+            final var action = queue.poll();
             if (action == null)
                 return;
 
-            if (action.tryRun())
-                queue.poll();
+            // one attempt only: each failed attempt blocks the loop for the full CAN timeout
+            if (!action.tryRun(1))
+                DriverStation.reportError("Failed to " + action.description, false);
         }
 
         public static enum ActionType {
@@ -56,7 +67,10 @@ public class PhoenixUtil {
         }
 
         public boolean tryRun() {
-            for (int i = 0; i < 5; i++) {
+            return tryRun(5);
+        }
+        public boolean tryRun(int attempts) {
+            for (int i = 0; i < attempts; i++) {
                 final var status = action.get();
                 if (status.isOK())
                     return true;
@@ -66,8 +80,12 @@ public class PhoenixUtil {
         }
         public void run() {
             System.out.println("Running MotorAction: " + this.description);
-            if (!tryRun())
+            if (tryRun())
+                return;
+
+            if (!startupComplete)
                 throw new RuntimeException("FATAL: Failed to " + this.description);
+            DriverStation.reportError("Failed to " + this.description, false);
         }
         public void queue() {
             // remove redundant actions
@@ -104,10 +122,12 @@ public class PhoenixUtil {
                 ActionType.Config,
                 () -> {
                     var config = new TalonFXConfiguration();
-                    refreshMotorConfig(name, motor, config).run();
-                    configureMotor(name, motor, config).run();
+                    var status = motor.getConfigurator().refresh(config, 0.25d);
+                    if (!status.isOK())
+                        return status;
 
-                    return StatusCode.OK;
+                    callback.accept(config);
+                    return motor.getConfigurator().apply(config, 0.25d);
                 }
             );
         }
