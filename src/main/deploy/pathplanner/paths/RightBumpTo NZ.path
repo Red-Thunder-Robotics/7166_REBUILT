@@ -1,0 +1,63 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.4895385980479148,
+        "y": 2.5
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.7177818687795123,
+        "y": 2.602004947751286
+      },
+      "isLocked": false,
+      "linkedName": "RightBumpLanding"
+    },
+    {
+      "anchor": {
+        "x": 6.539698314108253,
+        "y": 2.5
+      },
+      "prevControl": {
+        "x": 4.348988512861915,
+        "y": 2.463622395966514
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.0450928381962865,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 0.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -0.7850717998387046
+  },
+  "reversed": false,
+  "folder": "Right",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 55.07483691976046
+  },
+  "useDefaultConstraints": true
+}
