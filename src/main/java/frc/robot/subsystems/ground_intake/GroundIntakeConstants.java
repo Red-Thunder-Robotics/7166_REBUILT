@@ -64,7 +64,7 @@ public final class GroundIntakeConstants {
     public static final double actuatorPidS = 1;
     // public static final double actuatorTargetAcceleration = 50d;
     public static final double actuatorTargetAcceleration = 60d;
-    public static final double actuatorMaxVelocity = 12; //0.5d 5 Rotations per second on the output shaft 3.14 inches at a time
+    public static final double actuatorMaxVelocity = 18; //0.5d 5 Rotations per second on the output shaft 3.14 inches at a time
 
     public static final double actuatorZeroDutyCycle = -0.065d;
     public static final double actuatorZeroVelocityThresholdRPS = 0.05d;
