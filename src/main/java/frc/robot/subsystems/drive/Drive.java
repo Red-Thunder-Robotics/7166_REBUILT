@@ -13,7 +13,6 @@
 
 package frc.robot.subsystems.drive;
 
-import frc.robot.Constants.FieldConstants;
 import frc.robot.util.BeachedUtil;
 
 import static edu.wpi.first.units.Units.*;
@@ -190,19 +189,7 @@ public class Drive extends SubsystemBase {
         Subsystem... driveRequirements)
     {
       ModifiedAutoBuilder.configure(poseSupplier, resetPose, robotRelativeSpeedsSupplier, output, controller, robotConfig, shouldFlipPath, driveRequirements);
-      // When the robot is beached on fuel, drive off it instead of following the path
-      // (same as 6328's DriveTrajectory, including skipping it within 2 m of either alliance wall)
-      Consumer<ChassisSpeeds> beachedOutput = (speeds) -> {
-        final double x = poseSupplier.get().getX();
-        final boolean nearDepot = x < 2.0 || x > FieldConstants.FIELD_LENGTH.in(Meters) - 2.0;
-        Optional<ChassisSpeeds> beachedSpeeds = BeachedUtil.getInstance().getBeachedSpeeds();
-        Logger.recordOutput("Beached/Active", beachedSpeeds.isPresent() && !nearDepot);
-        if (beachedSpeeds.isPresent() && !nearDepot)
-          output.accept(beachedSpeeds.get());
-        else
-          output.accept(speeds);
-      };
-      AutoBuilder.configure(poseSupplier, resetPose, robotRelativeSpeedsSupplier, beachedOutput, controller, robotConfig, shouldFlipPath, driveRequirements);
+      AutoBuilder.configure(poseSupplier, resetPose, robotRelativeSpeedsSupplier, output, controller, robotConfig, shouldFlipPath, driveRequirements);
     }
 
   @Override
@@ -307,6 +294,12 @@ public class Drive extends SubsystemBase {
    * @param speeds Speeds in meters/sec
    */
   public void runVelocity(ChassisSpeeds speeds) {
+    // When the robot is beached on fuel, drive off it instead of following the driver or the path
+    Optional<ChassisSpeeds> beachedSpeeds = BeachedUtil.getInstance().getBeachedSpeeds();
+    Logger.recordOutput("Beached/Active", beachedSpeeds.isPresent());
+    if (beachedSpeeds.isPresent())
+      speeds = beachedSpeeds.get();
+
     // Calculate module setpoints
     ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
     SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);

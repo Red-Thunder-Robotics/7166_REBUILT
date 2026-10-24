@@ -12,6 +12,8 @@
 
 package frc.robot.util;
 
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import edu.wpi.first.math.MathUtil;
@@ -20,10 +22,15 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.generated.TunerConstants;
+import frc.robot.state_machine.ClimberState;
+import frc.robot.state_machine.StateMachine;
 import frc.robot.subsystems.drive.Drive;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
+import org.littletonrobotics.junction.Logger;
 
 public class BeachedUtil {
     private static BeachedUtil instance;
@@ -33,6 +40,13 @@ public class BeachedUtil {
     private final double maxTilt = Units.degreesToRadians(15);
     private final double minSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.4;
     private final double maxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+
+    // The bumps tilt the robot on purpose, so stay off while any part of the robot could be on one
+    private final double bumpHalfDepth = Inches.of(44.4 / 2.0).in(Meters);
+    private final double bumpIgnoreHalfWidth =
+        bumpHalfDepth + DriveConstants.BUMPER_LARGEST_DIMENSION.in(Meters) / 2.0 + 0.15;
+    // 6328 skips beach recovery this close to either alliance wall, where the depot is
+    private final double depotIgnoreDistance = 2.0;
 
     private BooleanSupplier ignoreBeached = () -> false;
 
@@ -67,8 +81,17 @@ public class BeachedUtil {
             // Calculate exact tilt angle from horizontal using the Z component
             double tilt = Math.acos(Math.abs(robotGravity.getZ()));
 
+            Logger.recordOutput("Beached/TiltDegrees", Units.radiansToDegrees(tilt));
+
             // Check threshold
             if (tilt < rotationThreshold) {
+                Logger.recordOutput("Beached/Suppressed", false);
+                return Optional.empty();
+            }
+
+            final boolean suppressed = isTiltExpected();
+            Logger.recordOutput("Beached/Suppressed", suppressed);
+            if (suppressed) {
                 return Optional.empty();
             }
 
@@ -88,5 +111,17 @@ public class BeachedUtil {
         } else {
             return Optional.empty();
         }
+    }
+
+    private boolean isTiltExpected() {
+        if (StateMachine.getClimberState() == ClimberState.Deployed) return true;
+
+        final double x = StateMachine.odometryAndVision.getEstimatedPose().getX();
+        final double fieldLength = FieldConstants.FIELD_LENGTH.in(Meters);
+        if (x < depotIgnoreDistance || x > fieldLength - depotIgnoreDistance) return true;
+
+        final double blueHubX = StateMachine.getHubPoseBlue().getX();
+        final double redHubX = fieldLength - blueHubX;
+        return Math.abs(x - blueHubX) < bumpIgnoreHalfWidth || Math.abs(x - redHubX) < bumpIgnoreHalfWidth;
     }
 }
