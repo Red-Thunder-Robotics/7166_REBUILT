@@ -305,6 +305,8 @@ public class Robot extends LoggedRobot {
         m_commandScheduler.onCommandInterrupt((Command command, Optional<Command> interruptor) -> {
             System.out.println(command.getName() + " was interrupted by " + (interruptor.isPresent() ? interruptor.get().getName() : "null"));
         });
+
+        MotorAction.startupComplete();
     }
 
     private void configureButtons() {
