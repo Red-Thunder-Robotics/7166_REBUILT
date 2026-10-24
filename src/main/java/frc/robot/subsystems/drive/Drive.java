@@ -13,6 +13,9 @@
 
 package frc.robot.subsystems.drive;
 
+import frc.robot.Constants.FieldConstants;
+import frc.robot.util.BeachedUtil;
+
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.CANBus;
@@ -187,7 +190,19 @@ public class Drive extends SubsystemBase {
         Subsystem... driveRequirements)
     {
       ModifiedAutoBuilder.configure(poseSupplier, resetPose, robotRelativeSpeedsSupplier, output, controller, robotConfig, shouldFlipPath, driveRequirements);
-      AutoBuilder.configure(poseSupplier, resetPose, robotRelativeSpeedsSupplier, output, controller, robotConfig, shouldFlipPath, driveRequirements);
+      // When the robot is beached on fuel, drive off it instead of following the path
+      // (same as 6328's DriveTrajectory, including skipping it within 2 m of either alliance wall)
+      Consumer<ChassisSpeeds> beachedOutput = (speeds) -> {
+        final double x = poseSupplier.get().getX();
+        final boolean nearDepot = x < 2.0 || x > FieldConstants.FIELD_LENGTH.in(Meters) - 2.0;
+        Optional<ChassisSpeeds> beachedSpeeds = BeachedUtil.getInstance().getBeachedSpeeds();
+        Logger.recordOutput("Beached/Active", beachedSpeeds.isPresent() && !nearDepot);
+        if (beachedSpeeds.isPresent() && !nearDepot)
+          output.accept(beachedSpeeds.get());
+        else
+          output.accept(speeds);
+      };
+      AutoBuilder.configure(poseSupplier, resetPose, robotRelativeSpeedsSupplier, beachedOutput, controller, robotConfig, shouldFlipPath, driveRequirements);
     }
 
   @Override
@@ -435,6 +450,14 @@ public class Drive extends SubsystemBase {
 
   public double getYawVelocityRadPerSec() {
     return gyroInputs.yawVelocityRadPerSec;
+  }
+
+  public double getRollRad() {
+    return gyroInputs.rollRad;
+  }
+
+  public double getPitchRad() {
+    return gyroInputs.pitchRad;
   }
 
   private double lastDriveGainP = 0d;
