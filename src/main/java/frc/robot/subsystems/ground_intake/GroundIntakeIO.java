@@ -50,4 +50,5 @@ public interface GroundIntakeIO {
     public default void actuatorZeroingDrive() {}
     public default void actuatorZero() {}
     public default boolean actuatorCanZero() { return true; }
+    public default void setActautorCurrentLimit(int current) {}
 }

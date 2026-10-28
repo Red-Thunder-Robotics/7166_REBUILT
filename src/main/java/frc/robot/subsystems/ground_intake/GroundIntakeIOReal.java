@@ -205,4 +205,9 @@ public final class GroundIntakeIOReal implements GroundIntakeIO {
             config.CurrentLimits.SupplyCurrentLimit = limit;
         }).queue();
     }
+    public void setActautorCurrentLimit(double limit) {
+        MotorAction.updateMotorConfig("Shooter actuator", m_actuatorMotor, (config) -> {
+            config.CurrentLimits.SupplyCurrentLimit = limit;
+        }).queue();
+    }
 }

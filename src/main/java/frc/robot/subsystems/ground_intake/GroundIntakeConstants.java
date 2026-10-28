@@ -50,6 +50,7 @@ public final class GroundIntakeConstants {
 
     public static final int actuatorMotorId = 13;
     public static final int actuatorCurrentLimit = 10;//5 25  30
+    public static final int actuatorCurrentLimitDeployed = 1;
     public static final int rollerStatorCurrentLimit = 200;//60 30   *80*
     public static final double actuatorMotorReduction = 42d/12d;//(50d / 10d) * (60d / 14d) * (54d / 22d);
     public static final Distance actuatorMotorPitchCircumference = Inches.of(1 * Math.PI);

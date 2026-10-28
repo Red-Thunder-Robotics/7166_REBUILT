@@ -3,6 +3,7 @@ package frc.robot.subsystems.ground_intake;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RPM;
 import static frc.robot.subsystems.ground_intake.GroundIntakeConstants.*;
+import static frc.robot.subsystems.ground_intake.GroundIntakeIOReal.*;
 
 import java.util.function.BooleanSupplier;
 
@@ -188,10 +189,12 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
                 retract();
                 if (oldIntakeState.isOut()) {
                     startRoller();
+                    m_io.setActautorCurrentLimit(actuatorCurrentLimit);
                     m_retractWaiter.activate();
                  }
                 else {
                     m_retractWaiter.activate();
+                    m_io.setActautorCurrentLimit(actuatorCurrentLimitDeployed);
                     stopRoller(); }
                 break;
             case HomeReverse:
@@ -213,6 +216,9 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
                 // else
                 //     m_startRollerWaiter.activate();
                 startRoller();
+                if (oldIntakeState.isOut()) {
+                    m_io.setActautorCurrentLimit(actuatorCurrentLimitDeployed);}
+                else {m_io.setActautorCurrentLimit(actuatorCurrentLimit);}
                 break;
             case DeployedReverse:
                 deploy();
