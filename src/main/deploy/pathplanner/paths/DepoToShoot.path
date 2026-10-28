@@ -8,42 +8,30 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.8015350488021289,
-        "y": 5.753229813664595
+        "x": 1.0027329192546577,
+        "y": 5.99466725820763
       },
       "isLocked": false,
       "linkedName": "InDepo"
     },
     {
       "anchor": {
-        "x": 2.564028393966282,
-        "y": 4.24826974267968
+        "x": 1.413176574977817,
+        "y": 5.962475598935225
       },
       "prevControl": {
-        "x": 2.314543034605146,
-        "y": 4.425323868677905
+        "x": 1.1556433007985802,
+        "y": 5.978571428571429
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "CenterShootPos"
+      "linkedName": "OutSideDepo"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "IntakeHomeOff",
-      "waypointRelativePos": 0.0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "IntakeHomeOff"
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.5,
     "maxAcceleration": 3.0,
@@ -54,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -1.1233027140753713
   },
   "reversed": false,
   "folder": "Center",
