@@ -86,6 +86,11 @@ public class Module {
         return io.getSupplyCurrent();
     }
 
+    /** Current drawn from the battery by both the drive and turn motors, in amps. */
+    public double getTotalSupplyCurrentAmps() {
+        return inputs.driveSupplyCurrentAmps + inputs.turnSupplyCurrentAmps;
+    }
+
     /** Runs the module with the specified setpoint state. Mutates the state to optimize it. */
     public void runSetpoint(SwerveModuleState state) {
         // Optimize velocity setpoint

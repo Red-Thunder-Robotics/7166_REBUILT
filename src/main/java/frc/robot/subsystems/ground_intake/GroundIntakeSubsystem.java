@@ -243,4 +243,11 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
     public void retract() {
         m_io.setActuatorPosition(actuatorPositionHome);
     }
+
+    /** Current drawn from the battery by this subsystem's motors, in amps. */
+    public double getTotalSupplyCurrentAmps() {
+        return m_inputs.actuatorMotorCurrentAmps
+                + m_inputs.rightRollerMotorCurrentAmps
+                + m_inputs.leftRollerMotorCurrentAmps;
+    }
 }

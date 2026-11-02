@@ -234,4 +234,14 @@ public final class ShooterSubsystem extends SubsystemBase {
         // return paramMap.map.get(distance);
         return shot;
     }
+
+    /** Current drawn from the battery by this subsystem's motors, in amps. */
+    public double getTotalSupplyCurrentAmps() {
+        return m_inputs.flywheelMotorTopLeftCurrentAmps
+                + m_inputs.flywheelMotorBottomLeftCurrentAmps
+                + m_inputs.flywheelMotorTopRightCurrentAmps
+                + m_inputs.flywheelMotorBottomRightCurrentAmps
+                + m_inputs.hoodMotorCurrentAmps
+                + m_inputs.upperKickerMotorCurrentAmps;
+    }
 }

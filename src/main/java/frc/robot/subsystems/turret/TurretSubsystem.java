@@ -116,4 +116,9 @@ public final class TurretSubsystem extends SubsystemBase {
     private void target3dPose(Translation3d targetPose) {
         setAngle(StateMachine.getRobotRotationalGoal(targetPose));
     }
+
+    /** Current drawn from the battery by this subsystem's motors, in amps. */
+    public double getTotalSupplyCurrentAmps() {
+        return m_inputs.currentAmps;
+    }
 }

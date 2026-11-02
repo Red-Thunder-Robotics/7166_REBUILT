@@ -101,4 +101,9 @@ public final class IndexerSubsystem extends SubsystemBase {
         m_io.topRollerStop();
         m_io.lowerKickerStop();
     }
+
+    /** Current drawn from the battery by this subsystem's motors, in amps. */
+    public double getTotalSupplyCurrentAmps() {
+        return m_inputs.indexerCurrentAmps + m_inputs.topRollerCurrentAmps + m_inputs.lowerKickerCurrentAmps;
+    }
 }

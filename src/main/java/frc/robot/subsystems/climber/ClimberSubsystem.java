@@ -39,4 +39,9 @@ public final class ClimberSubsystem extends SubsystemBase {
                 break;
         }
     }
+
+    /** Current drawn from the battery by this subsystem's motors, in amps. */
+    public double getTotalSupplyCurrentAmps() {
+        return m_inputs.currentAmps;
+    }
 }

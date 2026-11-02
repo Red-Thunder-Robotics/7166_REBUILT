@@ -82,9 +82,12 @@ import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOMackinac;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.util.ApriltagUtil;
+import frc.robot.util.BatteryTracker;
 import frc.robot.util.PhoenixUtil.MotorAction;
 import frc.robot.util.SmartDashboardItem;
 import frc.robot.util.SystemTimeValidReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -127,6 +130,7 @@ public class Robot extends LoggedRobot {
     private LightEmittingDiodesSubsystem m_lightEmittingDiodesSubsystem = null;
 
     private final LoggedDashboardChooser<Command> m_autoChooser;
+    private final BatteryTracker m_batteryTracker;
 
     @AutoLogOutput(key = "RotationTargetOffset")
     private double m_rotationTargetMeterOffset = 0d;
@@ -257,6 +261,15 @@ public class Robot extends LoggedRobot {
                 "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(m_driveSubsystem));
         m_autoChooser.addOption(
                 "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(m_driveSubsystem));
+
+        final List<DoubleSupplier> batteryCurrentSources = new ArrayList<>(List.of(
+                m_driveSubsystem::getTotalSupplyCurrentAmps,
+                m_intakeSubsystem::getTotalSupplyCurrentAmps,
+                m_indexerSubsystem::getTotalSupplyCurrentAmps,
+                m_shooterSubsystem::getTotalSupplyCurrentAmps,
+                m_climberSubsystem::getTotalSupplyCurrentAmps));
+        if (m_turretSubsystem != null) batteryCurrentSources.add(m_turretSubsystem::getTotalSupplyCurrentAmps);
+        m_batteryTracker = new BatteryTracker(batteryCurrentSources);
 
         SmartDashboardItem.newButtonDisabled("NTGyro", () -> resetPoseFromPathPlanner(m_autoChooser.get()));
 
@@ -480,6 +493,8 @@ public class Robot extends LoggedRobot {
         m_commandScheduler.run();
 
         Threads.setCurrentThreadPriority(true, 10);
+
+        m_batteryTracker.periodic();
 
         StateMachine.periodic(this);
         MotorAction.process();

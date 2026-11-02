@@ -184,6 +184,13 @@ public class Drive extends SubsystemBase {
                 driveRequirements);
     }
 
+    /** Current drawn from the battery by all swerve motors, in amps. */
+    public double getTotalSupplyCurrentAmps() {
+        double total = 0d;
+        for (final var module : modules) total += module.getTotalSupplyCurrentAmps();
+        return total;
+    }
+
     @Override
     public void periodic() {
         odometryLock.lock(); // Prevents odometry updates while reading data
