@@ -115,9 +115,17 @@ public class StateMachine {
         return intakeState;
     }
     public static void setIntakeState(IntakeState newIntakeState) {
-        var old = intakeState;
         intakeState = newIntakeState;
-        GroundIntakeSubsystem.instance.stateUpdate(intakeState, old);
+        // Compatibility boundary: callers request behavior; the intake owns execution.
+        GroundIntakeSubsystem.instance.setWantedState(switch (intakeState) {
+            case HomeOff -> GroundIntakeSubsystem.WantedState.STOW;
+            case HomeReverse -> GroundIntakeSubsystem.WantedState.REVERSE_HOME;
+            case DeployedOff -> GroundIntakeSubsystem.WantedState.DEPLOY;
+            case DeployedOn -> GroundIntakeSubsystem.WantedState.INTAKE;
+            case DeployedReverse -> GroundIntakeSubsystem.WantedState.REVERSE_DEPLOYED;
+            case OscillateOff -> GroundIntakeSubsystem.WantedState.OSCILLATE_OFF;
+            case OscillateOn -> GroundIntakeSubsystem.WantedState.OSCILLATE_ON;
+        });
         // IndexerSubsystem.instance.intakeStateUpdate(intakeState);
     }
 

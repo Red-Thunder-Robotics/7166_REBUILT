@@ -15,6 +15,7 @@ public final class GroundIntakeIOSim implements GroundIntakeIO {
     private Distance m_actuatorPosition = m_targetActuatorPosition;
 
     private double m_rollerVelocityRPS = 0d;
+    private boolean m_actuatorEnabled = false;
 
     private final PIDController m_actuatorPositionPID = new PIDController(0.5d, 0d, 0d);
 
@@ -25,7 +26,7 @@ public final class GroundIntakeIOSim implements GroundIntakeIO {
     @Override
     public void updateInputs(GroundIntakeIOInputs inputs) {
 
-        double step = m_actuatorPositionPID.calculate(m_actuatorPosition.in(Inches));
+        double step = m_actuatorEnabled ? m_actuatorPositionPID.calculate(m_actuatorPosition.in(Inches)) : 0d;
         double maxStep = actuatorMaxVelocity * actuatorMotorPitchCircumference.in(Inches) * 0.02;
         m_actuatorPosition = m_actuatorPosition.plus(Inches.of(MathUtil.clamp(step, -maxStep, maxStep)));
 
@@ -51,9 +52,15 @@ public final class GroundIntakeIOSim implements GroundIntakeIO {
 
     @Override
     public void setActuatorPosition(Distance position) {
+        m_actuatorEnabled = true;
         m_targetActuatorPosition = position;
         m_actuatorPositionPID.setSetpoint(position.in(Inches));
     }
+    @Override
+    public void actuatorStop() {
+        m_actuatorEnabled = false;
+    }
+
     @Override
     public void rollerVelocity(AngularVelocity velocity) {
         m_rollerVelocityRPS = velocity.in(RotationsPerSecond);
