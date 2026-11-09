@@ -19,24 +19,21 @@ import frc.robot.state_machine.StateMachine;
 /** Worked example: requests -> measured-state transitions -> complete outputs. */
 public final class GroundIntakeSubsystem extends SubsystemBase {
     public enum WantedState {
-        STOW, DEPLOY, INTAKE, REVERSE_HOME, REVERSE_DEPLOYED, OSCILLATE_OFF, OSCILLATE_ON
+        HomeOff, HomeReverse, DeployedOff, DeployedOn, DeployedReverse, OscillateOff, OscillateOn
     }
 
     public enum SystemState {
-        DISABLED, ZEROING,
-        RETURNING_HOME, STOWING, STOWED,
-        DEPLOYING, DEPLOYED, INTAKING,
-        HOMING_FOR_REVERSE, REVERSING_HOME,
-        DEPLOYING_FOR_REVERSE, REVERSING_DEPLOYED,
-        OSCILLATING_OFF, OSCILLATING_ON
+        HomeOff, HomeReverse, DeployedOff, DeployedOn, DeployedReverse, OscillateOff, OscillateOn,
+        // Extra output combinations needed while executing C3's requests.
+        HomeOn, OscillateReverse, Disabled, Zeroing
     }
 
     public static GroundIntakeSubsystem instance = null;
     private final GroundIntakeIO m_io;
     private final BooleanSupplier m_isShooting;
     private final GroundIntakeIOInputsAutoLogged m_inputs = new GroundIntakeIOInputsAutoLogged();
-    private WantedState m_wantedState = WantedState.STOW;
-    private SystemState m_systemState = SystemState.DISABLED;
+    private WantedState m_wantedState = WantedState.HomeOff;
+    private SystemState m_systemState = SystemState.Disabled;
     private final Timer m_pushTimer = new Timer();
     private enum PushStep { OutOne, InThree }
     private PushStep m_pushStep = PushStep.OutOne;
@@ -68,11 +65,11 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
             // Clear requests so enabling cannot restart a previously running roller.
             StateMachine.setIntakeState(IntakeState.HomeOff);
             m_pushTimer.stop();
-            m_systemState = SystemState.DISABLED;
+            m_systemState = SystemState.Disabled;
         } else if (ZeroingCommand.isSubsystemZeroing(this)) {
             StateMachine.setIntakeState(IntakeState.HomeOff);
             m_pushTimer.stop();
-            m_systemState = SystemState.ZEROING;
+            m_systemState = SystemState.Zeroing;
         } else {
             updatePushRequest();
             m_systemState = determineSystemState();
@@ -87,60 +84,66 @@ public final class GroundIntakeSubsystem extends SubsystemBase {
 
     private SystemState determineSystemState() {
         return switch (m_wantedState) {
-            case STOW -> {
-                if (isIntakeHome()) yield SystemState.STOWED;
-                // Continue pulling fuel inward while retracting from an out state.
-                // Startup, zeroing and a home reverse request return with rollers off.
+            case HomeOff -> {
+                if (isIntakeHome()) yield SystemState.HomeOff;
+                // C3 pulls fuel inward when returning from an out state.
                 yield switch (m_systemState) {
-                    case DISABLED, ZEROING, RETURNING_HOME, STOWED,
-                         HOMING_FOR_REVERSE, REVERSING_HOME -> SystemState.RETURNING_HOME;
-                    default -> SystemState.STOWING;
+                    case DeployedOff, DeployedOn, DeployedReverse,
+                         OscillateOff, OscillateOn, OscillateReverse, HomeOn -> SystemState.HomeOn;
+                    default -> SystemState.HomeOff;
                 };
             }
-            case DEPLOY -> isAtDeployedPosition() ? SystemState.DEPLOYED : SystemState.DEPLOYING;
-            // Preserve RTR's immediate forward rollers during deployment.
-            case INTAKE -> SystemState.INTAKING;
-            case REVERSE_HOME -> isIntakeHome()
-                ? SystemState.REVERSING_HOME : SystemState.HOMING_FOR_REVERSE;
-            case REVERSE_DEPLOYED -> isAtDeployedPosition()
-                ? SystemState.REVERSING_DEPLOYED : SystemState.DEPLOYING_FOR_REVERSE;
-            case OSCILLATE_OFF -> SystemState.OSCILLATING_OFF;
-            case OSCILLATE_ON -> SystemState.OSCILLATING_ON;
+            case HomeReverse -> isIntakeHome() ? SystemState.HomeReverse : SystemState.HomeOff;
+            case DeployedOff -> SystemState.DeployedOff;
+            // C3 runs the forward rollers immediately, including during deployment.
+            case DeployedOn -> SystemState.DeployedOn;
+            case DeployedReverse -> isAtDeployedPosition()
+                ? SystemState.DeployedReverse : SystemState.DeployedOff;
+            case OscillateOff -> SystemState.OscillateOff;
+            case OscillateOn -> {
+                // C3 starts forward at deployed; otherwise it retains the roller action.
+                if (isAtDeployedPosition()) yield SystemState.OscillateOn;
+                yield switch (m_systemState) {
+                    case DeployedOn, HomeOn, OscillateOn -> SystemState.OscillateOn;
+                    case HomeReverse, DeployedReverse, OscillateReverse -> SystemState.OscillateReverse;
+                    default -> SystemState.OscillateOff;
+                };
+            }
         };
     }
 
     private void applyOutputs() {
         switch (m_systemState) {
-            case DISABLED -> {
+            case Disabled -> {
                 m_io.actuatorStop();
-                m_io.rollerStop();
+                stopRoller();
             }
-            case ZEROING -> {
-                // ZeroingCommand owns the actuator until it ends.
-                m_io.rollerStop();
-            }
-            case RETURNING_HOME, STOWED, HOMING_FOR_REVERSE -> command(actuatorPositionHome, 0);
-            case STOWING -> command(actuatorPositionHome, 1);
-            case DEPLOYING, DEPLOYED, DEPLOYING_FOR_REVERSE -> command(actuatorPositionDeployed, 0);
-            case INTAKING -> command(actuatorPositionDeployed, 1);
-            case REVERSING_HOME -> command(actuatorPositionHome, -1);
-            case REVERSING_DEPLOYED -> command(actuatorPositionDeployed, -1);
-            case OSCILLATING_OFF -> command(actuatorPositionOscillate, 0);
-            case OSCILLATING_ON -> command(actuatorPositionOscillate, 1);
+            case Zeroing -> stopRoller(); // ZeroingCommand owns the actuator.
+            case HomeOff -> { retract(); stopRoller(); }
+            case HomeOn -> { retract(); startRoller(); }
+            case HomeReverse -> { retract(); reverseRoller(); }
+            case DeployedOff -> { deploy(); stopRoller(); }
+            case DeployedOn -> { deploy(); startRoller(); }
+            case DeployedReverse -> { deploy(); reverseRoller(); }
+            case OscillateOff -> { deployOscillate(); stopRoller(); }
+            case OscillateOn -> { deployOscillate(); startRoller(); }
+            case OscillateReverse -> { deployOscillate(); reverseRoller(); }
         }
     }
 
-    /** Every active state specifies both the actuator target and roller output. */
-    private void command(Distance position, int rollerDirection) {
-        m_io.setActuatorPosition(position);
-        if (rollerDirection == 0) {
-            m_io.rollerStop();
-        } else if (rollerOutputUsesVelocityControl) {
-            m_io.rollerVelocity(rollerDirection > 0 ? rollerOutputVelocity : rollerOutputVelocityReverse);
-        } else {
-            m_io.rollerCurrent(rollerDirection > 0 ? rollerOutputCurrent : rollerOutputCurrentReverse);
-        }
+    // C3 action names; only applyOutputs calls these, so each state owns all outputs.
+    private void startRoller() {
+        if (rollerOutputUsesVelocityControl) m_io.rollerVelocity(rollerOutputVelocity);
+        else m_io.rollerCurrent(rollerOutputCurrent);
     }
+    private void reverseRoller() {
+        if (rollerOutputUsesVelocityControl) m_io.rollerVelocity(rollerOutputVelocityReverse);
+        else m_io.rollerCurrent(rollerOutputCurrentReverse);
+    }
+    private void stopRoller() { m_io.rollerStop(); }
+    private void deploy() { m_io.setActuatorPosition(actuatorPositionDeployed); }
+    private void deployOscillate() { m_io.setActuatorPosition(actuatorPositionOscillate); }
+    private void retract() { m_io.setActuatorPosition(actuatorPositionHome); }
 
     private boolean atPosition(Distance position) {
         return Math.abs(m_inputs.actuatorPositionInches - position.in(Inches)) < 0.5d;

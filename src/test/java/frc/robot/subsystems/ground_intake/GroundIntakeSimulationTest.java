@@ -53,46 +53,74 @@ class GroundIntakeSimulationTest {
         StateMachine.setIntakeState(request);
         settle();
         var expected = switch (request) {
-            case HomeOff -> STOWED;
-            case HomeReverse -> REVERSING_HOME;
-            case DeployedOff -> DEPLOYED;
-            case DeployedOn -> INTAKING;
-            case DeployedReverse -> REVERSING_DEPLOYED;
-            case OscillateOff -> OSCILLATING_OFF;
-            case OscillateOn -> OSCILLATING_ON;
+            case HomeOff -> HomeOff;
+            case HomeReverse -> HomeReverse;
+            case DeployedOff -> DeployedOff;
+            case DeployedOn -> DeployedOn;
+            case DeployedReverse -> DeployedReverse;
+            case OscillateOff -> OscillateOff;
+            case OscillateOn -> OscillateOff; // From home, C3 does not start rollers.
         };
         assertEquals(expected, intake.getSystemState());
         double target = (request.isDeployed() ? actuatorPositionDeployed
             : request.isOscillate() ? actuatorPositionOscillate : actuatorPositionHome).in(Inches);
         assertEquals(target, io.inputs.actuatorPositionInches, 0.5);
         double speed = request.areRollersReversed() ? rollerOutputVelocityReverse.in(RotationsPerSecond)
-            : request.areRollersPowered() ? rollerOutputVelocity.in(RotationsPerSecond) : 0;
+            : request.areRollersPowered() && request != IntakeState.OscillateOn ? rollerOutputVelocity.in(RotationsPerSecond) : 0;
         assertEquals(speed, io.rollerDemand, 1e-9);
+    }
+    @Test void wantedStateNamesMatchC3() {
+        assertArrayEquals(java.util.Arrays.stream(IntakeState.values()).map(Enum::name).toArray(),
+            java.util.Arrays.stream(GroundIntakeSubsystem.WantedState.values()).map(Enum::name).toArray());
+    }
+    @Test void forwardRunsDuringDeploymentAndRepeatedRequestDoesNotInterruptIt() {
+        StateMachine.setIntakeState(IntakeState.DeployedOn); tick();
+        assertFalse(intake.isAtDeployedPosition());
+        assertTrue(io.rollerDemand > 0);
+        StateMachine.setIntakeState(IntakeState.DeployedOn); tick();
+        assertTrue(io.rollerDemand > 0);
+    }
+    @Test void oscillateOnStartsForwardFromDeployedAndKeepsItAtMidpoint() {
+        StateMachine.setIntakeState(IntakeState.DeployedOff); settle();
+        StateMachine.setIntakeState(IntakeState.OscillateOn); tick();
+        assertEquals(OscillateOn, intake.getSystemState());
+        settle();
+        assertEquals(actuatorPositionOscillate.in(Inches), io.inputs.actuatorPositionInches, 0.5);
+        assertTrue(io.rollerDemand > 0);
+        StateMachine.setIntakeState(IntakeState.OscillateOff); tick();
+        assertEquals(0, io.rollerDemand);
+    }
+    @Test void oscillateOnRetainsReverseWhenNotDeployed() {
+        StateMachine.setIntakeState(IntakeState.HomeReverse); tick();
+        StateMachine.setIntakeState(IntakeState.OscillateOn); settle();
+        assertEquals(OscillateReverse, intake.getSystemState());
+        assertTrue(io.rollerDemand < 0);
+        assertEquals(actuatorPositionOscillate.in(Inches), io.inputs.actuatorPositionInches, 0.5);
     }
     @Test void stowPullsFuelInUntilHomeThenStops() {
         StateMachine.setIntakeState(IntakeState.DeployedOn); settle();
         StateMachine.setIntakeState(IntakeState.HomeOff); tick();
-        assertEquals(STOWING, intake.getSystemState());
+        assertEquals(HomeOn, intake.getSystemState());
         assertTrue(io.rollerDemand > 0);
         settle();
-        assertEquals(STOWED, intake.getSystemState());
+        assertEquals(HomeOff, intake.getSystemState());
         assertEquals(0, io.rollerDemand);
     }
     @Test void reverseAtHomeWaitsForHomeAndOverridesForward() {
         StateMachine.setIntakeState(IntakeState.DeployedOn); settle();
         StateMachine.setIntakeState(IntakeState.HomeReverse); tick();
-        assertEquals(HOMING_FOR_REVERSE, intake.getSystemState());
+        assertEquals(HomeOff, intake.getSystemState());
         assertEquals(0, io.rollerDemand);
         settle();
-        assertEquals(REVERSING_HOME, intake.getSystemState());
+        assertEquals(HomeReverse, intake.getSystemState());
         assertTrue(io.rollerDemand < 0);
     }
     @Test void interruptedReverseCannotFireLater() {
         StateMachine.setIntakeState(IntakeState.DeployedReverse); tick();
-        assertEquals(DEPLOYING_FOR_REVERSE, intake.getSystemState());
+        assertEquals(DeployedOff, intake.getSystemState());
         assertEquals(0, io.rollerDemand);
         StateMachine.setIntakeState(IntakeState.DeployedOff); settle();
-        assertEquals(DEPLOYED, intake.getSystemState());
+        assertEquals(DeployedOff, intake.getSystemState());
         assertEquals(0, io.rollerDemand);
         StateMachine.setIntakeState(IntakeState.DeployedOn); tick();
         assertTrue(io.rollerDemand > 0);
@@ -102,15 +130,15 @@ class GroundIntakeSimulationTest {
     @Test void stalledDeployNeverStartsReverseAndCanBeCancelled() {
         io.freeze = true;
         StateMachine.setIntakeState(IntakeState.DeployedReverse); settle();
-        assertEquals(DEPLOYING_FOR_REVERSE, intake.getSystemState());
+        assertEquals(DeployedOff, intake.getSystemState());
         assertEquals(0, io.rollerDemand);
         StateMachine.setIntakeState(IntakeState.HomeOff); tick();
-        assertEquals(STOWED, intake.getSystemState());
+        assertEquals(HomeOff, intake.getSystemState());
     }
     @Test void disableStopsMovementAndReenableDoesNotRestartRollers() {
         StateMachine.setIntakeState(IntakeState.DeployedOn); tick();
         DriverStationSim.setEnabled(false); DriverStationSim.notifyNewData(); tick();
-        assertEquals(DISABLED, intake.getSystemState());
+        assertEquals(Disabled, intake.getSystemState());
         assertEquals(0, io.rollerDemand);
         double stoppedPosition = io.inputs.actuatorPositionInches;
         settle();
@@ -118,7 +146,7 @@ class GroundIntakeSimulationTest {
         assertEquals(IntakeState.HomeOff, StateMachine.getIntakeState());
         DriverStationSim.setEnabled(true); DriverStationSim.notifyNewData(); tick();
         assertEquals(0, io.rollerDemand);
-        settle(); assertEquals(STOWED, intake.getSystemState());
+        settle(); assertEquals(HomeOff, intake.getSystemState());
     }
     @Test void zeroingOwnsActuatorAndStopsRollers() {
         StateMachine.setIntakeState(IntakeState.DeployedOn); tick();
@@ -126,7 +154,7 @@ class GroundIntakeSimulationTest {
         CommandScheduler.getInstance().schedule(zero);
         int writes = io.positionWrites;
         tick();
-        assertEquals(ZEROING, intake.getSystemState());
+        assertEquals(Zeroing, intake.getSystemState());
         assertEquals(writes, io.positionWrites);
         assertEquals(0, io.rollerDemand);
         zero.cancel(); tick(); assertEquals(0, io.rollerDemand);
@@ -136,18 +164,18 @@ class GroundIntakeSimulationTest {
         DriverStationSim.setAutonomous(mode == Mode.AUTO); DriverStationSim.notifyNewData();
         StateMachine.setIntakeState(IntakeState.DeployedOff); settle();
         shooting.set(true); tick(); tick();
-        assertEquals(INTAKING, intake.getSystemState());
+        assertEquals(DeployedOn, intake.getSystemState());
         for (int i = 0; i < 8; i++) tick();
-        assertEquals(INTAKING, intake.getSystemState());
+        assertEquals(DeployedOn, intake.getSystemState());
         for (int i = 0; i < 11; i++) tick(); // 0.4 seconds after timer start.
         assertEquals(mode == Mode.AUTO ? IntakeState.HomeOff : IntakeState.DeployedOn,
             StateMachine.getIntakeState());
         for (int i = 0; i < 10; i++) tick();
         assertEquals(IntakeState.HomeOff, StateMachine.getIntakeState());
-        settle(); assertEquals(STOWED, intake.getSystemState()); assertEquals(0, io.rollerDemand);
+        settle(); assertEquals(HomeOff, intake.getSystemState()); assertEquals(0, io.rollerDemand);
         shooting.set(false); tick();
         StateMachine.setIntakeState(IntakeState.DeployedOff); settle();
-        assertEquals(DEPLOYED, intake.getSystemState());
+        assertEquals(DeployedOff, intake.getSystemState());
     }
     enum Mode { TELEOP, AUTO }
     private static class ObservedSim implements GroundIntakeIO {

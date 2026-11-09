@@ -30,46 +30,32 @@ Commit and push your design, then implementation updates. Request review before 
 
 Each cycle: read measurements → decide state → apply outputs → log. Setters only record requests. Existing controls and autos use a compatibility mapping in `StateMachine.setIntakeState`.
 
-The chart covers forward intake/stow; the table includes reverse and oscillate. New requests are evaluated every cycle, including during movement.
+Both enums use C3's seven request names. System states describe outputs, not proof of arrival: `DeployedOff` can mean moving outward with rollers off. `HomeOn` represents C3's forward rollers during retraction; `OscillateReverse` represents its retained reverse action.
 
 ```mermaid
 stateDiagram-v2
-    [*] --> DISABLED
-    DISABLED --> RETURNING_HOME: enabled, away from home
-    DISABLED --> STOWED: enabled, at home
-    RETURNING_HOME --> STOWED: at home
-    STOWED --> DEPLOYING: want DEPLOY
-    DEPLOYING --> DEPLOYED: at deployed
-    DEPLOYED --> DEPLOYING: no longer at deployed
-    STOWED --> INTAKING: want INTAKE
-    DEPLOYING --> INTAKING: want INTAKE
-    DEPLOYED --> INTAKING: want INTAKE
-    INTAKING --> STOWING: want STOW, away from home
-    DEPLOYING --> STOWING: want STOW, away from home
-    DEPLOYED --> STOWING: want STOW, away from home
-    STOWING --> STOWED: at home
-    STOWING --> INTAKING: want INTAKE
-    note right of DISABLED
-        Any state goes here when disabled.
-        Clear requests and stop both outputs.
-    end note
+    HomeOff --> DeployedOn: want DeployedOn
+    DeployedOn --> HomeOn: want HomeOff, away from home
+    HomeOn --> HomeOff: at home
+    HomeOff --> DeployedOff: want DeployedReverse
+    DeployedOff --> DeployedReverse: want DeployedReverse, at deployed
+    DeployedOff --> OscillateOn: want OscillateOn, at deployed
+    OscillateOn --> OscillateOff: want OscillateOff
 ```
 
-| Wanted state | Condition / system state | Actuator target | Rollers |
-| --- | --- | --- | --- |
-| `STOW` | At home: `STOWED` | Home | Off |
-| `STOW` | Returning from an out state: `STOWING` | Home | Forward until home |
-| `STOW` | Startup, after zeroing, or from a home reverse: `RETURNING_HOME` | Home | Off |
-| `DEPLOY` | Away: `DEPLOYING`; arrived: `DEPLOYED` | Deployed | Off |
-| `INTAKE` | `INTAKING`, including during deployment | Deployed | Forward |
-| `REVERSE_HOME` | Away: `HOMING_FOR_REVERSE`; arrived: `REVERSING_HOME` | Home | Off until home, then reverse |
-| `REVERSE_DEPLOYED` | Away: `DEPLOYING_FOR_REVERSE`; arrived: `REVERSING_DEPLOYED` | Deployed | Off until deployed, then reverse |
-| `OSCILLATE_OFF` | `OSCILLATING_OFF` | Midpoint | Off |
-| `OSCILLATE_ON` | `OSCILLATING_ON` | Midpoint | Forward |
-| Any, while disabled | `DISABLED`; wanted reset to `STOW` | Stop actuator | Off |
-| Any, during driven zeroing | `ZEROING`; wanted reset to `STOW` | Owned by `ZeroingCommand` | Off |
+This chart shows selected transitions; new requests are evaluated every cycle.
 
-Arrival means within 0.5 inches of the named target. Reverse waits until arrival or a new request; no timeout is implemented. The existing shooting-push timer still produces intake/stow requests.
+| Wanted state | Action |
+| --- | --- |
+| `HomeOff` | Retract; run forward when returning from out, then stop at home. |
+| `HomeReverse` | Retract; reverse once home. |
+| `DeployedOff` | Deploy; stop rollers. |
+| `DeployedOn` | Deploy; start forward rollers immediately. |
+| `DeployedReverse` | Deploy; reverse once deployed. |
+| `OscillateOff` | Move to midpoint; stop rollers. |
+| `OscillateOn` | Move to midpoint; start forward if deployed, otherwise retain the previous roller action. |
+
+Arrival means within 0.5 inches of the named target. Reverse waits until arrival or a new request; no timeout is implemented. C3's shooting-push sequence and teleop/auto timing are retained. `Disabled` stops outputs and clears requests; `Zeroing` gives the actuator to the zeroing command.
 
 </details>
 
@@ -86,7 +72,7 @@ On Windows, replace `bash gradlew` with `gradlew.bat`. See the [simulation tests
 
 Test normal completion, interrupted/repeated requests, reversal, stalled feedback, zeroing, shooting push, and disable/re-enable. Compare wanted/system states with measured position and roller velocity in AdvantageScope. Test whole-robot coordination after individual conversions.
 
-Build and all 15 sim cases passed on 2026-11-09. Full-robot sim started, with a PathPlanner rotation error during auto loading, a CTRE logger-directory message, and a startup loop overrun. No hardware test; sim validates sequencing, not physical tuning or fuel handling.
+Build and all 19 sim cases passed on 2026-11-09. The earlier full-robot startup check completed, with a PathPlanner rotation error during auto loading, a CTRE logger-directory message, and a startup loop overrun. No hardware test; sim validates sequencing, not physical tuning or fuel handling.
 
 </details>
 
@@ -94,9 +80,9 @@ Build and all 15 sim cases passed on 2026-11-09. Full-robot sim started, with a 
 <summary>Behavior changes in the example</summary>
 
 - One roller output replaces conflicting forward/reverse flags and pending waiters.
-- Home reverse waits for home; midpoint-on explicitly runs forward.
+- Home reverse waits for home, fixing C3’s deployed-position check. Reverse requests use measured arrival instead of the previous request’s position name.
 - Disable clears requests and stops outputs; re-enable returns home with rollers off. Driven zeroing owns the actuator.
-- Forward intake still runs during deployment; stowing from an out state runs forward until home.
+- C3 names, action helpers, forward deployment, retraction rollers, and conditional midpoint-on behavior are retained.
 - Arrival checks use measured position against named targets. Sim now honors actuator stop.
 
 </details>

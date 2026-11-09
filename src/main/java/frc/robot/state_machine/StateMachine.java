@@ -118,13 +118,13 @@ public class StateMachine {
         intakeState = newIntakeState;
         // Compatibility boundary: callers request behavior; the intake owns execution.
         GroundIntakeSubsystem.instance.setWantedState(switch (intakeState) {
-            case HomeOff -> GroundIntakeSubsystem.WantedState.STOW;
-            case HomeReverse -> GroundIntakeSubsystem.WantedState.REVERSE_HOME;
-            case DeployedOff -> GroundIntakeSubsystem.WantedState.DEPLOY;
-            case DeployedOn -> GroundIntakeSubsystem.WantedState.INTAKE;
-            case DeployedReverse -> GroundIntakeSubsystem.WantedState.REVERSE_DEPLOYED;
-            case OscillateOff -> GroundIntakeSubsystem.WantedState.OSCILLATE_OFF;
-            case OscillateOn -> GroundIntakeSubsystem.WantedState.OSCILLATE_ON;
+            case HomeOff -> GroundIntakeSubsystem.WantedState.HomeOff;
+            case HomeReverse -> GroundIntakeSubsystem.WantedState.HomeReverse;
+            case DeployedOff -> GroundIntakeSubsystem.WantedState.DeployedOff;
+            case DeployedOn -> GroundIntakeSubsystem.WantedState.DeployedOn;
+            case DeployedReverse -> GroundIntakeSubsystem.WantedState.DeployedReverse;
+            case OscillateOff -> GroundIntakeSubsystem.WantedState.OscillateOff;
+            case OscillateOn -> GroundIntakeSubsystem.WantedState.OscillateOn;
         });
         // IndexerSubsystem.instance.intakeStateUpdate(intakeState);
     }
